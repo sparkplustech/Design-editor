@@ -166,7 +166,7 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 				ref={this.containerRef}
 				id={id}
 				className="rde-canvas"
-				style={{ width: '100%', height: '100%', ...style }}
+				style={{ width: '761px', height: '538px', ...style }}
 			>
 				<canvas id={`canvas_${id}`} />
 			</div>
