@@ -62,9 +62,9 @@ class App extends Component<any, IState> {
 					</script>
 					<script async={true} src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" />
 				</Helmet>
-				<div className="rde-title">
+				{/* <div className="rde-title">
 					<Title onChangeEditor={this.handleChangeEditor} currentEditor={activeEditor} />
-				</div>
+				</div> */}
 				<FlowContainer>
 					<div className="rde-content">{this.renderEditor(activeEditor)}</div>
 				</FlowContainer>
