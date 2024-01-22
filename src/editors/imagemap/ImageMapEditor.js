@@ -698,7 +698,7 @@ class ImageMapEditor extends Component {
 		);
 		const titleContent = (
 			<React.Fragment>
-				<span>{i18n.t('imagemap.imagemap-editor')}</span>
+				<span>SOLO Certificate Designer</span>
 			</React.Fragment>
 		);
 		const title = <ImageMapTitle title={titleContent} action={action} />;
