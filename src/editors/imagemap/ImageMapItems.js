@@ -164,12 +164,15 @@ class ImageMapItems extends Component {
 		},
 		onDesignClick: () => {
 			this.setState({ activeSection: 'design' });
+			this.setState({ collapse: false});
 		},
 		onTemplateClick: () => {
 			this.setState({ activeSection: 'template' });
+			this.setState({ collapse: false});
 		},
 		onComponentsClick: () => {
 			this.setState({ activeSection: 'components' });
+			this.setState({ collapse: false});
 		},
 	};
 
@@ -312,7 +315,7 @@ class ImageMapItems extends Component {
 						justifyContent="top"
 						flexDirection="column"
 						alignItems="center"
-						style={{ height: '100%', padding: '5px', background: '#e7e8ea' }}
+						style={{ height: '100%', padding: '5px 0px', background: '#e7e8ea' }}
 					>
 						<CommonButton
 							icon={collapse ? 'angle-double-right' : 'angle-double-left'}
@@ -321,7 +324,7 @@ class ImageMapItems extends Component {
 							style={{ margin: '0 4px' }}
 							onClick={this.handlers.onCollapse}
 						/>
-						<Flex flexDirection="column" style={{margin: '8px 0px', color: activeSection === 'design' ? 'black' : '' }}>
+						<Flex flexDirection="column"  className = {`${activeSection === 'design' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'}`}   >
 							<AntDesignOutlined
 								onClick={() => this.handlers.onDesignClick()}
 								style={{ fontSize: '32px' }}
@@ -329,14 +332,14 @@ class ImageMapItems extends Component {
 							/>{' '}
 							<span>Designs</span>{' '}
 						</Flex>
-						<Flex flexDirection="column" style={{margin: '8px 0px', color: activeSection === 'template' ? 'black' : '' }}>
+						<Flex flexDirection="column" className = {`${activeSection === 'template' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'}`}>
 							<ProfileOutlined
 								onClick={() => this.handlers.onTemplateClick()}
 								style={{ fontSize: '32px' }}
 							/>{' '}
 							<span>Templates</span>{' '}
 						</Flex>
-						<Flex flexDirection="column" style={{margin: '8px 0px', color: activeSection === 'components' ? 'black' : '' }} >
+						<Flex flexDirection="column" className = {`${activeSection === 'components' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'}`} >
 							<LayoutOutlined
 								onClick={() => this.handlers.onComponentsClick()}
 								style={{ fontSize: '32px' }}
