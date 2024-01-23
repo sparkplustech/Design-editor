@@ -668,8 +668,9 @@ class ImageMapEditor extends Component {
 		} = this.handlers;
 		const action = (
 			<React.Fragment>
-				<Input placeholder="Enter a name"/>
-				{/* <span>You have unsaved changes</span> */}
+				<Input placeholder="Enter a name" className='name-input'/>
+				<span className='text-width'>You have unsaved changes</span>
+				{/* <span className='text-width'>No unsaved changes</span> */}
 				<CommonButton name="Save & Close" />
 				<CommonButton
 					className="rde-action-btn"
