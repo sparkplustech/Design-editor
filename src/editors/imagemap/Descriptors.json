@@ -122,19 +122,7 @@
 		}
 	],
 	"DRAWING": [
-		{
-			"name": "Polygon",
-			"description": "",
-			"type": "drawing",
-			"icon": {
-				"prefix": "fas",
-				"name": "draw-polygon"
-			},
-			"option": {
-				"type": "polygon",
-				"name": "New polygon"
-			}
-		},
+		
 		{
 			"name": "Line",
 			"description": "",

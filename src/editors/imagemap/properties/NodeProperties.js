@@ -6,7 +6,6 @@ import PropertyDefinition from './PropertyDefinition';
 import Scrollbar from '../../../components/common/Scrollbar';
 import { Flex } from '../../../components/flex';
 
-const { Panel } = Collapse;
 
 class NodeProperties extends Component {
 	static propTypes = {
@@ -26,23 +25,22 @@ class NodeProperties extends Component {
 		const { canvasRef, selectedItem, form } = this.props;
 		const showArrow = false;
 		return (
-			<Scrollbar>
-				<Form layout="horizontal" colon={false}>
-					<Collapse bordered={false}>
+			
+				<Form>
 						{selectedItem && PropertyDefinition[selectedItem.type] ? (
 							Object.keys(PropertyDefinition[selectedItem.type]).map(key => {
 								return (
-									<Panel
-										key={key}
-										header={PropertyDefinition[selectedItem.type][key].title}
-										showArrow={showArrow}
-									>
+									<Flex flexDirection='column' style={{padding:'10px'}}>
+								<h4>{PropertyDefinition[selectedItem.type][key].title}
+										</h4>
+									
 										{PropertyDefinition[selectedItem.type][key].component.render(
 											canvasRef,
 											form,
 											selectedItem,
 										)}
-									</Panel>
+									
+									</Flex>
 								);
 							})
 						) : (
@@ -60,9 +58,8 @@ class NodeProperties extends Component {
 								<List />
 							</Flex>
 						)}
-					</Collapse>
 				</Form>
-			</Scrollbar>
+			
 		);
 	}
 }

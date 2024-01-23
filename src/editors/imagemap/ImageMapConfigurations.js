@@ -60,36 +60,36 @@ class ImageMapConfigurations extends Component {
 		});
 		return (
 			<div className={className}>
-				<CommonButton
+				{/* <CommonButton
 					className="rde-action-btn"
 					shape="circle"
 					icon={collapse ? 'angle-double-left' : 'angle-double-right'}
 					onClick={onCollapse}
 					style={{ position: 'absolute', top: 16, right: 16, zIndex: 1000 }}
-				/>
-				<Tabs
+				/> */}
+				{/* <Tabs
 					tabPosition="right"
 					style={{ height: '100%' }}
 					activeKey={activeKey}
 					onChange={onChangeTab}
 					tabBarStyle={{ marginTop: 60 }}
-				>
-					<Tabs.TabPane tab={<Icon name="cog" />} key="map">
+				> */}
+					{/* <Tabs.TabPane tab={<Icon name="cog" />} key="map">
 						<MapProperties onChange={onChange} canvasRef={canvasRef} />
-					</Tabs.TabPane>
-					<Tabs.TabPane tab={<Icon name="cogs" />} key="node">
+					</Tabs.TabPane> */}
+					
 						<NodeProperties onChange={onChange} selectedItem={selectedItem} canvasRef={canvasRef} />
-					</Tabs.TabPane>
-					<Tabs.TabPane tab={<Icon name="vine" prefix="fab" />} key="animations">
+			
+					{/* <Tabs.TabPane tab={<Icon name="vine" prefix="fab" />} key="animations">
 						<Animations animations={animations} onChangeAnimations={onChangeAnimations} />
 					</Tabs.TabPane>
 					<Tabs.TabPane tab={<Icon name="star-half-alt" />} key="styles">
 						<Styles styles={styles} onChangeStyles={onChangeStyles} />
-					</Tabs.TabPane>
+					</Tabs.TabPane> */}
 					{/* <Tabs.TabPane tab={<Icon name="table" />} key="datasources">
                         <DataSources ref={(c) => { this.dataSourcesRef = c; }} dataSources={dataSources} onChangeDataSources={onChangeDataSources} />
                     </Tabs.TabPane> */}
-				</Tabs>
+				
 			</div>
 		);
 	}
