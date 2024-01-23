@@ -24,7 +24,7 @@ class WorkflowConfigurations extends Component<IProps> {
 	};
 
 	state = {
-		collapse: false,
+		collapse: true,
 		activeKey: 'info',
 	};
 

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Collapse, notification, Input, message } from 'antd';
 import classnames from 'classnames';
 import i18n from 'i18next';
-import {FileTextFilled} from '@ant-design/icons';
+import { FileTextFilled, AntDesignOutlined, LayoutOutlined, ProfileOutlined } from '@ant-design/icons';
 import { Flex } from '../../components/flex';
 import Icon from '../../components/icon/Icon';
 import Scrollbar from '../../components/common/Scrollbar';
@@ -30,6 +30,7 @@ class ImageMapItems extends Component {
 		descriptors: {},
 		filteredDescriptors: [],
 		svgModalVisible: false,
+		activeSection: 'design',
 	};
 
 	componentDidMount() {
@@ -60,6 +61,8 @@ class ImageMapItems extends Component {
 		} else if (this.state.collapse !== nextState.collapse) {
 			return true;
 		} else if (this.state.svgModalVisible !== nextState.svgModalVisible) {
+			return true;
+		} else if (this.state.activeSection !== nextState.activeSection) {
 			return true;
 		}
 		return false;
@@ -159,6 +162,15 @@ class ImageMapItems extends Component {
 				};
 			});
 		},
+		onDesignClick: () => {
+			this.setState({ activeSection: 'design' });
+		},
+		onTemplateClick: () => {
+			this.setState({ activeSection: 'template' });
+		},
+		onComponentsClick: () => {
+			this.setState({ activeSection: 'components' });
+		},
 	};
 
 	events = {
@@ -234,24 +246,27 @@ class ImageMapItems extends Component {
 
 	renderItem = (item, centered) =>
 		item.type === 'drawing' ? (
-			
 			<div
 				key={item.name}
 				draggable
 				onClick={e => this.handlers.onDrawingItem(item)}
 				className="rde-editor-items-item"
-				style={{ justifyContent:  'center', alignItems:'center', display:'flex', flexDirection:'column', border:'1px solid black', width:'80px', height:'80px' }}
-
+				style={{
+					justifyContent: 'center',
+					alignItems: 'center',
+					display: 'flex',
+					flexDirection: 'column',
+					border: '1px solid black',
+					width: '80px',
+					height: '80px',
+				}}
 			>
-				
 				<span className="rde-editor-items-item-icon">
 					<Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />
 				</span>
-			 <div className="rde-editor-items-item-text">{item.name}</div>
+				<div className="rde-editor-items-item-text">{item.name}</div>
 			</div>
-		
 		) : (
-			
 			<div
 				key={item.name}
 				draggable
@@ -259,46 +274,79 @@ class ImageMapItems extends Component {
 				onDragStart={e => this.events.onDragStart(e, item)}
 				onDragEnd={e => this.events.onDragEnd(e, item)}
 				className="rde-editor-items-item"
-				
-				style={{ justifyContent:  'center', alignItems:'center', display:'flex', flexDirection:'column', border:'1px solid black', width:'80px', height:'80px' }}
+				style={{
+					justifyContent: 'center',
+					alignItems: 'center',
+					display: 'flex',
+					flexDirection: 'column',
+					border: '1px solid black',
+					width: '80px',
+					height: '80px',
+				}}
 			>
-				
 				<span className="rde-editor-items-item-icon">
 					<Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />
 				</span>
 				<div className="rde-editor-items-item-text">{item.name}</div>
-				
 			</div>
-			
 		);
 
 	render() {
 		const { descriptors } = this.props;
-		const { collapse, textSearch, filteredDescriptors, activeKey, svgModalVisible, svgOption } = this.state;
+		const {
+			collapse,
+			textSearch,
+			filteredDescriptors,
+			activeKey,
+			svgModalVisible,
+			svgOption,
+			activeSection,
+		} = this.state;
 		const className = classnames('rde-editor-items', {
 			minimize: collapse,
 		});
 		return (
 			<div className={className}>
 				<Flex flex="1" flexDirection="row" style={{ height: '100%' }}>
-					<Flex justifyContent="top"  flexDirection='column' alignItems="center" style={{ height: '100%', padding:"5px",background:'#e7e8ea' }}>
+					<Flex
+						justifyContent="top"
+						flexDirection="column"
+						alignItems="center"
+						style={{ height: '100%', padding: '5px', background: '#e7e8ea' }}
+					>
 						<CommonButton
 							icon={collapse ? 'angle-double-right' : 'angle-double-left'}
 							shape="circle"
 							className="rde-action-btn"
 							style={{ margin: '0 4px' }}
 							onClick={this.handlers.onCollapse}
-						/>	
-					<Flex flexDirection='column'>
-						<FileTextFilled style={{ fontSize: '32px' }}/>	<span>Designs</span>			</Flex>	
-						<Flex flexDirection='column'>
-						<FileTextFilled style={{ fontSize: '32px' }}/>	<span>Templates</span>			</Flex>	
-						<Flex flexDirection='column'>
-						<FileTextFilled style={{ fontSize: '32px' }}/>	<span>Components</span>			</Flex>	
-					</Flex>
+						/>
+						<Flex flexDirection="column" style={{margin: '8px 0px', color: activeSection === 'design' ? 'black' : '' }}>
+							<AntDesignOutlined
+								onClick={() => this.handlers.onDesignClick()}
+								style={{ fontSize: '32px' }}
 
-					<Flex flex="1" flexDirection='column' style={{ overflowY: 'hidden' , width:"400px"}}>
-					{/* {collapse ? null : (
+							/>{' '}
+							<span>Designs</span>{' '}
+						</Flex>
+						<Flex flexDirection="column" style={{margin: '8px 0px', color: activeSection === 'template' ? 'black' : '' }}>
+							<ProfileOutlined
+								onClick={() => this.handlers.onTemplateClick()}
+								style={{ fontSize: '32px' }}
+							/>{' '}
+							<span>Templates</span>{' '}
+						</Flex>
+						<Flex flexDirection="column" style={{margin: '8px 0px', color: activeSection === 'components' ? 'black' : '' }} >
+							<LayoutOutlined
+								onClick={() => this.handlers.onComponentsClick()}
+								style={{ fontSize: '32px' }}
+							/>{' '}
+							<span>Components</span>{' '}
+						</Flex>
+					</Flex>
+					
+					<Flex flex="1" flexDirection="column" style={{ overflowY: 'hidden', width: '400px' }}>
+						{/* {collapse ? null : (
 							<Input
 								style={{ margin: '8px' }}
 								placeholder={i18n.t('action.search-list')}
@@ -307,30 +355,38 @@ class ImageMapItems extends Component {
 								allowClear
 							/>
 						)} */}
-					<Scrollbar>
-						<Flex flex="1" style={{ overflowY: 'hidden' }}>
-							{(textSearch.length && this.renderItems(filteredDescriptors)) ||
-								(
-									<Flex
-										flexWrap="wrap"
-										flexDirection="row"
-										style={{ width: '100%' , padding:'10px',gap:'20px', justifyContent:'space-evenly'}}
-										justifyContent="center"
-									>
-										{this.handlers.transformList().map(item => this.renderItem(item))}
-									</Flex>
-							
-								)}
-						</Flex>
-						<Flex flex="1" style={{ overflowY: 'hidden' }}>
+						<Scrollbar>
+							{activeSection === 'components' && (
+								<Flex flex="1" style={{ overflowY: 'hidden' }}>
+									{(textSearch.length && this.renderItems(filteredDescriptors)) || (
+										<Flex
+											flexWrap="wrap"
+											flexDirection="row"
+											style={{
+												width: '100%',
+												padding: '10px',
+												gap: '20px',
+												justifyContent: 'space-evenly',
+											}}
+											justifyContent="center"
+										>
+											{this.handlers.transformList().map(item => this.renderItem(item))}
+										</Flex>
+									)}
+								</Flex>
+							)}
+							{activeSection === 'design' && (
+								<Flex flex="1" style={{ overflowY: 'hidden' }}>
 									Design section
+								</Flex>
+							)}
 
-						</Flex>
-						<Flex flex="1" style={{ overflowY: 'hidden' }}>
+							{activeSection === 'template' && (
+								<Flex flex="1" style={{ overflowY: 'hidden' }}>
 									Template section
-
-						</Flex>
-					</Scrollbar>
+								</Flex>
+							)}
+						</Scrollbar>
 					</Flex>
 				</Flex>
 				<SVGModal
