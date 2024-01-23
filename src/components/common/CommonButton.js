@@ -64,6 +64,7 @@ class CommonButton extends Component {
 									/>
 								)
 							) : null}
+							{!this.props.icon && this.props.name}
 							{this.props.children}
 						</Button>
 					</span>
@@ -96,6 +97,7 @@ class CommonButton extends Component {
 								/>
 							)
 						) : null}
+						{!this.props.icon && this.props.name}
 						{this.props.children}
 					</Button>
 				)}

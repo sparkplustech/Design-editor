@@ -2,6 +2,7 @@ import { Badge, Button, Menu, Popconfirm } from 'antd';
 import i18n from 'i18next';
 import debounce from 'lodash/debounce';
 import React, { Component } from 'react';
+import { Input } from 'antd';
 import Canvas from '../../canvas/Canvas';
 import CommonButton from '../../components/common/CommonButton';
 import { Content } from '../../components/layout';
@@ -14,7 +15,6 @@ import ImageMapHeaderToolbar from './ImageMapHeaderToolbar';
 import ImageMapItems from './ImageMapItems';
 import ImageMapPreview from './ImageMapPreview';
 import ImageMapTitle from './ImageMapTitle';
-
 const propertiesToInclude = [
 	'id',
 	'name',
@@ -651,6 +651,9 @@ class ImageMapEditor extends Component {
 		} = this.handlers;
 		const action = (
 			<React.Fragment>
+				<Input placeholder="Enter a name"/>
+				{/* <span>You have unsaved changes</span> */}
+				<CommonButton name="Save & Close" />
 				<CommonButton
 					className="rde-action-btn"
 					shape="circle"
@@ -698,6 +701,7 @@ class ImageMapEditor extends Component {
 		);
 		const titleContent = (
 			<React.Fragment>
+				<CommonButton name="Back" />
 				<span>SOLO Certificate Designer</span>
 			</React.Fragment>
 		);
