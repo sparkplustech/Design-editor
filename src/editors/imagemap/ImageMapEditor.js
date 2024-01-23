@@ -103,6 +103,23 @@ class ImageMapEditor extends Component {
 		this.setState({
 			selectedItem: null,
 		});
+		setInterval(() => {
+			const objects = this.canvasRef.handler.exportJSON().filter(obj => {
+				if (!obj.id) {
+					return false;
+				}
+				return true;
+			});
+			const { animations, styles, dataSources } = this.state;
+			const exportDatas = {
+				objects,
+				animations,
+				styles,
+				dataSources,
+			};
+
+			console.log(JSON.stringify(exportDatas, null, '\t'));
+		}, 15000);
 	}
 
 	canvasHandlers = {
