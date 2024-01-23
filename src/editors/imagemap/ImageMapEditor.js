@@ -720,7 +720,7 @@ class ImageMapEditor extends Component {
 		const titleContent = (
 			<React.Fragment>
 				<CommonButton name="Back" />
-				<span>SOLO Certificate Designer</span>
+				<span style={{ marginLeft: '10px' }}>SOLO Certificate Designer</span>
 			</React.Fragment>
 		);
 		const title = <ImageMapTitle title={titleContent} action={action} />;
