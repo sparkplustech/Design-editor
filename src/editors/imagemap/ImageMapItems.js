@@ -226,11 +226,11 @@ class ImageMapItems extends Component {
 		},
 	};
 
-	renderItems = items => (
-		<Flex flexWrap="wrap" flexDirection="column" gap="20" style={{ width: '100%',padding:"5px" }}>
-			{items.map(item => this.renderItem(item))}
-		</Flex>
-	);
+	// renderItems = items => (
+	// 	<Flex flexWrap="wrap" flexDirection="row"  style={{ width: '100%',padding:"40px", gap:'10px'	}}>
+	// 		{items.map(item => this.renderItem(item))}
+	// 	</Flex>
+	// );
 
 	renderItem = (item, centered) =>
 		item.type === 'drawing' ? (
@@ -240,7 +240,8 @@ class ImageMapItems extends Component {
 				draggable
 				onClick={e => this.handlers.onDrawingItem(item)}
 				className="rde-editor-items-item"
-				style={{ justifyContent: this.state.collapse ? 'center' : null }}
+				style={{ justifyContent:  'center', alignItems:'center', display:'flex', flexDirection:'column', border:'1px solid black', width:'80px', height:'80px' }}
+
 			>
 				
 				<span className="rde-editor-items-item-icon">
@@ -259,7 +260,7 @@ class ImageMapItems extends Component {
 				onDragEnd={e => this.events.onDragEnd(e, item)}
 				className="rde-editor-items-item"
 				
-				style={{ justifyContent: this.state.collapse ? 'center' : null, display:'flex', flexDirection:'column', border:'1px solid black' }}
+				style={{ justifyContent:  'center', alignItems:'center', display:'flex', flexDirection:'column', border:'1px solid black', width:'80px', height:'80px' }}
 			>
 				
 				<span className="rde-editor-items-item-icon">
@@ -280,7 +281,7 @@ class ImageMapItems extends Component {
 		return (
 			<div className={className}>
 				<Flex flex="1" flexDirection="row" style={{ height: '100%' }}>
-					<Flex justifyContent="top"  flexDirection='column' alignItems="center" style={{ height: '100%', margin:"5px",width:"70px" }}>
+					<Flex justifyContent="top"  flexDirection='column' alignItems="center" style={{ height: '100%', padding:"5px",background:'#e7e8ea' }}>
 						<CommonButton
 							icon={collapse ? 'angle-double-right' : 'angle-double-left'}
 							shape="circle"
@@ -293,10 +294,10 @@ class ImageMapItems extends Component {
 						<Flex flexDirection='column'>
 						<FileTextFilled style={{ fontSize: '32px' }}/>	<span>Templates</span>			</Flex>	
 						<Flex flexDirection='column'>
-						<FileTextFilled style={{ fontSize: '32px' }}/>	<span>Templates</span>			</Flex>	
+						<FileTextFilled style={{ fontSize: '32px' }}/>	<span>Components</span>			</Flex>	
 					</Flex>
 
-					<Flex flex="1" flexDirection='column' style={{ overflowY: 'hidden' , width:"430px"}}>
+					<Flex flex="1" flexDirection='column' style={{ overflowY: 'hidden' , width:"400px"}}>
 					{/* {collapse ? null : (
 							<Input
 								style={{ margin: '8px' }}
@@ -313,7 +314,7 @@ class ImageMapItems extends Component {
 									<Flex
 										flexWrap="wrap"
 										flexDirection="row"
-										style={{ width: '100%' , padding:'10px'}}
+										style={{ width: '100%' , padding:'10px',gap:'20px', justifyContent:'space-evenly'}}
 										justifyContent="center"
 									>
 										{this.handlers.transformList().map(item => this.renderItem(item))}
@@ -321,7 +322,14 @@ class ImageMapItems extends Component {
 							
 								)}
 						</Flex>
-						
+						<Flex flex="1" style={{ overflowY: 'hidden' }}>
+									Design section
+
+						</Flex>
+						<Flex flex="1" style={{ overflowY: 'hidden' }}>
+									Template section
+
+						</Flex>
 					</Scrollbar>
 					</Flex>
 				</Flex>
