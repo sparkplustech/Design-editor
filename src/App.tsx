@@ -50,7 +50,7 @@ class App extends Component<any, IState> {
 					<link rel="manifest" href="./manifest.json" />
 					<link rel="shortcut icon" href="./favicon.ico" />
 					<link rel="stylesheet" href="https://fonts.googleapis.com/earlyaccess/notosanskr.css" />
-					<title>React Design Editor</title>
+					<title>Designer | SOLO ECOSYSTEM</title>
 					<script async={true} src="https://www.googletagmanager.com/gtag/js?id=G-EH7WWSK514" />
 					<script>
 						{`
