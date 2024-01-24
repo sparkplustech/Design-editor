@@ -43,7 +43,7 @@ export default {
 			component: GeneralProperty,
 		},
 		marker: {
-			title: 'Marker',
+			title: 'Icon',
 			component: MarkerProperty,
 		},
 	

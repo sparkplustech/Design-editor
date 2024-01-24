@@ -65,7 +65,7 @@ class AnimationModal extends Component {
 							width: 30,
 							height: 30,
 							editable: false,
-							name: 'New marker',
+							name: 'New icon',
 							tooltip: {
 								enabled: false,
 							},

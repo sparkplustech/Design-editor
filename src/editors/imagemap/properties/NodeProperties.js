@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Collapse, List } from 'antd';
+import { Form, Collapse, List, Divider } from 'antd';
 
 import PropertyDefinition from './PropertyDefinition';
 import Scrollbar from '../../../components/common/Scrollbar';
@@ -30,6 +30,7 @@ class NodeProperties extends Component {
 						{selectedItem && PropertyDefinition[selectedItem.type] ? (
 							Object.keys(PropertyDefinition[selectedItem.type]).map(key => {
 								return (
+									<>
 									<Flex flexDirection='column' style={{padding:'10px'}}>
 								<h4>{PropertyDefinition[selectedItem.type][key].title}
 										</h4>
@@ -41,6 +42,11 @@ class NodeProperties extends Component {
 										)}
 									
 									</Flex>
+									{PropertyDefinition[selectedItem.type][key].title !== "Shadow" && (
+										<Divider className='divider-class'/>
+									)}
+									</>
+									
 								);
 							})
 						) : (
