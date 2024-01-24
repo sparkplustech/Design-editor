@@ -734,7 +734,7 @@ class ImageMapEditor extends Component {
 					canvasRef={this.canvasRef}
 					descriptors={descriptors}
 				/>
-				<div className="rde-editor-canvas-container">
+				<div className="rde-editor-canvas-container" style={{overflow:'scroll', minWidth:'200px'}}>
 					<div className="rde-editor-header-toolbar">
 						<ImageMapHeaderToolbar
 							canvasRef={this.canvasRef}
