@@ -4907,11 +4907,22 @@ readers do not read off random characters that represent icons */
 .ant-select-selection:focus,
 .ant-select-selection:active {
 	box-shadow: none !important;
+	border-color: #ff6c36 !important;
 }
 .ant-select-dropdown-menu-item-active {
 	background: rgba(255, 108, 54, 0.2) !important;
 }
 .ant-select-dropdown-menu-item:hover {
 	background: rgba(255, 108, 54, 0.2) !important;
+}
+.ant-tag-checkable-checked {
+	background-color: #ff6c36 !important;
+	border-color: #ff6c36 !important;
+}
+.ant-tag-checkable:not(.ant-tag-checkable-checked):hover {
+	color: #ff6c36 !important;
+}
+.ant-tag-checkable:active{
+	background-color: #ff6c36 !important;
 }
 /*Right side panel styles end*/
