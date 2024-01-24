@@ -66,9 +66,15 @@ item=""
 				<h4 className='main-attribute'>Group</h4>
 
 				<p className="sub-attribute" draggable
-				
+				onClick={e => this.handlers.onAddItem(this.getItem("[CourseName]"), true)}
+					
 				>Course Name</p>
-				<p className="sub-attribute">Course Description</p>
+				<p className="sub-attribute"
+				draggable
+				onClick={e => this.handlers.onAddItem(this.getItem("[CourseDescription]"), true)}
+				
+				
+				>Course Description</p>
 				<Divider />
 				<h4 className="main-attribute"> Credential</h4>
 				<p className="sub-attribute">Credential ID </p>
