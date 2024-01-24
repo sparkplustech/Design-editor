@@ -4911,4 +4911,7 @@ readers do not read off random characters that represent icons */
 .ant-divider-horizontal {
 	height: 0.5px;
 }
+.ant-upload.ant-upload-drag .ant-upload {
+    padding: 16px 5px;
+}
 /*Right side panel styles end*/
