@@ -8,6 +8,7 @@ import { Flex } from '../../components/flex';
 import Icon from '../../components/icon/Icon';
 import Scrollbar from '../../components/common/Scrollbar';
 import CommonButton from '../../components/common/CommonButton';
+import Templates from '../../components/templates/Templates';
 import { SVGModal } from '../../components/common';
 import { uuid } from 'uuidv4';
 import { FlowSettings } from '../flow';
@@ -386,7 +387,7 @@ class ImageMapItems extends Component {
 
 							{activeSection === 'template' && (
 								<Flex flex="1" style={{ overflowY: 'hidden' }}>
-									Template section
+									<Templates/>
 								</Flex>
 							)}
 						</Scrollbar>
