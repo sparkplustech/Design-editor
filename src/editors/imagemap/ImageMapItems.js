@@ -368,7 +368,7 @@ class ImageMapItems extends Component {
 											style={{
 												width: '100%',
 												padding: '10px',
-												gap: '20px',
+												gap: '10px',
 												justifyContent: 'space-evenly',
 											}}
 											justifyContent="center"

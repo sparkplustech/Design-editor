@@ -104,21 +104,6 @@
 				"radius": 30,
 				"name": "New shape"
 			}
-		},
-		{
-			"name": "Cube",
-			"description": "",
-			"type": "shape",
-			"icon": {
-				"prefix": "fas",
-				"name": "cube"
-			},
-			"option": {
-				"type": "cube",
-				"width": 80,
-				"height": 80,
-				"name": "New shape"
-			}
 		}
 	],
 	"DRAWING": [
