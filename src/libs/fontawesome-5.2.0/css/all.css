@@ -4881,9 +4881,6 @@ readers do not read off random characters that represent icons */
 	margin-right: 10px;
 }
 /*Right side panel styles start*/
-.ant-switch-checked {
-	background-color: #ff6c36 !important;
-}
 .ant-slider-handle {
 	border: 2px solid #ff6c36 !important;
 }
@@ -4895,25 +4892,6 @@ readers do not read off random characters that represent icons */
 }
 .ant-slider-track {
 	background-color: #ff6c36 !important;
-}
-.ant-select-open .ant-select-selection {
-	border-color: #ff6c36 !important;
-	box-shadow: none !important;
-}
-.ant-select-selection:hover {
-	border-color: #ff6c36 !important;
-}
-.ant-select-focused .ant-select-selection,
-.ant-select-selection:focus,
-.ant-select-selection:active {
-	box-shadow: none !important;
-	border-color: #ff6c36 !important;
-}
-.ant-select-dropdown-menu-item-active {
-	background: rgba(255, 108, 54, 0.2) !important;
-}
-.ant-select-dropdown-menu-item:hover {
-	background: rgba(255, 108, 54, 0.2) !important;
 }
 .ant-tag-checkable-checked {
 	background-color: #ff6c36 !important;
