@@ -729,11 +729,15 @@ class Handler implements HandlerOptions {
 			lockMovementX: !editable,
 			lockMovementY: !editable,
 			hoverCursor: !editable ? 'pointer' : 'move',
-		};
+		}; 
+		console.log(obj)
 		if (obj.type === 'i-text') {
 			option.editable = false;
 		} else {
 			option.editable = editable;
+		} 
+		if(obj.name==='attribute'){
+			option.editable=false
 		}
 		if (editable && this.workarea.layout === 'fullscreen') {
 			option.scaleX = this.workarea.scaleX;
