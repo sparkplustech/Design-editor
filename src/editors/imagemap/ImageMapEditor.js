@@ -396,19 +396,20 @@ class ImageMapEditor extends Component {
 			if ((target && target.id === 'workarea') || !target) {
 				const { layerX: left, layerY: top } = event;
 				return (
-					<Menu>
-						<Menu.SubMenu key="add" style={{ width: 120 }} title={i18n.t('action.add')}>
-							{this.transformList().map(item => {
-								const option = Object.assign({}, item.option, { left, top });
-								const newItem = Object.assign({}, item, { option });
-								return (
-									<Menu.Item style={{ padding: 0 }} key={item.name}>
-										{this.itemsRef.renderItem(newItem, false)}
-									</Menu.Item>
-								);
-							})}
-						</Menu.SubMenu>
-					</Menu>
+					// <Menu>
+					// 	<Menu.SubMenu key="add" style={{ width: 120 }} title={i18n.t('action.add')}>
+					// 		{this.transformList().map(item => {
+					// 			const option = Object.assign({}, item.option, { left, top });
+					// 			const newItem = Object.assign({}, item, { option });
+					// 			return (
+					// 				<Menu.Item style={{ padding: 0 }} key={item.name}>
+					// 					{this.itemsRef.renderItem(newItem, false)}
+					// 				</Menu.Item>
+					// 			);
+					// 		})}
+					// 	</Menu.SubMenu>
+					// </Menu>
+					null
 				);
 			}
 			if (target.type === 'activeSelection') {
