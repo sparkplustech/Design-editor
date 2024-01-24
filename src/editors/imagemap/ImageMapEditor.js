@@ -719,7 +719,7 @@ class ImageMapEditor extends Component {
 		);
 		const titleContent = (
 			<React.Fragment>
-				<CommonButton name="Back" />
+				<CommonButton icon="arrow-left" />
 				<span style={{ marginLeft: '10px' }}>SOLO Certificate Designer</span>
 			</React.Fragment>
 		);
