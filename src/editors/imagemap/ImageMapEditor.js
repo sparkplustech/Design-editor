@@ -118,7 +118,7 @@ class ImageMapEditor extends Component {
 				dataSources,
 			};
 
-			console.log(JSON.stringify(exportDatas, null, '\t'));
+			//console.log(JSON.stringify(exportDatas, null, '\t'));
 		}, 15000);
 	}
 

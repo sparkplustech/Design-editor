@@ -33,6 +33,7 @@ class ImageMapItems extends Component {
 		filteredDescriptors: [],
 		svgModalVisible: false,
 		activeSection: 'design',
+		item:null
 	};
 
 	componentDidMount() {
@@ -423,7 +424,9 @@ class ImageMapItems extends Component {
 							)}
 							{activeSection === 'attribute' && (
 								<div>
-									<Attributes />
+									<Attributes 
+					
+					canvasRef={this.props.canvasRef}/>
 								</div>
 							)}
 						</Scrollbar>
