@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import { Collapse, notification, Input, message } from 'antd';
 import classnames from 'classnames';
 import i18n from 'i18next';
-import { FileTextFilled, AntDesignOutlined, LayoutOutlined, ProfileOutlined } from '@ant-design/icons';
+import { FileTextFilled, AntDesignOutlined, LayoutOutlined, ProfileOutlined, TagOutlined } from '@ant-design/icons';
 import { Flex } from '../../components/flex';
 import Icon from '../../components/icon/Icon';
 import Scrollbar from '../../components/common/Scrollbar';
 import CommonButton from '../../components/common/CommonButton';
 import Templates from '../../components/templates/Templates';
+import Attributes from '../../components/attributes/Attributes';
 import { SVGModal } from '../../components/common';
 import { uuid } from 'uuidv4';
 import { FlowSettings } from '../flow';
@@ -165,15 +166,19 @@ class ImageMapItems extends Component {
 		},
 		onDesignClick: () => {
 			this.setState({ activeSection: 'design' });
-			this.setState({ collapse: false});
+			this.setState({ collapse: false });
 		},
 		onTemplateClick: () => {
 			this.setState({ activeSection: 'template' });
-			this.setState({ collapse: false});
+			this.setState({ collapse: false });
 		},
 		onComponentsClick: () => {
 			this.setState({ activeSection: 'components' });
-			this.setState({ collapse: false});
+			this.setState({ collapse: false });
+		},
+		onAttributeClick: () => {
+			this.setState({ activeSection: 'attribute' });
+			this.setState({ collapse: false });
 		},
 	};
 
@@ -325,30 +330,56 @@ class ImageMapItems extends Component {
 							style={{ margin: '0 4px' }}
 							onClick={this.handlers.onCollapse}
 						/>
-						<Flex flexDirection="column"  className = {`${activeSection === 'design' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'}`}   >
+						<Flex
+							flexDirection="column"
+							className={`${
+								activeSection === 'design' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
+							}`}
+						>
 							<AntDesignOutlined
 								onClick={() => this.handlers.onDesignClick()}
 								style={{ fontSize: '32px' }}
-
 							/>{' '}
 							<span>Designs</span>{' '}
 						</Flex>
-						<Flex flexDirection="column" className = {`${activeSection === 'template' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'}`}>
+						<Flex
+							flexDirection="column"
+							className={`${
+								activeSection === 'template' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
+							}`}
+						>
 							<ProfileOutlined
 								onClick={() => this.handlers.onTemplateClick()}
 								style={{ fontSize: '32px' }}
 							/>{' '}
 							<span>Templates</span>{' '}
 						</Flex>
-						<Flex flexDirection="column" className = {`${activeSection === 'components' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'}`} >
+						<Flex
+							flexDirection="column"
+							className={`${
+								activeSection === 'components' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
+							}`}
+						>
 							<LayoutOutlined
 								onClick={() => this.handlers.onComponentsClick()}
 								style={{ fontSize: '32px' }}
 							/>{' '}
 							<span>Components</span>{' '}
 						</Flex>
+						<Flex
+							flexDirection="column"
+							className={`${
+								activeSection === 'attribute' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
+							}`}
+						>
+							<TagOutlined
+								onClick={() => this.handlers.onAttributeClick()}
+								style={{ fontSize: '32px' }}
+							/>{' '}
+							<span>Attributes</span>{' '}
+						</Flex>
 					</Flex>
-					
+
 					<Flex flex="1" flexDirection="column" style={{ overflowY: 'hidden', width: '400px' }}>
 						{/* {collapse ? null : (
 							<Input
@@ -387,8 +418,13 @@ class ImageMapItems extends Component {
 
 							{activeSection === 'template' && (
 								<Flex flex="1" style={{ overflowY: 'hidden' }}>
-									<Templates/>
+									<Templates />
 								</Flex>
+							)}
+							{activeSection === 'attribute' && (
+								<div>
+									<Attributes />
+								</div>
 							)}
 						</Scrollbar>
 					</Flex>

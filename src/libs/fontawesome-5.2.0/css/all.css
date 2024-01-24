@@ -4912,6 +4912,33 @@ readers do not read off random characters that represent icons */
 	height: 0.5px;
 }
 .ant-upload.ant-upload-drag .ant-upload {
-    padding: 16px 5px;
+	padding: 16px 5px;
 }
 /*Right side panel styles end*/
+/*Left side panel styles start*/
+.panel-space {
+	padding: 15px 0px;
+}
+.main-attribute {
+	margin-left: 10px;
+}
+.ant-divider-horizontal {
+	margin: 16px 0 !important;
+}
+.sub-attribute {
+	font-size: 14px;
+	margin-bottom: 6px;
+	margin-top: 6px;
+	padding: 5px 10px;
+	cursor: pointer;
+	&:hover {
+		background-color: rgba(255, 108, 54, 0.2);
+	}
+	&:focus {
+		background-color: rgba(255, 108, 54, 0.2);
+	}
+	&:active {
+		background-color: rgba(255, 108, 54, 0.2);
+	}
+}
+/*Leftt side panel styles end*/
