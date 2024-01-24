@@ -367,7 +367,7 @@ class ImageMapItems extends Component {
 											flexDirection="row"
 											style={{
 												width: '100%',
-												padding: '10px',
+												padding: '15px 10px 10px',
 												gap: '10px',
 												justifyContent: 'space-evenly',
 											}}
