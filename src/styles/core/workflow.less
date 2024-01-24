@@ -46,8 +46,9 @@
                 font-weight: 500;
             }
             &:hover {
-                background: rgba(0, 0, 0, .2);
-                box-shadow: 0 0 11px rgba(33, 33, 33, .2); 
+                background: rgba(255, 108, 54, .2);
+                // box-shadow: 0 0 11px rgba(255, 108, 54); 
+                border-color: #ff6c36 !important;
             }
             &:not(:last-child):after {
                 background-color: #e8e8e8;
@@ -238,6 +239,10 @@
     padding: 16px 10px;
     width: 100%;
     text-align: center;
+
+    span{
+        cursor: pointer;
+    }
 }
 
 .leftbarmenu-active{
@@ -248,3 +253,7 @@
 .leftbarmenu:hover {
     color:#ff6c36 ;
 }
+
+// .rde-editor-footer-toolbar .ant-btn {
+//     margin-right: 0px;
+// }

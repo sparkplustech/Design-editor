@@ -259,7 +259,7 @@ class ImageMapItems extends Component {
 					alignItems: 'center',
 					display: 'flex',
 					flexDirection: 'column',
-					border: '1px solid black',
+					border: '1px solid #e8e8e8',
 					width: '80px',
 					height: '80px',
 				}}
@@ -282,7 +282,7 @@ class ImageMapItems extends Component {
 					alignItems: 'center',
 					display: 'flex',
 					flexDirection: 'column',
-					border: '1px solid black',
+					border: '1px solid #e8e8e8',
 					width: '80px',
 					height: '80px',
 				}}
