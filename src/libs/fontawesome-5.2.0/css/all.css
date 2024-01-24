@@ -4900,7 +4900,15 @@ readers do not read off random characters that represent icons */
 .ant-tag-checkable:not(.ant-tag-checkable-checked):hover {
 	color: #ff6c36 !important;
 }
-.ant-tag-checkable:active{
+.ant-tag-checkable:active {
 	background-color: #ff6c36 !important;
+}
+.ant-select-focused .ant-select-selection,
+.ant-select-selection:focus,
+.ant-select-selection:active {
+	box-shadow: none !important;
+}
+.ant-divider-horizontal {
+	height: 0.5px;
 }
 /*Right side panel styles end*/
