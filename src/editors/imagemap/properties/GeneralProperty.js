@@ -35,12 +35,12 @@ export default {
 						</Form.Item>
 					</Col>
 				</Row>
-				<Form.Item label={i18n.t('common.name')} colon={false}>
+				<Form.Item label={i18n.t('common.name')} colon={false} >
 					{getFieldDecorator('name', {
 						initialValue: data.name,
 					})(<Input />)}
 				</Form.Item>
-				<Row>
+				<Row style={{ marginTop: '10px' }}>
 					<Col span={12}>
 						<Form.Item label={i18n.t('common.width')} colon={false}>
 							{getFieldDecorator('width', {
@@ -72,7 +72,7 @@ export default {
 						</Form.Item>
 					</Col>
 				</Row>
-				<Row>
+				<Row style={{ marginTop: '10px' }}>
 					<Col span={12}>
 						<Form.Item label={i18n.t('common.left')} colon={false}>
 							{getFieldDecorator('left', {
@@ -101,7 +101,7 @@ export default {
 					</Col>
 				</Row>
 				{data.superType === 'element' ? null : (
-					<Form.Item label={i18n.t('common.angle')} colon={false}>
+					<Form.Item label={i18n.t('common.angle')} colon={false} style={{ marginTop: '10px' }}>
 						{getFieldDecorator('angle', {
 							rules: [
 								{

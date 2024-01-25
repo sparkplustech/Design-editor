@@ -35,7 +35,7 @@ export default {
 						</Form.Item>
 					</Col>
 					<Col span={8}>
-						<Form.Item label="Font Size" colon={false}>
+						<Form.Item label="Font Size" colon={false} style={{paddingLeft:"20px"}}>
 							{getFieldDecorator('fontSize', {
 								initialValue: data.fontSize || '32',
 							})(
@@ -145,8 +145,8 @@ export default {
 							)}
 						</Form.Item>
 					</Col>
-					<Col span={12}>
-						<Form.Item label="Line Height" colon={false}>
+					<Col span={12} style={{ marginTop: '10px' }}>
+						<Form.Item label="Line Height" colon={false} style={{marginRight:"10px"}}>
 							{getFieldDecorator('lineHeight', {
 								rules: [
 									{
@@ -157,8 +157,8 @@ export default {
 							})(<Slider min={0} max={100} />)}
 						</Form.Item>
 					</Col>
-					<Col span={12}>
-						<Form.Item label="Char Spacing" colon={false}>
+					<Col span={12} style={{ marginTop: '10px' }}>
+						<Form.Item label="Char Spacing" colon={false} style={{marginLeft:"10px"}}>
 							{getFieldDecorator('charSpacing', {
 								rules: [
 									{

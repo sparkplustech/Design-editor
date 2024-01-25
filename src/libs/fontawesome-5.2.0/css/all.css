@@ -4881,6 +4881,9 @@ readers do not read off random characters that represent icons */
 	margin-right: 10px;
 }
 /*Right side panel styles start*/
+.ant-slider{
+	margin: 5px !important;
+}
 .ant-slider-handle {
 	border: 2px solid #ff6c36 !important;
 }
@@ -4942,9 +4945,12 @@ readers do not read off random characters that represent icons */
 	}
 }
 /*Left side panel styles end*/
-.ant-form-item-control{
+.ant-form-item-control {
 	line-height: 34px !important;
 }
-.ant-form-item-label{
+.ant-form-item-label {
 	line-height: 28px !important;
+}
+.ant-form-item .ant-switch {
+	margin: -20px 0px 0px !important;
 }
