@@ -9,6 +9,7 @@ import Icon from '../../components/icon/Icon';
 import Scrollbar from '../../components/common/Scrollbar';
 import CommonButton from '../../components/common/CommonButton';
 import Templates from '../../components/templates/Templates';
+import Design from '../../components/design/Design';
 import Attributes from '../../components/attributes/Attributes';
 import { SVGModal } from '../../components/common';
 import { uuid } from 'uuidv4';
@@ -413,7 +414,7 @@ class ImageMapItems extends Component {
 							)}
 							{activeSection === 'design' && (
 								<Flex flex="1" style={{ overflowY: 'hidden' }}>
-									Design section
+									<Design/>
 								</Flex>
 							)}
 

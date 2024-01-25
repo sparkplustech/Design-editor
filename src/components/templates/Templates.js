@@ -3,7 +3,6 @@ import { Row, Col } from 'antd';
 import './TemplatesStyle.less';
 
 const Templates = () => {
-  const [templateVisible, setTemplateVisible] = useState(true);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
 
   const templates = [
@@ -34,12 +33,10 @@ const Templates = () => {
   ];
 
   const handleSeeAllClick = (templateIndex) => {
-    setTemplateVisible(false);
     setSelectedTemplate(templates[templateIndex]);
   };
 
   const handleBackClick = () => {
-    setTemplateVisible(true);
     setSelectedTemplate(null);
   };
 
