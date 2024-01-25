@@ -4912,7 +4912,7 @@ readers do not read off random characters that represent icons */
 	height: 0.5px;
 }
 .ant-upload.ant-upload-drag .ant-upload {
-	padding: 16px 5px;
+	padding: 16px 5px !important;
 }
 /*Right side panel styles end*/
 /*Left side panel styles start*/
@@ -4943,7 +4943,7 @@ readers do not read off random characters that represent icons */
 }
 /*Left side panel styles end*/
 .ant-form-item-control{
-	line-height: 20px !important;
+	line-height: 34px !important;
 }
 .ant-form-item-label{
 	line-height: 28px !important;

@@ -26,27 +26,33 @@ export default {
 						initialValue: data.opacity || 1,
 					})(<Slider min={0} max={1} step={0.1} />)}
 				</Form.Item>
-				<Form.Item label={i18n.t('imagemap.style.stroke-color')} colon={false}>
-					{getFieldDecorator('stroke', {
-						initialValue: data.stroke || 'rgba(255, 255, 255, 0)',
-					})(<ColorPicker />)}
-				</Form.Item>
-				<Form.Item label={i18n.t('imagemap.style.stroke-width')} colon={false}>
-					{getFieldDecorator('strokeWidth', {
-						initialValue: data.strokeWidth || 1,
-					})(
-						<Select showSearch style={{ width: '100%' }}>
-							{Array.from({ length: 12 }, (v, k) => {
-								const value = k + 1;
-								return (
-									<Select.Option key={value} value={value}>
-										{value}
-									</Select.Option>
-								);
-							})}
-						</Select>,
-					)}
-				</Form.Item>
+				<Row>
+					<Col md={24} lg={12}>
+						<Form.Item label={i18n.t('imagemap.style.stroke-color')} colon={false}>
+							{getFieldDecorator('stroke', {
+								initialValue: data.stroke || 'rgba(255, 255, 255, 0)',
+							})(<ColorPicker />)}
+						</Form.Item>
+					</Col>
+					<Col md={24} lg={12}>
+						<Form.Item label={i18n.t('imagemap.style.stroke-width')} colon={false}>
+							{getFieldDecorator('strokeWidth', {
+								initialValue: data.strokeWidth || 1,
+							})(
+								<Select showSearch style={{ width: '100%' }}>
+									{Array.from({ length: 12 }, (v, k) => {
+										const value = k + 1;
+										return (
+											<Select.Option key={value} value={value}>
+												{value}
+											</Select.Option>
+										);
+									})}
+								</Select>,
+							)}
+						</Form.Item>
+					</Col>
+				</Row>
 				{data.type === 'rect' ? (
 					<Row gutter={8}>
 						<Col md={24} lg={12}>
