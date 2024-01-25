@@ -33,7 +33,7 @@ class ImageMapItems extends Component {
 		filteredDescriptors: [],
 		svgModalVisible: false,
 		activeSection: 'design',
-		item:null
+		item: null,
 	};
 
 	componentDidMount() {
@@ -341,7 +341,7 @@ class ImageMapItems extends Component {
 								onClick={() => this.handlers.onDesignClick()}
 								style={{ fontSize: '32px' }}
 							/>{' '}
-							<span>Designs</span>{' '}
+							<span onClick={() => this.handlers.onDesignClick()}>Designs</span>{' '}
 						</Flex>
 						<Flex
 							flexDirection="column"
@@ -353,7 +353,7 @@ class ImageMapItems extends Component {
 								onClick={() => this.handlers.onTemplateClick()}
 								style={{ fontSize: '32px' }}
 							/>{' '}
-							<span>Templates</span>{' '}
+							<span onClick={() => this.handlers.onTemplateClick()}>Templates</span>{' '}
 						</Flex>
 						<Flex
 							flexDirection="column"
@@ -365,7 +365,7 @@ class ImageMapItems extends Component {
 								onClick={() => this.handlers.onComponentsClick()}
 								style={{ fontSize: '32px' }}
 							/>{' '}
-							<span>Components</span>{' '}
+							<span onClick={() => this.handlers.onComponentsClick()}>Components</span>{' '}
 						</Flex>
 						<Flex
 							flexDirection="column"
@@ -377,7 +377,7 @@ class ImageMapItems extends Component {
 								onClick={() => this.handlers.onAttributeClick()}
 								style={{ fontSize: '32px' }}
 							/>{' '}
-							<span>Attributes</span>{' '}
+							<span onClick={() => this.handlers.onAttributeClick()}>Attributes</span>{' '}
 						</Flex>
 					</Flex>
 
@@ -424,9 +424,7 @@ class ImageMapItems extends Component {
 							)}
 							{activeSection === 'attribute' && (
 								<div>
-									<Attributes 
-					
-					canvasRef={this.props.canvasRef}/>
+									<Attributes canvasRef={this.props.canvasRef} />
 								</div>
 							)}
 						</Scrollbar>
