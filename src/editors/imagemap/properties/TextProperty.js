@@ -49,7 +49,7 @@ export default {
 							)}
 						</Form.Item>
 					</Col>
-					<Col span={6}>
+					<Col span={6} style={{ marginTop: '8px' }}>
 						<Form.Item>
 							{getFieldDecorator('fontWeight', {
 								valuePropName: 'checked',
@@ -61,7 +61,7 @@ export default {
 							)}
 						</Form.Item>
 					</Col>
-					<Col span={6}>
+					<Col span={6} style={{ marginTop: '8px' }}>
 						<Form.Item>
 							{getFieldDecorator('fontStyle', {
 								valuePropName: 'checked',
@@ -73,7 +73,7 @@ export default {
 							)}
 						</Form.Item>
 					</Col>
-					<Col span={6}>
+					<Col span={6} style={{ marginTop: '8px' }}>
 						<Form.Item>
 							{getFieldDecorator('linethrough', {
 								valuePropName: 'checked',
@@ -85,7 +85,7 @@ export default {
 							)}
 						</Form.Item>
 					</Col>
-					<Col span={6}>
+					<Col span={6} style={{ marginTop: '8px' }}>
 						<Form.Item>
 							{getFieldDecorator('underline', {
 								valuePropName: 'checked',
@@ -97,7 +97,7 @@ export default {
 							)}
 						</Form.Item>
 					</Col>
-					<Col span={6}>
+					<Col span={6} style={{ marginTop: '2px' }}>
 						<Form.Item>
 							{getFieldDecorator('textAlign.left', {
 								valuePropName: 'checked',
@@ -109,7 +109,7 @@ export default {
 							)}
 						</Form.Item>
 					</Col>
-					<Col span={6}>
+					<Col span={6} style={{ marginTop: '2px' }}>
 						<Form.Item>
 							{getFieldDecorator('textAlign.center', {
 								valuePropName: 'checked',
@@ -121,7 +121,7 @@ export default {
 							)}
 						</Form.Item>
 					</Col>
-					<Col span={6}>
+					<Col span={6} style={{ marginTop: '2px' }}>
 						<Form.Item>
 							{getFieldDecorator('textAlign.right', {
 								valuePropName: 'checked',
@@ -133,7 +133,7 @@ export default {
 							)}
 						</Form.Item>
 					</Col>
-					<Col span={6}>
+					<Col span={6} style={{ marginTop: '2px' }}>
 						<Form.Item>
 							{getFieldDecorator('textAlign.justify', {
 								valuePropName: 'checked',
