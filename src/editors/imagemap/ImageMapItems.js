@@ -420,7 +420,7 @@ class ImageMapItems extends Component {
 
 							{activeSection === 'template' && (
 								<Flex flex="1" style={{ overflowY: 'hidden' }}>
-									<Templates />
+									<Templates canvasRef={this.props.canvasRef} />
 								</Flex>
 							)}
 							{activeSection === 'attribute' && (
