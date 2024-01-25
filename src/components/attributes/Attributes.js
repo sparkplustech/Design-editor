@@ -3,34 +3,33 @@ import { Row, Col, Divider } from 'antd';
 import PropTypes from 'prop-types';
 import { uuid } from 'uuidv4';
 
-
 class Attributes extends Component {
-item=""
+	item = '';
 	static propTypes = {
-		canvasRef: PropTypes.any	};
-	
+		canvasRef: PropTypes.any,
+	};
+
 	getItem(name) {
-		let item={
-			name: "Text",
-			description: "",
-			type: "text",
+		let item = {
+			name: 'Text',
+			description: '',
+			type: 'text',
 			editable: false,
 			icon: {
-				prefix: "fas",
-				name: "font"
+				prefix: 'fas',
+				name: 'font',
 			},
 			option: {
-				type: "textbox",
+				type: 'textbox',
 				text: name,
 				width: 400,
 				height: 30,
-				fontSize: 32,
-				name: "attribute",
+				fontSize: 20,
+				name: 'attribute',
 				textAlign: 'center',
-			
-
-			}}
-		return item
+			},
+		};
+		return item;
 	}
 	handlers = {
 		onAddItem: (item, centered) => {
@@ -47,51 +46,101 @@ item=""
 			}
 			canvasRef.handler.add(option, centered);
 		},
-
 	};
 
-	
-
-	render(){
-
-	
+	render() {
 		return (
-		<Row className="panel-space">
-			<Col>
-				<h4 className="main-attribute">Issuer</h4>
-				<p className="sub-attribute" draggable
-				onClick={e => this.handlers.onAddItem(this.getItem("[IssuerName]"), true)}
-						>Issuer Name</p>
-				<Divider />
-				<h4 className='main-attribute'>Group</h4>
+			<Row className="panel-space">
+				<Col>
+					<h4 className="main-attribute">Issuer</h4>
+					<p
+						className="sub-attribute"
+						draggable
+						onClick={e => this.handlers.onAddItem(this.getItem('[IssuerName]'), true)}
+					>
+						Issuer Name
+					</p>
+					<Divider />
+					<h4 className="main-attribute">Group</h4>
 
-				<p className="sub-attribute" draggable
-				onClick={e => this.handlers.onAddItem(this.getItem("[CourseName]"), true)}
-					
-				>Course Name</p>
-				<p className="sub-attribute"
-				draggable
-				onClick={e => this.handlers.onAddItem(this.getItem("[CourseDescription]"), true)}
-				
-				
-				>Course Description</p>
-				<Divider />
-				<h4 className="main-attribute"> Credential</h4>
-				<p className="sub-attribute">Credential ID </p>
-				<p className="sub-attribute">Credential License ID </p>
-				<p className="sub-attribute">Issue Date </p>
-				<p className="sub-attribute"> Expiry Date </p>
-				<p className="sub-attribute">Grade </p>
-				<p className="sub-attribute"> URL</p>
-				<p className="sub-attribute"> UUID</p>
-				<Divider />
-				<h4 className="main-attribute">Recipient</h4>
-				<p className="sub-attribute">Recipient ID </p>
-				<p className="sub-attribute"> Recipient Name </p>
-				<p className="sub-attribute"> Recipient Email</p>
-			</Col>
-		</Row>)
+					<p
+						className="sub-attribute"
+						draggable
+						onClick={e => this.handlers.onAddItem(this.getItem('[CourseName]'), true)}
+					>
+						Course Name
+					</p>
+					<p
+						className="sub-attribute"
+						draggable
+						onClick={e => this.handlers.onAddItem(this.getItem('[CourseDescription]'), true)}
+					>
+						Course Description
+					</p>
+					<Divider />
+					<h4 className="main-attribute"> Credential</h4>
+					<p
+						className="sub-attribute"
+						onClick={e => this.handlers.onAddItem(this.getItem('[CredentialId]'), true)}
+					>
+						Credential ID
+					</p>
+					<p
+						className="sub-attribute"
+						onClick={e => this.handlers.onAddItem(this.getItem('[CredentialILicenseId]'), true)}
+					>
+						Credential License ID
+					</p>
+					<p
+						className="sub-attribute"
+						onClick={e => this.handlers.onAddItem(this.getItem('[IssueDate]'), true)}
+					>
+						Issue Date
+					</p>
+					<p
+						className="sub-attribute"
+						onClick={e => this.handlers.onAddItem(this.getItem('[ExpiryDate]'), true)}
+					>
+						Expiry Date
+					</p>
+					<p className="sub-attribute" onClick={e => this.handlers.onAddItem(this.getItem('[Grade]'), true)}>
+						Grade
+					</p>
+					<p className="sub-attribute" onClick={e => this.handlers.onAddItem(this.getItem('[Url]'), true)}>
+						URL
+					</p>
+					<p className="sub-attribute" onClick={e => this.handlers.onAddItem(this.getItem('[Uuid]'), true)}>
+						UUID
+					</p>
+					<Divider />
+					<h4
+						className="main-attribute"
+						onClick={e => this.handlers.onAddItem(this.getItem('[Recipient]'), true)}
+					>
+						Recipient
+					</h4>
+					<p
+						className="sub-attribute"
+						onClick={e => this.handlers.onAddItem(this.getItem('[RecipientId]'), true)}
+					>
+						Recipient ID
+					</p>
+					<p
+						className="sub-attribute"
+						onClick={e => this.handlers.onAddItem(this.getItem('[RecipientName]'), true)}
+					>
+						Recipient Name
+					</p>
+					<p
+						className="sub-attribute"
+						onClick={e => this.handlers.onAddItem(this.getItem('[RecipientEmail]'), true)}
+					>
+						Recipient Email
+					</p>
+				</Col>
+			</Row>
+		);
 	}
-};
+}
 
 export default Attributes;
