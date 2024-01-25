@@ -36,7 +36,7 @@ class Content extends Component<IProps> {
 						style={{
 							overflowY: 'auto',
 							overflowX: 'hidden',
-							minHeight: `calc(100vh - ${title ? 98 : 60}px)`,
+							minHeight: `calc(100vh - ${title ? 60 : 60}px)`,
 							height: `calc(100vh - ${title ? 98 : 60}px)`,
 						}}
 						className={className}

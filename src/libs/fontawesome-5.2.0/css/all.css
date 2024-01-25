@@ -4941,4 +4941,10 @@ readers do not read off random characters that represent icons */
 		background-color: rgba(255, 108, 54, 0.2);
 	}
 }
-/*Leftt side panel styles end*/
+/*Left side panel styles end*/
+.ant-form-item-control{
+	line-height: 20px !important;
+}
+.ant-form-item-label{
+	line-height: 28px !important;
+}
