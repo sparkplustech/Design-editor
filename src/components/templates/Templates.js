@@ -32,7 +32,7 @@ const Templates = () => {
 		},
 	];
 
-	const handleSeeAllClick = templateIndex => {
+	const handleSeeAllClick = (templateIndex) => {
 		setSelectedTemplate(templates[templateIndex]);
 	};
 
@@ -61,7 +61,6 @@ const Templates = () => {
 										<img
 											src={image}
 											className="template-img"
-											alt={`Template ${index + 1} Image ${imgIndex + 1}`}
 										/>
 									</div>
 								</Col>
@@ -88,7 +87,6 @@ const Templates = () => {
 										<img
 											src={image}
 											className="template-img"
-											alt={`Template ${index + 1} Image ${imgIndex + 1}`}
 										/>
 									</div>
 							</Col>
