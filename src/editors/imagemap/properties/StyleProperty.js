@@ -14,7 +14,7 @@ export default {
 						initialValue: data.fill || 'rgba(0, 0, 0, 1)',
 					})(<ColorPicker />)}
 				</Form.Item>
-				<Form.Item label={i18n.t('common.opacity')} colon={false}>
+				<Form.Item label={i18n.t('common.opacity')} colon={false} style={{ marginTop: '7px' }}>
 					{getFieldDecorator('opacity', {
 						rules: [
 							{
@@ -26,7 +26,7 @@ export default {
 						initialValue: data.opacity || 1,
 					})(<Slider min={0} max={1} step={0.1} />)}
 				</Form.Item>
-				<Row>
+				<Row style={{ marginTop: '7px' }}>
 					<Col md={24} lg={12}>
 						<Form.Item label={i18n.t('imagemap.style.stroke-color')} colon={false}>
 							{getFieldDecorator('stroke', {
@@ -54,7 +54,7 @@ export default {
 					</Col>
 				</Row>
 				{data.type === 'rect' ? (
-					<Row gutter={8}>
+					<Row gutter={8}  style={{ marginTop: '10px' }}>
 						<Col md={24} lg={12}>
 							<Form.Item label={i18n.t('imagemap.style.rx')} colon={false}>
 								{getFieldDecorator('rx', {

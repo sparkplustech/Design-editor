@@ -56,13 +56,13 @@ templatelink:'https://hirefullstackdevelopersindia.com/testfile/sample (7).json'
     },
   ];
 
-  const handleSeeAllClick = (templateIndex) => {
-    setSelectedTemplate(templates[templateIndex]);
-  };
+	const handleSeeAllClick = (templateIndex) => {
+		setSelectedTemplate(templates[templateIndex]);
+	};
 
-  const handleBackClick = () => {
-    setSelectedTemplate(null);
-  };
+	const handleBackClick = () => {
+		setSelectedTemplate(null);
+	};
 
 
   function handleTemplateClick() {
@@ -98,28 +98,33 @@ templatelink:'https://hirefullstackdevelopersindia.com/testfile/sample (7).json'
           </div>
         ))}
 
-      {selectedTemplate && (
-        <div className="template-design-all">
-          <Row className="template-row">
-            <Col span={8}>
-              <span onClick={handleBackClick}>All Templates</span>
-            </Col>
-            <Col span={16}>
-              <h3>{selectedTemplate.name}</h3>
-            </Col>
-          </Row>
+			{selectedTemplate && (
+				<div className="template-design-all">
+					<Row className="template-row">
+						<Col span={8}>
+							<span onClick={handleBackClick}>All Templates</span>
+						</Col>
+						<Col span={16}>
+							<h3>{selectedTemplate.name}</h3>
+						</Col>
+					</Row>
 
-          <Row>
-            {selectedTemplate.images.map((image, imgIndex) => (
-              <Col key={imgIndex} span={12}>
-                <img src={image.thumbnail} className={selectedTemplate.className} alt={`Template ${imgIndex + 1}`} />
-              </Col>
-            ))}
-          </Row>
-        </div>
-      )}
-    </div>
-  );
+					<Row>
+						{selectedTemplate.images.map((image, imgIndex) => (
+							<Col key={imgIndex} span={12}>
+								<div className={selectedTemplate.className}>
+										<img
+											src={image.thumbnail}
+											className="template-img"
+										/>
+									</div>
+							</Col>
+						))}
+					</Row>
+				</div>
+			)}
+		</div>
+	);
 };
 
 export default Templates;

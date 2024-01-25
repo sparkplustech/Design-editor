@@ -80,6 +80,7 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 			// Call a function to save the canvas
 //console.log("save")		  }
 		}
+		  
 		if (this.props.responsive) {
 			this.createObserver();
 		} else {
