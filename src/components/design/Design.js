@@ -49,7 +49,6 @@ const Design = () => {
 										<img
 											src={image}
 											className="design-img"
-											alt={`Design ${index + 1} Image ${imgIndex + 1}`}
 										/>
 									</div>
 								</Col>
@@ -76,7 +75,6 @@ const Design = () => {
 									<img
 										src={image}
 										className="design-img"
-										alt={`Design ${index + 1} Image ${imgIndex + 1}`}
 									/>
 								</div>
 							</Col>
