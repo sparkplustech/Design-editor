@@ -730,7 +730,7 @@ class Handler implements HandlerOptions {
 			lockMovementY: !editable,
 			hoverCursor: !editable ? 'pointer' : 'move',
 		}; 
-		console.log(obj)
+		//console.log(obj)
 		if (obj.type === 'i-text') {
 			option.editable = false;
 		} else {

@@ -71,11 +71,22 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 			canvasOption: mergedCanvasOption,
 			...other,
 		});
+		this.canvas.on('object:modified', save)
+		this.canvas.on('object:added', save)
+		this.canvas.on('object:removed', save)
+
+		
+		function save() {
+			// Call a function to save the canvas
+//console.log("save")		  }
+		  
 		if (this.props.responsive) {
 			this.createObserver();
 		} else {
 			this.handleLoad();
 		}
+
+
 	}
 
 	componentDidUpdate(prevProps: CanvasProps) {

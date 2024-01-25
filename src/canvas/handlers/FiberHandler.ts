@@ -10,7 +10,7 @@ class FiberHandler extends CustomHandler {
 		const { subTargets } = opt;
 		if (subTargets.length) {
 			const target = subTargets[0];
-			console.log(target);
+			//console.log(target);
 			if (target.type === 'container') {
 			} else if (target.type === 'coreContainer') {
 			}
