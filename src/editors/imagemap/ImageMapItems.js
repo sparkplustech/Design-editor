@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Collapse, notification, Input, message } from 'antd';
 import classnames from 'classnames';
 import i18n from 'i18next';
-import { FileTextFilled, AntDesignOutlined, LayoutOutlined, ProfileOutlined, TagOutlined } from '@ant-design/icons';
+import { FileTextFilled, AntDesignOutlined, LayoutOutlined, ProfileOutlined, TagOutlined, IeOutlined } from '@ant-design/icons';
 import { Flex } from '../../components/flex';
 import Icon from '../../components/icon/Icon';
 import Scrollbar from '../../components/common/Scrollbar';
@@ -112,9 +112,23 @@ class ImageMapItems extends Component {
 			}
 			const id = uuid();
 			const option = Object.assign({}, item.option, { id });
-			if (item.option.superType === 'svg' && item.type === 'default') {
+			if (item.option.superType === 'svg'  && item.type === 'default') {
 				this.handlers.onSVGModalVisible(item.option);
 				return;
+			}
+			if (item.option.superType === 'svg' && item.type === 'component') {
+				fetch(item.svgUrl)
+  .then(response => response.text())
+  .then(svgData => {
+    // Convert SVG data to data URI
+    const dataURI = 'data:image/svg+xml;base64,' + btoa(svgData);
+	
+				const { canvasRef } = this.props;
+				canvasRef.handler.add({ loadType:"file", svg:dataURI, type: 'svg', superType: 'svg', id: uuid(), name: 'New SVG' }, centered);
+			
+				return;
+  }
+  )
 			}
 			canvasRef.handler.add(option, centered);
 		},
@@ -278,6 +292,7 @@ class ImageMapItems extends Component {
 				<div className="rde-editor-items-item-text">{item.name}</div>
 			</div>
 		) : (
+		
 			<div
 				key={item.name}
 				draggable
@@ -301,6 +316,42 @@ class ImageMapItems extends Component {
 				<div className="rde-editor-items-item-text">{item.name}</div>
 			</div>
 		);
+
+		renderComponents = () =>{
+		const components=
+		[
+			{name:'Ribbon', description: '',svgUrl:'https://hirefullstackdevelopersindia.com/testfile/rt.svg', 
+		type: 'component',option:{superType:'svg'}},
+		{name:'Ribbon', description: '',svgUrl:'https://hirefullstackdevelopersindia.com/testfile/rt.svg',
+		type: 'component',option:{superType:'svg'}}
+	];
+
+			return		components.map(item=>
+				(
+
+<div
+				key={item.name}
+				draggable
+				onClick={e => this.handlers.onAddItem(item, true)}
+				onDragStart={e => this.events.onDragStart(e, item)}
+				onDragEnd={e => this.events.onDragEnd(e, item)}
+				className="rde-editor-items-item"
+				style={{
+					justifyContent: 'center',
+					alignItems: 'center',
+					display: 'flex',
+					flexDirection: 'column',
+					border: '1px solid #e8e8e8',
+					width: '80px',
+					height: '80px',
+				}}
+			>
+				<span className="rde-editor-items-item-icon">
+					{/* <Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} /> */}
+				</span>
+				<div className="rde-editor-items-item-text">{item.name}</div>
+			</div>		)	);
+		}
 
 	render() {
 		const { descriptors } = this.props;
@@ -408,6 +459,9 @@ class ImageMapItems extends Component {
 											justifyContent="center"
 										>
 											{this.handlers.transformList().map(item => this.renderItem(item))}
+											{this.renderComponents()}
+
+											
 										</Flex>
 									)}
 								</Flex>
