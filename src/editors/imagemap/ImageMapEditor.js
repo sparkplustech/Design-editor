@@ -753,7 +753,7 @@ class ImageMapEditor extends Component {
 						ref={c => {
 							this.container = c;
 						}}
-						className="rde-editor-canvas" style={{position:'relative'}}
+						className="rde-editor-canvas" 
 					>
 						<Canvas
 							ref={c => {
@@ -780,7 +780,7 @@ class ImageMapEditor extends Component {
 								selectionColor: 'rgba(8, 151, 156, 0.3)'
 							}}
 								
-							style={{width:'800px',height:'618px', top:'50%',left:'50%',transform:'translate(-50%,-50%'}}
+							// style={{width:'800px',height:'618px', top:'50%',left:'50%',transform:'translate(-50%,-50%'}}
 						
 						/>
 					</div>
