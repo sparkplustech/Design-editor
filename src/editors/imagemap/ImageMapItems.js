@@ -3,13 +3,23 @@ import PropTypes from 'prop-types';
 import { Collapse, notification, Input, message } from 'antd';
 import classnames from 'classnames';
 import i18n from 'i18next';
-import { FileTextFilled, AntDesignOutlined, LayoutOutlined, ProfileOutlined, TagOutlined, IeOutlined } from '@ant-design/icons';
+import {
+	FileTextFilled,
+	AntDesignOutlined,
+	LayoutOutlined,
+	ProfileOutlined,
+	TagOutlined,
+	IeOutlined,
+	PictureOutlined,
+} from '@ant-design/icons';
 import { Flex } from '../../components/flex';
 import Icon from '../../components/icon/Icon';
 import Scrollbar from '../../components/common/Scrollbar';
 import CommonButton from '../../components/common/CommonButton';
 import Templates from '../../components/templates/Templates';
 import Design from '../../components/design/Design';
+import BadgeBackground from '../../components/badge-background/BadgeBackground';
+import BadgeDesign from '../../components/badge-design/BadgeDesign';
 import Attributes from '../../components/attributes/Attributes';
 import { SVGModal } from '../../components/common';
 import { uuid } from 'uuidv4';
@@ -35,11 +45,13 @@ class ImageMapItems extends Component {
 		svgModalVisible: false,
 		activeSection: 'design',
 		item: null,
+		currentPath: '',
 	};
 
 	componentDidMount() {
 		const { canvasRef } = this.props;
 		this.waitForCanvasRender(canvasRef);
+		this.setState({ currentPath: window.location.pathname });
 	}
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
@@ -112,23 +124,32 @@ class ImageMapItems extends Component {
 			}
 			const id = uuid();
 			const option = Object.assign({}, item.option, { id });
-			if (item.option.superType === 'svg'  && item.type === 'default') {
+			if (item.option.superType === 'svg' && item.type === 'default') {
 				this.handlers.onSVGModalVisible(item.option);
 				return;
 			}
 			if (item.option.superType === 'svg' && item.type === 'component') {
 				fetch(item.svgUrl)
-  .then(response => response.text())
-  .then(svgData => {
-    // Convert SVG data to data URI
-    const dataURI = 'data:image/svg+xml;base64,' + btoa(svgData);
-	
-				const { canvasRef } = this.props;
-				canvasRef.handler.add({ loadType:"file", svg:dataURI, type: 'svg', superType: 'svg', id: uuid(), name: 'New SVG' }, centered);
-			
-				return;
-  }
-  )
+					.then(response => response.text())
+					.then(svgData => {
+						// Convert SVG data to data URI
+						const dataURI = 'data:image/svg+xml;base64,' + btoa(svgData);
+
+						const { canvasRef } = this.props;
+						canvasRef.handler.add(
+							{
+								loadType: 'file',
+								svg: dataURI,
+								type: 'svg',
+								superType: 'svg',
+								id: uuid(),
+								name: 'New SVG',
+							},
+							centered,
+						);
+
+						return;
+					});
 			}
 			canvasRef.handler.add(option, centered);
 		},
@@ -292,7 +313,6 @@ class ImageMapItems extends Component {
 				<div className="rde-editor-items-item-text">{item.name}</div>
 			</div>
 		) : (
-		
 			<div
 				key={item.name}
 				draggable
@@ -317,19 +337,26 @@ class ImageMapItems extends Component {
 			</div>
 		);
 
-		renderComponents = () =>{
-		const components=
-		[
-			{name:'Ribbon', description: '',svgUrl:'https://hirefullstackdevelopersindia.com/testfile/rt.svg', 
-		type: 'component',option:{superType:'svg'}},
-		{name:'Ribbon', description: '',svgUrl:'https://hirefullstackdevelopersindia.com/testfile/rt.svg',
-		type: 'component',option:{superType:'svg'}}
-	];
+	renderComponents = () => {
+		const components = [
+			{
+				name: 'Ribbon',
+				description: '',
+				svgUrl: 'https://hirefullstackdevelopersindia.com/testfile/rt.svg',
+				type: 'component',
+				option: { superType: 'svg' },
+			},
+			{
+				name: 'Ribbon',
+				description: '',
+				svgUrl: 'https://hirefullstackdevelopersindia.com/testfile/rt.svg',
+				type: 'component',
+				option: { superType: 'svg' },
+			},
+		];
 
-			return		components.map(item=>
-				(
-
-<div
+		return components.map(item => (
+			<div
 				key={item.name}
 				draggable
 				onClick={e => this.handlers.onAddItem(item, true)}
@@ -350,8 +377,9 @@ class ImageMapItems extends Component {
 					{/* <Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} /> */}
 				</span>
 				<div className="rde-editor-items-item-text">{item.name}</div>
-			</div>		)	);
-		}
+			</div>
+		));
+	};
 
 	render() {
 		const { descriptors } = this.props;
@@ -363,10 +391,13 @@ class ImageMapItems extends Component {
 			svgModalVisible,
 			svgOption,
 			activeSection,
+			currentPath,
 		} = this.state;
 		const className = classnames('rde-editor-items', {
 			minimize: collapse,
 		});
+
+		const certificatePath = "/certificate-designer";
 		return (
 			<div className={className}>
 				<Flex flex="1" flexDirection="row" style={{ height: '100%' }}>
@@ -395,7 +426,8 @@ class ImageMapItems extends Component {
 							/>{' '}
 							<span onClick={() => this.handlers.onDesignClick()}>Designs</span>{' '}
 						</Flex>
-						<Flex
+						{currentPath === certificatePath ? (
+							<Flex
 							flexDirection="column"
 							className={`${
 								activeSection === 'template' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
@@ -407,6 +439,22 @@ class ImageMapItems extends Component {
 							/>{' '}
 							<span onClick={() => this.handlers.onTemplateClick()}>Templates</span>{' '}
 						</Flex>
+						) : (
+							<Flex
+							flexDirection="column"
+							className={`${
+								activeSection === 'template' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
+							}`}
+						>
+							<PictureOutlined
+								onClick={() => this.handlers.onTemplateClick()}
+								style={{ fontSize: '32px' }}
+							/>{' '}
+							<span onClick={() => this.handlers.onTemplateClick()}>Backgrounds</span>{' '}
+						</Flex>
+						)}
+						
+						
 						<Flex
 							flexDirection="column"
 							className={`${
@@ -459,22 +507,24 @@ class ImageMapItems extends Component {
 											justifyContent="center"
 										>
 											{this.handlers.transformList().map(item => this.renderItem(item))}
-											{this.renderComponents()}
-
-											
+											{/* {this.renderComponents()} */}
 										</Flex>
 									)}
 								</Flex>
 							)}
 							{activeSection === 'design' && (
 								<Flex flex="1" style={{ overflowY: 'hidden' }}>
-									<Design/>
+									{currentPath === certificatePath ? <Design canvasRef={this.props.canvasRef} /> : <BadgeDesign canvasRef={this.props.canvasRef}/>}
 								</Flex>
 							)}
 
 							{activeSection === 'template' && (
 								<Flex flex="1" style={{ overflowY: 'hidden' }}>
-									<Templates canvasRef={this.props.canvasRef} />
+									{currentPath === certificatePath ? (
+										<Templates canvasRef={this.props.canvasRef} />
+									) : (
+										<BadgeBackground canvasRef={this.props.canvasRef} />
+									)}
 								</Flex>
 							)}
 							{activeSection === 'attribute' && (

@@ -91,7 +91,9 @@ templatelink:'https://hirefullstackdevelopersindia.com/testfile/sample (7).json'
             <Row>
               {template.images.slice(0,2).map((image, imgIndex) => (
                 <Col key={imgIndex} span={12}>
-                  <img src={image.thumbnail} onClick={handleTemplateClick} className={template.className} alt={`Template ${index + 1} Image ${imgIndex + 1}`} />
+                  <div className={template.className}>
+                  <img src={image.thumbnail} onClick={handleTemplateClick} className="template-img" alt={`Template ${index + 1} Image ${imgIndex + 1}`} />
+                  </div>
                 </Col>
               ))}
             </Row>
@@ -115,6 +117,7 @@ templatelink:'https://hirefullstackdevelopersindia.com/testfile/sample (7).json'
 								<div className={selectedTemplate.className}>
 										<img
 											src={image.thumbnail}
+                      onClick={handleTemplateClick}
 											className="template-img"
 										/>
 									</div>
