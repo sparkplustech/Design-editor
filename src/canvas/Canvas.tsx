@@ -59,6 +59,11 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 		});
 		this.canvas = new fabric.Canvas(`canvas_${id}`, mergedCanvasOption);
 		this.canvas.setBackgroundColor(mergedCanvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
+
+	
+
+
+
 		this.canvas.renderAll();
 		this.container = this.containerRef.current;
 		this.handler = new Handler({
@@ -74,7 +79,7 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 		this.canvas.on('object:modified', save)
 		this.canvas.on('object:added', save)
 		this.canvas.on('object:removed', save)
-
+	
 		
 		function save() {
 			// Call a function to save the canvas
@@ -180,7 +185,7 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 				className="rde-canvas"
 				style={{ width: '100%', height: '100%', ...style }}
 			>
-				<canvas id={`canvas_${id}`} />
+				<canvas id={`canvas_${id}`}/>
 			</div>
 		);
 	}

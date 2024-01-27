@@ -225,6 +225,7 @@ class WorkareaHandler {
 	 */
 	setImage = async (source: string | File, loaded = false) => {
 		const { canvas, workarea, editable } = this.handler;
+		console.log(source)
 		if (workarea.layout === 'responsive') {
 			return this.setResponsiveImage(source, loaded);
 		}

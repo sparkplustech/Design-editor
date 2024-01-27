@@ -120,6 +120,13 @@ class ImageMapEditor extends Component {
 
 		// 	//console.log(JSON.stringify(exportDatas, null, '\t'));
 		// }, 15000);
+
+//for badge
+	//	this.canvasHandlers.onChangeWokarea('width',"",{width:600,height:600})
+		//this.canvasHandlers.onChangeWokarea('src','./images/sample/transparentBg.png',"")
+
+	
+	
 	}
 
 	canvasHandlers = {
@@ -746,7 +753,7 @@ class ImageMapEditor extends Component {
 						ref={c => {
 							this.container = c;
 						}}
-						className="rde-editor-canvas"
+						className="rde-editor-canvas" style={{position:'relative'}}
 					>
 						<Canvas
 							ref={c => {
@@ -770,8 +777,11 @@ class ImageMapEditor extends Component {
 								transaction: true,
 							}}
 							canvasOption={{
-								selectionColor: 'rgba(8, 151, 156, 0.3)',
+								selectionColor: 'rgba(8, 151, 156, 0.3)'
 							}}
+								
+							style={{width:'800px',height:'618px', top:'50%',left:'50%',transform:'translate(-50%,-50%'}}
+						
 						/>
 					</div>
 					<div className="rde-editor-footer-toolbar">
