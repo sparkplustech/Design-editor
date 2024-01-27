@@ -121,12 +121,12 @@ class ImageMapEditor extends Component {
 		// 	//console.log(JSON.stringify(exportDatas, null, '\t'));
 		// }, 15000);
 
-//for badge
-	//	this.canvasHandlers.onChangeWokarea('width',"",{width:600,height:600})
-		//this.canvasHandlers.onChangeWokarea('src','./images/sample/transparentBg.png',"")
-
-	
-	
+		//for badge
+		const currentPath = window.location.pathname;
+		if (currentPath === '/badge-designer') {
+			this.canvasHandlers.onChangeWokarea('width', '', { width: 600, height: 600 });
+			this.canvasHandlers.onChangeWokarea('src', './images/sample/transparentBg.png', '');
+		}
 	}
 
 	canvasHandlers = {
@@ -676,8 +676,8 @@ class ImageMapEditor extends Component {
 		} = this.handlers;
 		const action = (
 			<React.Fragment>
-				<Input placeholder="Enter a name" className='name-input'/>
-				<span className='text-width'>You have unsaved changes</span>
+				<Input placeholder="Enter a name" className="name-input" />
+				<span className="text-width">You have unsaved changes</span>
 				{/* <span className='text-width'>No unsaved changes</span> */}
 				<CommonButton name="Save & Close" />
 				<CommonButton
@@ -741,7 +741,7 @@ class ImageMapEditor extends Component {
 					canvasRef={this.canvasRef}
 					descriptors={descriptors}
 				/>
-				<div className="rde-editor-canvas-container" style={{overflow:'scroll', minWidth:'200px'}}>
+				<div className="rde-editor-canvas-container" style={{ overflow: 'scroll', minWidth: '200px' }}>
 					<div className="rde-editor-header-toolbar">
 						<ImageMapHeaderToolbar
 							canvasRef={this.canvasRef}
@@ -777,7 +777,14 @@ class ImageMapEditor extends Component {
 								transaction: true,
 							}}
 							canvasOption={{
-								selectionColor: 'rgba(8, 151, 156, 0.3)'
+								selectionColor: 'rgba(8, 151, 156, 0.3)',
+							}}
+							style={{
+								width: '800px',
+								height: '618px',
+								top: '50%',
+								left: '50%',
+								transform: 'translate(-50%,-50%',
 							}}
 								
 							// style={{width:'800px',height:'618px', top:'50%',left:'50%',transform:'translate(-50%,-50%'}}
