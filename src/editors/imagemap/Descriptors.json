@@ -52,7 +52,7 @@
 			"option": {
 				"type": "image",
 				"name": "New image",
-				"src": "./images/sample/transparentBg.png"
+				"src": "./images/sample/placeholder.png"
 			}
 		}
 		

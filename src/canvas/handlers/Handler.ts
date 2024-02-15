@@ -624,7 +624,7 @@ class Handler implements HandlerOptions {
 				obj.set('file', null);
 				obj.set('src', null);
 				resolve(
-					obj.setSrc('./images/sample/transparentBg.png', () => this.canvas.renderAll(), {
+					obj.setSrc('./images/sample/placeholder.png', () => this.canvas.renderAll(), {
 						dirty: true,
 					}) as FabricImage,
 				);
