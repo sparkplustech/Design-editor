@@ -53,6 +53,11 @@ class ImageMapConfigurations extends Component {
 			onChangeStyles,
 			onChangeDataSources,
 		} = this.props;
+
+		if(!selectedItem){
+			return null;
+		}
+		
 		const { collapse, activeKey } = this.state;
 		const { onChangeTab, onCollapse } = this.handlers;
 		const className = classnames('rde-editor-configurations', {
