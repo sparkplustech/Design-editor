@@ -264,7 +264,7 @@ class ImageMapItems extends Component {
 								top: layerY,
 							},
 						};
-						this.handlers.onAddItem(item, false);
+						this.handlers.onAddItem(item, true);
 					} else {
 						notification.warn({
 							message: 'Not supported file type',
@@ -275,7 +275,7 @@ class ImageMapItems extends Component {
 			}
 			const option = Object.assign({}, this.item.option, { left: layerX, top: layerY });
 			const newItem = Object.assign({}, this.item, { option });
-			this.handlers.onAddItem(newItem, false);
+			this.handlers.onAddItem(newItem, true);
 			return false;
 		},
 		onDragEnd: e => {
