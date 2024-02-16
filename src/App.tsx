@@ -39,7 +39,6 @@ class App extends Component<any, IState> {
 
 	render() {
 		const { activeEditor } = this.state;
-		console.log(process.env.API_URL);
 		return (
 			<Router>
 				<div className="rde-main">
