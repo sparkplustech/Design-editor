@@ -107,6 +107,8 @@
 		"core-js": "^3.19.1",
 		"css-loader": "^3.5.2",
 		"del": "^5.1.0",
+		"dotenv": "^16.4.4",
+		"dotenv-webpack": "^8.0.1",
 		"eslint": "^8.3.0",
 		"eslint-config-airbnb": "^19.0.0",
 		"eslint-loader": "^4.0.2",

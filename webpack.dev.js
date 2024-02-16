@@ -3,7 +3,8 @@ const merge = require('webpack-merge');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const baseConfig = require('./webpack.common.js');
-
+const dotenv = require('dotenv');
+const Dotenv = require('dotenv-webpack');
 const devPort = 4000;
 const host = 'localhost';
 
@@ -51,6 +52,9 @@ module.exports = merge(baseConfig, {
 		new HtmlWebpackPlugin({
 			filename: 'index.html',
 			title: 'React Design Editor',
+		}),
+		new Dotenv({
+			API_URL: `.env.${process.env.API_URL}`,
 		}),
 	],
 });

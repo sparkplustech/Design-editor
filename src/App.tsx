@@ -39,6 +39,7 @@ class App extends Component<any, IState> {
 
 	render() {
 		const { activeEditor } = this.state;
+		console.log(process.env.API_URL);
 		return (
 			<Router>
 				<div className="rde-main">
@@ -69,17 +70,13 @@ class App extends Component<any, IState> {
 					</div> */}
 					<FlowContainer>
 						<Routes>
-							<Route
-								path="/"
-								element={<Navigate to="/certificate-designer" />}
-							/>
+							<Route path="/" element={<Navigate to="/certificate-designer" />} />
 							<Route path="/certificate-designer" element={this.renderEditor(activeEditor)} />
 							<Route path="/badge-designer" element={this.renderEditor(activeEditor)} />
 						</Routes>
 					</FlowContainer>
 				</div>
 			</Router>
-
 		);
 	}
 }
