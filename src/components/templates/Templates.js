@@ -112,7 +112,7 @@ const Templates = ({ canvasRef }) => {
 								<div className="certificate-img2">
 									<img
 										src={item.imageLink}
-                    onClick={() => handleTemplateClick(item.templateCode)}
+                    onClick={() => handleTemplateClick(item)}
 										className="template-img"
 										alt={`Template Portrait} Image ${imgIndex + 1}`}
 									/>
@@ -144,7 +144,7 @@ const Templates = ({ canvasRef }) => {
 											: 'certificate-img1'
 									}
 								>
-									<img src={item.imageLink}  onClick={() => handleTemplateClick(item.templateCode)} className="template-img" />
+									<img src={item.imageLink}  onClick={() => handleTemplateClick(item)} className="template-img" />
 								</div>
 							</Col>
 						))}
