@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Row, Col, Spin } from 'antd';
 import './TemplatesStyle.less';
 
-const Templates = ({ canvasRef }) => {
+const Templates = ({ canvasRef, onPageSizeChange  }) => {
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
 	const [templatesData, setTemplatesData] = useState({
 		a4PortraitTemplates: [],
@@ -49,6 +49,7 @@ const Templates = ({ canvasRef }) => {
     try {
       const objects = objectsData?.templateCode?.objects;
       const pageSize = objectsData?.pageSize;
+      onPageSizeChange(pageSize);
       canvasRef.handler.clear();
       
       if (objects && Array.isArray(objects)) {  

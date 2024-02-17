@@ -902,6 +902,7 @@ class ImageMapEditor extends Component {
 					}}
 					canvasRef={this.canvasRef}
 					descriptors={descriptors}
+					onPageSizeChange={this.handlePageSizeChange}
 				/>
 				<div className="rde-editor-canvas-container" style={{ overflow: 'scroll', minWidth: '200px' }}>
 					<div className="rde-editor-header-toolbar">
