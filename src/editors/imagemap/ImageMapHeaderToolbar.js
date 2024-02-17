@@ -1,21 +1,26 @@
 import i18n from 'i18next';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
+import { Select } from 'antd';
 import { CommonButton } from '../../components/common';
 import { Flex } from '../../components/flex';
 import Icon from '../../components/icon/Icon';
 import ImageMapList from './ImageMapList';
 
+const { Option } = Select;
+
 class ImageMapHeaderToolbar extends Component {
 	static propTypes = {
 		canvasRef: PropTypes.any,
 		selectedItem: PropTypes.object,
+		onPageSizeChange: PropTypes.func,
+		selectedPageSize: PropTypes.any,
 	};
 
 	render() {
-		const { canvasRef, selectedItem } = this.props;
+		const { canvasRef, selectedItem, onPageSizeChange, selectedPageSize } = this.props;
 		const isCropping = canvasRef ? canvasRef.handler?.interactionMode === 'crop' : false;
+
 		return (
 			<Flex className="rde-editor-header-toolbar-container" flex="1">
 				<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-list">
@@ -168,6 +173,10 @@ class ImageMapHeaderToolbar extends Component {
 					/>
 				</Flex.Item>
 				<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-history">
+					<Select placeholder="Page Size" style={{ width: 120 }} value={selectedPageSize} onChange={onPageSizeChange}>
+						<Option value="a4portait">A4 Portrait</Option>
+						<Option value="a4landscape">A4 Landscape</Option>
+					</Select>
 					<CommonButton
 						className="rde-action-btn"
 						disabled={isCropping || (canvasRef && !canvasRef.handler?.transactionHandler.undos.length)}

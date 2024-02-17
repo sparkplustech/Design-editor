@@ -1,4 +1,4 @@
-import { Badge, Button, Menu, Popconfirm } from 'antd';
+import { Badge, Button, Menu, Popconfirm, message, Spin } from 'antd';
 import i18n from 'i18next';
 import debounce from 'lodash/debounce';
 import React, { Component } from 'react';
@@ -15,6 +15,7 @@ import ImageMapHeaderToolbar from './ImageMapHeaderToolbar';
 import ImageMapItems from './ImageMapItems';
 import ImageMapPreview from './ImageMapPreview';
 import ImageMapTitle from './ImageMapTitle';
+
 const propertiesToInclude = [
 	'id',
 	'name',
@@ -86,6 +87,13 @@ class ImageMapEditor extends Component {
 		editing: false,
 		descriptors: {},
 		objects: undefined,
+		isInputEmpty: true,
+		inputData: '',
+		selectedPageSize: 'a4landscape',
+		currentPath: '',
+		editId: '',
+		templateData: [],
+		isEdit: false,
 	};
 
 	componentDidMount() {
@@ -126,6 +134,52 @@ class ImageMapEditor extends Component {
 		if (currentPath === '/badge-designer') {
 			this.canvasHandlers.onChangeWokarea('width', '', { width: 600, height: 600 });
 			this.canvasHandlers.onChangeWokarea('src', './images/sample/transparentBg.png', '');
+		}
+
+		this.setState({
+			currentPath: currentPath,
+		});
+
+		//edit
+		const queryParams = new URLSearchParams(window.location.search);
+		const isEdit = queryParams.get('edit') === 'true';
+		const id = queryParams.get('id');
+		this.setState({ editId: id, isEdit: isEdit });
+		if (isEdit && id) {
+			this.setState({ loading: true });
+			const templateEndpoint =
+				currentPath === '/badge-designer'
+					? `${process.env.REACT_APP_API_BASE_URL}/templates/getBadgeTemplate/${id}`
+					: `${process.env.REACT_APP_API_BASE_URL}/templates/getCertificateTemplate/${id}`;
+
+			fetch(templateEndpoint, {
+				headers: {
+					Authorization: `Bearer ${process.env.REACT_APP_API_TOKEN}`,
+				},
+			})
+				.then(response => response.json())
+				.then(data => {
+					
+					if(data.statusCode === 400){
+						queryParams.delete('id');
+						queryParams.delete('edit');
+						const newUrl = `${window.location.pathname}`;
+						window.history.replaceState({}, '', newUrl);
+						this.setState({ loading: false, inputData: '', isInputEmpty: false, editId: '' });
+					}else{
+						if (data?.templateCode !== "") {
+							const objects = data?.templateCode?.objects;
+							this.canvasRef.handler.clear();
+							if (objects && Array.isArray(objects)) {
+								this.canvasRef.handler.importJSON(objects);
+							} else {
+								console.error('Invalid objects data format:', objects);
+							}
+						}
+						this.setState({ loading: false, inputData: data?.name, isInputEmpty: false, selectedPageSize: data?.pageSize });
+					}				
+				})
+				.catch(error => console.error('Error fetching templates:', error));
 		}
 	}
 
@@ -621,6 +675,86 @@ class ImageMapEditor extends Component {
 		onSaveImage: () => {
 			this.canvasRef.handler.saveCanvasImage();
 		},
+
+		onSaveImageAndJson: () => {
+			const path = this.state.currentPath;
+			const isEdit = this.state.isEdit;
+			const editId = this.state.editId;
+		  
+			// Get canvas image data URL
+			const dataURL = this.canvasRef.canvas.toDataURL('image/png');
+		  
+			// Convert data URL to Blob
+			const blobPromise = fetch(dataURL).then(res => res.blob());
+		  
+			blobPromise.then(blob => {
+			  const name = this.state.inputData;
+			  const pageSize = this.state.selectedPageSize;
+			  const objects = this.canvasRef.handler.exportJSON().filter(obj => {
+				if (!obj.id) {
+				  return false;
+				}
+				return true;
+			  });
+			  const { animations, styles, dataSources } = this.state;
+			  const exportDatas = {
+				objects,
+				animations,
+				styles,
+				dataSources,
+			  };
+			  const templateCode = JSON.stringify(exportDatas, null, '\t');
+		  
+			  const formData = new FormData();
+			  formData.append('image', blob, 'image.png');
+			  formData.append('templateCode', templateCode);
+			  formData.append('name', name);
+			  formData.append('pageSize', pageSize);
+		  
+			  let endpoint;
+		  
+			  if (isEdit) {
+				endpoint =
+				  path === '/certificate-designer'
+					? `${process.env.REACT_APP_API_BASE_URL}/templates/editCertificateTemplate/${editId}`
+					: `${process.env.REACT_APP_API_BASE_URL}/templates/editBadgeTemplate/${editId}`;
+			  } else {
+				endpoint =
+				  path === '/certificate-designer'
+					? `${process.env.REACT_APP_API_BASE_URL}/templates/createcertificateTemplate`
+					: `${process.env.REACT_APP_API_BASE_URL}/templates/createBadgeTemplate`;
+			  }
+		  
+			  fetch(endpoint, {
+				method: isEdit ? 'PATCH' : 'POST',
+				headers: {
+				  Authorization: `Bearer ${process.env.REACT_APP_API_TOKEN}`,
+				},
+				body: formData,
+			  })
+				.then(response => {
+				  if (response.ok) {
+					message.success(
+					  `${isEdit ? 'Template updated' : path === '/certificate-designer' ? 'Certificate' : 'Badge'} ${
+						isEdit ? 'successfully' : 'created successfully'
+					  }`,
+					);
+					return response.json();
+				  } else {
+					message.error(`Failed to ${isEdit ? 'update' : 'create'} ${path === '/certificate-designer' ? 'certificate' : 'badge'}`);
+					throw new Error('API Error');
+				  }
+				})
+				.then(data => {
+				  window.location.reload();
+				  return data;
+				})
+				.catch(error => {
+				  console.error('API Error:', error);
+				  throw error;
+				});
+			});
+		  },
 	};
 
 	transformList = () => {
@@ -639,6 +773,16 @@ class ImageMapEditor extends Component {
 		});
 	};
 
+	onChangeInput = e => {
+		const inputData = e.target.value;
+		const isInputEmpty = inputData.trim() === '';
+		this.setState({ inputData, isInputEmpty });
+	};
+
+	handlePageSizeChange = value => {
+		this.setState({ selectedPageSize: value });
+	};
+
 	render() {
 		const {
 			preview,
@@ -652,6 +796,11 @@ class ImageMapEditor extends Component {
 			editing,
 			descriptors,
 			objects,
+			isInputEmpty,
+			inputData,
+			selectedPageSize,
+			currentPath,
+			editId,
 		} = this.state;
 		const {
 			onAdd,
@@ -673,17 +822,25 @@ class ImageMapEditor extends Component {
 			onChangeStyles,
 			onChangeDataSources,
 			onSaveImage,
+			onSaveImageAndJson,
 		} = this.handlers;
 
-		const currentPath = window.location.pathname;
-		const canvasStyle = currentPath === '/badge-designer' ? { width: '600px', height: '600px' } : { width: '800px', height: '618px' };
+		const canvasStyle =
+			currentPath === '/badge-designer'
+				? { width: '600px', height: '600px' }
+				: { width: '800px', height: '618px' };
 
 		const action = (
 			<React.Fragment>
-				<Input placeholder="Enter a name" className="name-input" />
+				<Input
+					placeholder="Enter a name"
+					className="name-input"
+					onChange={this.onChangeInput}
+					value={inputData}
+				/>
 				<span className="text-width">You have unsaved changes</span>
 				{/* <span className='text-width'>No unsaved changes</span> */}
-				<CommonButton name="Save & Close" />
+				<CommonButton name="Save & Close" onClick={onSaveImageAndJson} disabled={isInputEmpty} />
 				<CommonButton
 					className="rde-action-btn"
 					shape="circle"
@@ -738,6 +895,7 @@ class ImageMapEditor extends Component {
 		const title = <ImageMapTitle title={titleContent} action={action} />;
 		const content = (
 			<div className="rde-editor">
+				{loading && <Spin size="large" />}
 				<ImageMapItems
 					ref={c => {
 						this.itemsRef = c;
@@ -751,6 +909,8 @@ class ImageMapEditor extends Component {
 							canvasRef={this.canvasRef}
 							selectedItem={selectedItem}
 							onSelect={onSelect}
+							onPageSizeChange={this.handlePageSizeChange}
+							selectedPageSize={selectedPageSize}
 						/>
 					</div>
 					<div
@@ -787,8 +947,8 @@ class ImageMapEditor extends Component {
 								top: '50%',
 								left: '50%',
 								transform: 'translate(-50%, -50%)',
-								...canvasStyle, 
-							  }}
+								...canvasStyle,
+							}}
 
 							// style={{width:'800px',height:'618px', top:'50%',left:'50%',transform:'translate(-50%,-50%'}}
 						/>

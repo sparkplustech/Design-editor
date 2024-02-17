@@ -47,12 +47,11 @@ const Templates = ({ canvasRef }) => {
 
 	function handleTemplateClick(objectsData) {
     try {
-      const objects = objectsData.objects;
-
+      const objects = objectsData?.templateCode?.objects;
+      const pageSize = objectsData?.pageSize;
       canvasRef.handler.clear();
       
-      if (objects && Array.isArray(objects)) {
-        
+      if (objects && Array.isArray(objects)) {  
         canvasRef.handler.importJSON(objects);
       } else {
         console.error('Invalid objects data format:', objects);
@@ -65,8 +64,7 @@ const Templates = ({ canvasRef }) => {
 	if (loading) {
 		return <Spin size="large" className='loader-class'/>;
 	}
-	console.log(templatesData);
-	console.log('selected', selectedTemplate);
+	
 	return (
 		<div className="TemplatesSection">
 			{!selectedTemplate && templatesData.a4LandscapeTemplates && (
@@ -86,7 +84,7 @@ const Templates = ({ canvasRef }) => {
 								<div className="certificate-img1">
 									<img
 										src={item.imageLink}
-                    onClick={() => handleTemplateClick(item.templateCode)}
+                    onClick={() => handleTemplateClick(item)}
 										className="template-img"
 										alt={`Template Landscape} Image ${imgIndex + 1}`}
 									/>
