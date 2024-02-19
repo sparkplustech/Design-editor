@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Row, Col, Spin } from 'antd';
 import './TemplatesStyle.less';
 
-const Templates = ({ canvasRef, onPageSizeChange  }) => {
+const Templates = ({ canvasRef, onPageSizeChange }) => {
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
 	const [templatesData, setTemplatesData] = useState({
 		a4PortraitTemplates: [],
@@ -18,7 +18,7 @@ const Templates = ({ canvasRef, onPageSizeChange  }) => {
 		})
 			.then(response => response.json())
 			.then(data => {
-				const portraitTemplates = data?.templates?.filter(template => template.pageSize === 'a4portait') || [];
+				const portraitTemplates = data?.templates?.filter(template => template.pageSize === 'a4portrait') || [];
 				const landscapeTemplates =
 					data?.templates?.filter(template => template.pageSize === 'a4landscape') || [];
 
@@ -45,27 +45,39 @@ const Templates = ({ canvasRef, onPageSizeChange  }) => {
 		setSelectedTemplate(null);
 	};
 
-	function handleTemplateClick(objectsData) {
-    try {
-      const objects = objectsData?.templateCode?.objects;
-      const pageSize = objectsData?.pageSize;
-      onPageSizeChange(pageSize);
-      canvasRef.handler.clear();
-      
-      if (objects && Array.isArray(objects)) {  
-        canvasRef.handler.importJSON(objects);
-      } else {
-        console.error('Invalid objects data format:', objects);
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }  
-  
-	if (loading) {
-		return <Spin size="large" className='loader-class'/>;
+	function handleTemplateClick(tempdata) {
+		setLoading(true);
+		fetch(`${process.env.REACT_APP_API_BASE_URL}/templates/getCertificateTemplate/${tempdata?.id}`, {
+			headers: {
+				Authorization: `Bearer ${process.env.REACT_APP_API_TOKEN}`,
+			},
+		})
+			.then(response => response.json())
+			.then(data => {
+				try {
+					const objects = data?.templateCode?.objects;
+					const pageSize = tempdata?.pageSize;
+					onPageSizeChange(pageSize);
+					canvasRef.handler.clear();
+
+					if (objects && Array.isArray(objects)) {
+						canvasRef.handler.importJSON(objects);
+					} else {
+						console.error('Invalid objects data format:', objects);
+					}
+				} catch (error) {
+					console.error('Error:', error);
+				}
+
+				setLoading(false);
+			})
+			.catch(error => console.error('Error fetching templates:', error));
 	}
-	
+
+	if (loading) {
+		return <Spin size="large" className="loader-class" />;
+	}
+
 	return (
 		<div className="TemplatesSection">
 			{!selectedTemplate && templatesData.a4LandscapeTemplates && (
@@ -85,7 +97,7 @@ const Templates = ({ canvasRef, onPageSizeChange  }) => {
 								<div className="certificate-img1">
 									<img
 										src={item.imageLink}
-                    onClick={() => handleTemplateClick(item)}
+										onClick={() => handleTemplateClick(item)}
 										className="template-img"
 										alt={`Template Landscape} Image ${imgIndex + 1}`}
 									/>
@@ -113,7 +125,7 @@ const Templates = ({ canvasRef, onPageSizeChange  }) => {
 								<div className="certificate-img2">
 									<img
 										src={item.imageLink}
-                    onClick={() => handleTemplateClick(item)}
+										onClick={() => handleTemplateClick(item)}
 										className="template-img"
 										alt={`Template Portrait} Image ${imgIndex + 1}`}
 									/>
@@ -131,7 +143,7 @@ const Templates = ({ canvasRef, onPageSizeChange  }) => {
 							<span onClick={handleBackClick}>All Templates</span>
 						</Col>
 						<Col span={16}>
-							<h3>{selectedTemplate[0].pageSize === 'a4portait' ? 'A4 Portrait' : 'A4 Landscape'}</h3>
+							<h3>{selectedTemplate[0].pageSize === 'a4portrait' ? 'A4 Portrait' : 'A4 Landscape'}</h3>
 						</Col>
 					</Row>
 
@@ -139,13 +151,13 @@ const Templates = ({ canvasRef, onPageSizeChange  }) => {
 						{selectedTemplate.map((item, imgIndex) => (
 							<Col key={imgIndex} span={12}>
 								<div
-									className={
-										item.pageSize === 'a4portait'
-											? 'certificate-img2'
-											: 'certificate-img1'
-									}
+									className={item.pageSize === 'a4portrait' ? 'certificate-img2' : 'certificate-img1'}
 								>
-									<img src={item.imageLink}  onClick={() => handleTemplateClick(item)} className="template-img" />
+									<img
+										src={item.imageLink}
+										onClick={() => handleTemplateClick(item)}
+										className="template-img"
+									/>
 								</div>
 							</Col>
 						))}

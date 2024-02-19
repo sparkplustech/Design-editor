@@ -21,6 +21,8 @@ class ImageMapHeaderToolbar extends Component {
 		const { canvasRef, selectedItem, onPageSizeChange, selectedPageSize } = this.props;
 		const isCropping = canvasRef ? canvasRef.handler?.interactionMode === 'crop' : false;
 
+		const currentPath = window.location.pathname;
+
 		return (
 			<Flex className="rde-editor-header-toolbar-container" flex="1">
 				<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-list">
@@ -173,10 +175,18 @@ class ImageMapHeaderToolbar extends Component {
 					/>
 				</Flex.Item>
 				<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-history">
-					<Select placeholder="Page Size" style={{ width: 120 }} value={selectedPageSize} onChange={onPageSizeChange}>
-						<Option value="a4portait">A4 Portrait</Option>
-						<Option value="a4landscape">A4 Landscape</Option>
-					</Select>
+					{currentPath === '/certificate-designer' && (
+						<Select
+							placeholder="Page Size"
+							style={{ width: 120 }}
+							value={selectedPageSize}
+							onChange={onPageSizeChange}
+						>
+							<Option value="a4portrait">A4 Portrait</Option>
+							<Option value="a4landscape">A4 Landscape</Option>
+						</Select>
+					)}
+
 					<CommonButton
 						className="rde-action-btn"
 						disabled={isCropping || (canvasRef && !canvasRef.handler?.transactionHandler.undos.length)}

@@ -14,28 +14,40 @@ const BadgeBackground = ({ canvasRef }) => {
 		})
 			.then(response => response.json())
 			.then(data => {
+				console.log(data);
 				setTemplatesData(data);
 				setLoading(false);
 			})
 			.catch(error => console.error('Error fetching templates:', error));
 	}, []);
 
-	function handleTemplateClick(objectsData) {
-		try {
-		  const objects = objectsData.objects;
-	
-		  canvasRef.handler.clear();
-		  
-		  if (objects && Array.isArray(objects)) {
-			
-			canvasRef.handler.importJSON(objects);
-		  } else {
-			console.error('Invalid objects data format:', objects);
-		  }
-		} catch (error) {
-		  console.error('Error:', error);
-		}
-	  } 
+	function handleTemplateClick(tempdata) {
+		console.log("check id", tempdata.id);
+		setLoading(true);
+		fetch(`${process.env.REACT_APP_API_BASE_URL}/templates/getBadgeTemplate/${tempdata?.id}`, {
+			headers: {
+				Authorization: `Bearer ${process.env.REACT_APP_API_TOKEN}`,
+			},
+		})
+			.then(response => response.json())
+			.then(data => {
+				try {
+					const objects = data?.templateCode?.objects;
+					canvasRef.handler.clear();
+
+					if (objects && Array.isArray(objects)) {
+						canvasRef.handler.importJSON(objects);
+					} else {
+						console.error('Invalid objects data format:', objects);
+					}
+				} catch (error) {
+					console.error('Error:', error);
+				}
+
+				setLoading(false);
+			})
+			.catch(error => console.error('Error fetching templates:', error));
+	}
 	  
 	  if (loading) {
 		return <Spin size="large" className='loader-class'/>;
@@ -52,12 +64,12 @@ const BadgeBackground = ({ canvasRef }) => {
 					</Row>
 
 					<Row>
-						{templatesData?.Badges?.map((item, imgIndex) => (
+						{templatesData?.badges?.map((item, imgIndex) => (
 							<Col key={imgIndex} span={12}>
 								<div className="certificate-img1">
 									<img
 										src={item.imageLink}
-										onClick={() => handleTemplateClick(item.templateCode)}
+										onClick={() => handleTemplateClick(item)}
 										className="template-img"
 										alt={`Template Badge} Image ${imgIndex + 1}`}
 									/>
