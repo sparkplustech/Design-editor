@@ -15,6 +15,7 @@ import ImageMapHeaderToolbar from './ImageMapHeaderToolbar';
 import ImageMapItems from './ImageMapItems';
 import ImageMapPreview from './ImageMapPreview';
 import ImageMapTitle from './ImageMapTitle';
+import API_CONSTANT from '../../../constant';
 
 const propertiesToInclude = [
 	'id',
@@ -149,12 +150,12 @@ class ImageMapEditor extends Component {
 			this.setState({ loading: true });
 			const templateEndpoint =
 				currentPath === '/badge-designer'
-					? `${process.env.REACT_APP_API_BASE_URL}/templates/getBadgeTemplate/${id}`
-					: `${process.env.REACT_APP_API_BASE_URL}/templates/getCertificateTemplate/${id}`;
+					? `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getBadgeTemplate/${id}`
+					: `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getCertificateTemplate/${id}`;
 
 			fetch(templateEndpoint, {
 				headers: {
-					Authorization: `Bearer ${process.env.REACT_APP_API_TOKEN}`,
+					Authorization: `Bearer ${API_CONSTANT.REACT_APP_API_TOKEN}`,
 				},
 			})
 				.then(response => response.json())
@@ -716,19 +717,19 @@ class ImageMapEditor extends Component {
 			  if (isEdit) {
 				endpoint =
 				  path === '/certificate-designer'
-					? `${process.env.REACT_APP_API_BASE_URL}/templates/editCertificateTemplate/${editId}`
-					: `${process.env.REACT_APP_API_BASE_URL}/templates/editBadgeTemplate/${editId}`;
+					? `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/editCertificateTemplate/${editId}`
+					: `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/editBadgeTemplate/${editId}`;
 			  } else {
 				endpoint =
 				  path === '/certificate-designer'
-					? `${process.env.REACT_APP_API_BASE_URL}/templates/createcertificateTemplate`
-					: `${process.env.REACT_APP_API_BASE_URL}/templates/createBadgeTemplate`;
+					? `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/createcertificateTemplate`
+					: `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/createBadgeTemplate`;
 			  }
 		  
 			  fetch(endpoint, {
 				method: isEdit ? 'PATCH' : 'POST',
 				headers: {
-				  Authorization: `Bearer ${process.env.REACT_APP_API_TOKEN}`,
+				  Authorization: `Bearer ${API_CONSTANT.REACT_APP_API_TOKEN}`,
 				},
 				body: formData,
 			  })
@@ -782,6 +783,10 @@ class ImageMapEditor extends Component {
 	handlePageSizeChange = value => {
 		this.setState({ selectedPageSize: value });
 	};
+
+	handleMainLoader = value => {
+		this.setState({ loading: value});
+	}
 
 	render() {
 		const {
@@ -903,6 +908,7 @@ class ImageMapEditor extends Component {
 					canvasRef={this.canvasRef}
 					descriptors={descriptors}
 					onPageSizeChange={this.handlePageSizeChange}
+					mainLoader={this.handleMainLoader}
 				/>
 				<div className="rde-editor-canvas-container" style={{ overflow: 'scroll', minWidth: '200px' }}>
 					<div className="rde-editor-header-toolbar">

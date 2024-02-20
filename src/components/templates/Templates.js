@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Spin } from 'antd';
 import './TemplatesStyle.less';
+import API_CONSTANT from '../../../constant';
 
-const Templates = ({ canvasRef, onPageSizeChange }) => {
+const Templates = ({ canvasRef, onPageSizeChange, mainLoader }) => {
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
 	const [templatesData, setTemplatesData] = useState({
 		a4PortraitTemplates: [],
@@ -11,9 +12,9 @@ const Templates = ({ canvasRef, onPageSizeChange }) => {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		fetch(`${process.env.REACT_APP_API_BASE_URL}/templates/getAllCertificateTemplates`, {
+		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getAllCertificateTemplates`, {
 			headers: {
-				Authorization: `Bearer ${process.env.REACT_APP_API_TOKEN}`,
+				Authorization: `Bearer ${API_CONSTANT.REACT_APP_API_TOKEN}`,
 			},
 		})
 			.then(response => response.json())
@@ -46,10 +47,10 @@ const Templates = ({ canvasRef, onPageSizeChange }) => {
 	};
 
 	function handleTemplateClick(tempdata) {
-		setLoading(true);
-		fetch(`${process.env.REACT_APP_API_BASE_URL}/templates/getCertificateTemplate/${tempdata?.id}`, {
+		mainLoader(true);
+		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getCertificateTemplate/${tempdata?.id}`, {
 			headers: {
-				Authorization: `Bearer ${process.env.REACT_APP_API_TOKEN}`,
+				Authorization: `Bearer ${API_CONSTANT.REACT_APP_API_TOKEN}`,
 			},
 		})
 			.then(response => response.json())
@@ -69,7 +70,7 @@ const Templates = ({ canvasRef, onPageSizeChange }) => {
 					console.error('Error:', error);
 				}
 
-				setLoading(false);
+				mainLoader(false);
 			})
 			.catch(error => console.error('Error fetching templates:', error));
 	}

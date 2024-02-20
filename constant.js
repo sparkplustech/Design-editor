@@ -1,0 +1,5 @@
+let API_CONSTANT={
+    REACT_APP_API_BASE_URL:'https://testapi.thesolo.network/api',
+REACT_APP_API_TOKEN:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtb2JpbGUiOiIiLCJpZCI6bnVsbCwiZW1haWwiOiJsZWFybkB0aGVzb2xvLm5ldHdvcmsiLCJpYXQiOjE3MDc5NzIyODEsImV4cCI6MTcxMzE1NjI4MX0.5ArvPn6DyGpkYx3NBrSNYhrh5KWSa36oB_qvr4d6Huc'
+}
+export default API_CONSTANT

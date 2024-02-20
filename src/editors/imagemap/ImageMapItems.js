@@ -35,6 +35,7 @@ class ImageMapItems extends Component {
 		canvasRef: PropTypes.any,
 		descriptors: PropTypes.object,
 		onPageSizeChange: PropTypes.any,
+		mainLoader: PropTypes.bool,
 	};
 
 	state = {
@@ -522,9 +523,9 @@ class ImageMapItems extends Component {
 							{activeSection === 'template' && (
 								<Flex flex="1" style={{ overflowY: 'hidden' }}>
 									{currentPath === certificatePath ? (
-										<Templates canvasRef={this.props.canvasRef} onPageSizeChange={this.props.onPageSizeChange} />
+										<Templates canvasRef={this.props.canvasRef} onPageSizeChange={this.props.onPageSizeChange} mainLoader={this.props.mainLoader} />
 									) : (
-										<BadgeBackground canvasRef={this.props.canvasRef} />
+										<BadgeBackground canvasRef={this.props.canvasRef} mainLoader={this.props.mainLoader}/>
 									)}
 								</Flex>
 							)}

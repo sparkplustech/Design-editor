@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Spin } from 'antd';
 import './BadgeBackgroundStyle.less';
+import API_CONSTANT from '../../../constant';
 
-const BadgeBackground = ({ canvasRef }) => {
+const BadgeBackground = ({ canvasRef, mainLoader }) => {
 	const [templatesData, setTemplatesData] = useState([]);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		fetch(`${process.env.REACT_APP_API_BASE_URL}/templates/getAllBadgeTemplates`, {
+		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getAllBadgeTemplates`, {
 			headers: {
-				Authorization: `Bearer ${process.env.REACT_APP_API_TOKEN}`,
+				Authorization: `Bearer ${API_CONSTANT.REACT_APP_API_TOKEN}`,
 			},
 		})
 			.then(response => response.json())
 			.then(data => {
-				console.log(data);
 				setTemplatesData(data);
 				setLoading(false);
 			})
@@ -22,11 +22,10 @@ const BadgeBackground = ({ canvasRef }) => {
 	}, []);
 
 	function handleTemplateClick(tempdata) {
-		console.log("check id", tempdata.id);
-		setLoading(true);
-		fetch(`${process.env.REACT_APP_API_BASE_URL}/templates/getBadgeTemplate/${tempdata?.id}`, {
+		mainLoader(true);
+		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getBadgeTemplate/${tempdata?.id}`, {
 			headers: {
-				Authorization: `Bearer ${process.env.REACT_APP_API_TOKEN}`,
+				Authorization: `Bearer ${API_CONSTANT.REACT_APP_API_TOKEN}`,
 			},
 		})
 			.then(response => response.json())
@@ -44,7 +43,7 @@ const BadgeBackground = ({ canvasRef }) => {
 					console.error('Error:', error);
 				}
 
-				setLoading(false);
+				mainLoader(false);
 			})
 			.catch(error => console.error('Error fetching templates:', error));
 	}
