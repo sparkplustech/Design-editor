@@ -399,7 +399,10 @@ class ImageMapItems extends Component {
 			minimize: collapse,
 		});
 
-		const certificatePath = "/certificate-designer";
+		const isAdminPath = currentPath.includes('admin');
+		const isCertificatePath = currentPath.includes('certificate-designer');
+
+		console.log('is admin', isAdminPath);
 		return (
 			<div className={className}>
 				<Flex flex="1" flexDirection="row" style={{ height: '100%' }}>
@@ -416,47 +419,48 @@ class ImageMapItems extends Component {
 							style={{ margin: '0 4px' }}
 							onClick={this.handlers.onCollapse}
 						/>
-						<Flex
-							flexDirection="column"
-							className={`${
-								activeSection === 'design' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
-							}`}
-						>
-							<AntDesignOutlined
-								onClick={() => this.handlers.onDesignClick()}
-								style={{ fontSize: '32px' }}
-							/>{' '}
-							<span onClick={() => this.handlers.onDesignClick()}>Designs</span>{' '}
-						</Flex>
-						{currentPath === certificatePath ? (
+						{!isAdminPath && (
 							<Flex
-							flexDirection="column"
-							className={`${
-								activeSection === 'template' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
-							}`}
-						>
-							<ProfileOutlined
-								onClick={() => this.handlers.onTemplateClick()}
-								style={{ fontSize: '32px' }}
-							/>{' '}
-							<span onClick={() => this.handlers.onTemplateClick()}>Templates</span>{' '}
-						</Flex>
+								flexDirection="column"
+								className={`${
+									activeSection === 'design' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
+								}`}
+							>
+								<AntDesignOutlined
+									onClick={() => this.handlers.onDesignClick()}
+									style={{ fontSize: '32px' }}
+								/>{' '}
+								<span onClick={() => this.handlers.onDesignClick()}>Designs</span>{' '}
+							</Flex>
+						)}
+						{isCertificatePath ? (
+							<Flex
+								flexDirection="column"
+								className={`${
+									activeSection === 'template' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
+								}`}
+							>
+								<ProfileOutlined
+									onClick={() => this.handlers.onTemplateClick()}
+									style={{ fontSize: '32px' }}
+								/>{' '}
+								<span onClick={() => this.handlers.onTemplateClick()}>Templates</span>{' '}
+							</Flex>
 						) : (
 							<Flex
-							flexDirection="column"
-							className={`${
-								activeSection === 'template' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
-							}`}
-						>
-							<PictureOutlined
-								onClick={() => this.handlers.onTemplateClick()}
-								style={{ fontSize: '32px' }}
-							/>{' '}
-							<span onClick={() => this.handlers.onTemplateClick()}>Backgrounds</span>{' '}
-						</Flex>
+								flexDirection="column"
+								className={`${
+									activeSection === 'template' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
+								}`}
+							>
+								<PictureOutlined
+									onClick={() => this.handlers.onTemplateClick()}
+									style={{ fontSize: '32px' }}
+								/>{' '}
+								<span onClick={() => this.handlers.onTemplateClick()}>Backgrounds</span>{' '}
+							</Flex>
 						)}
-						
-						
+
 						<Flex
 							flexDirection="column"
 							className={`${
@@ -516,16 +520,34 @@ class ImageMapItems extends Component {
 							)}
 							{activeSection === 'design' && (
 								<Flex flex="1" style={{ overflowY: 'hidden' }}>
-									{currentPath === certificatePath ? <Design canvasRef={this.props.canvasRef} /> : <BadgeDesign canvasRef={this.props.canvasRef}/>}
+									{isCertificatePath ? (
+										<Design
+											canvasRef={this.props.canvasRef}
+											onPageSizeChange={this.props.onPageSizeChange}
+											mainLoader={this.props.mainLoader}
+										/>
+									) : (
+										<BadgeDesign
+											canvasRef={this.props.canvasRef}
+											mainLoader={this.props.mainLoader}
+										/>
+									)}
 								</Flex>
 							)}
 
 							{activeSection === 'template' && (
 								<Flex flex="1" style={{ overflowY: 'hidden' }}>
-									{currentPath === certificatePath ? (
-										<Templates canvasRef={this.props.canvasRef} onPageSizeChange={this.props.onPageSizeChange} mainLoader={this.props.mainLoader} />
+									{isCertificatePath ? (
+										<Templates
+											canvasRef={this.props.canvasRef}
+											onPageSizeChange={this.props.onPageSizeChange}
+											mainLoader={this.props.mainLoader}
+										/>
 									) : (
-										<BadgeBackground canvasRef={this.props.canvasRef} mainLoader={this.props.mainLoader}/>
+										<BadgeBackground
+											canvasRef={this.props.canvasRef}
+											mainLoader={this.props.mainLoader}
+										/>
 									)}
 								</Flex>
 							)}

@@ -72,6 +72,8 @@ class App extends Component<any, IState> {
 							<Route path="/" element={<Navigate to="/certificate-designer" />} />
 							<Route path="/certificate-designer" element={this.renderEditor(activeEditor)} />
 							<Route path="/badge-designer" element={this.renderEditor(activeEditor)} />
+							<Route path="/admin-certificate-designer" element={this.renderEditor(activeEditor)} />
+							<Route path="/admin-badge-designer" element={this.renderEditor(activeEditor)} />
 						</Routes>
 					</FlowContainer>
 				</div>

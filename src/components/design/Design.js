@@ -1,102 +1,186 @@
-import React, { useState } from 'react';
-import { Row, Col } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Row, Col, Spin } from 'antd';
 import './DesignStyle.less';
+import API_CONSTANT from '../../../constant';
 
-const Design = ({canvasRef}) => {
-	const [selectedDesign, setSelectedDesign] = useState(null);
+const Design = ({ canvasRef, onPageSizeChange, mainLoader }) => {
+	const [selectedTemplate, setSelectedTemplate] = useState(null);
+	const [templatesData, setTemplatesData] = useState({
+		a4PortraitTemplates: [],
+		a4LandscapeTemplates: [],
+	});
+	const [loading, setLoading] = useState(true);
+	const [designCode, setDesignCode] = useState("");
+	const [userData, setUserData] = useState([]);
 
-	const designs = [
-		{
-			name: 'Designs',
-			className: 'certificate-img1',
-			images: [
-				{thumbnail: 'https://marketplace.canva.com/EAE74fTSypY/1/0/1600w/canva-gold-elegant-certificate-of-achievement-template-8_WfTWrNJaI.jpg',
-				templatelink:'https://hirefullstackdevelopersindia.com/testfile/sample (3).json'
-			  },
-			  {thumbnail: 'https://d1csarkz8obe9u.cloudfront.net/posterpreviews/certificate-of-appreciation-design-template-7289b7fef37b1bda2dc3527df90bfe87_screen.jpg?ts=1703360539',
-			  templatelink:'https://hirefullstackdevelopersindia.com/testfile/sample (4).json'
-			},
-			{thumbnail: 'https://d1csarkz8obe9u.cloudfront.net/posterpreviews/professional-certificate-design-template-c78dfc41d0402fe6793e854a4354affd_screen.jpg?ts=1698205825',
-			templatelink:'https://hirefullstackdevelopersindia.com/testfile/sample (5).json'
-		  }
-		  ,
-		  {thumbnail: 'https://d1csarkz8obe9u.cloudfront.net/posterpreviews/certificate-design-template-4185c55703afd57c4190a86c04f9e04e_screen.jpg?ts=1698395843',
-		  templatelink:'https://hirefullstackdevelopersindia.com/testfile/sample (6).json'
-		},
-		{thumbnail: 'https://d1csarkz8obe9u.cloudfront.net/posterpreviews/certificate-of-appreciation-design-template-75a5cd2b0b64c4b15f82638b4e5548b8_screen.jpg?ts=1663583139',
-		templatelink:'https://hirefullstackdevelopersindia.com/testfile/sample (7).json'
+	useEffect(() => {
+		const queryParams = new URLSearchParams(window.location.search);
+        const designCode = queryParams.get('designCode');
+		setDesignCode(designCode);
+
+		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
+			headers: {},
+		})
+			.then(response => response.json())
+			.then(data => {
+				setUserData(data);
+				fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getallusercertificateTemplates`, {
+					headers: {
+						Authorization: `Bearer ${data.accessToken}`,
+					},
+				})
+					.then(response => response.json())
+					.then(data => {
+						const portraitTemplates = data?.templates?.filter(template => template.pageSize === 'a4portrait') || [];
+						const landscapeTemplates =
+							data?.templates?.filter(template => template.pageSize === 'a4landscape') || [];
+		
+						setTemplatesData({
+							...templatesData,
+							a4PortraitTemplates: portraitTemplates,
+							a4LandscapeTemplates: landscapeTemplates,
+						});
+		
+						setLoading(false);
+					})
+					.catch(error => console.error('Error fetching templates:', error));
+			})
+			.catch(error => console.error('Error fetching usertoken:', error));
+	}, []);
+
+	const handleSeeAllClick = templateType => {
+		if (templateType === 'a4LandscapeTemplates') {
+			setSelectedTemplate(templatesData.a4LandscapeTemplates);
+		} else if (templateType === 'a4PortraitTemplates') {
+			setSelectedTemplate(templatesData.a4PortraitTemplates);
 		}
-		   
-		 ],
-		},
-	];
-
-	const handleSeeAllClick = (designIndex) => {
-		setSelectedDesign(designs[designIndex]);
 	};
 
 	const handleBackClick = () => {
-		setSelectedDesign(null);
+		setSelectedTemplate(null);
 	};
 
-	function handleDesignClick() {
-		fetch('https://hirefullstackdevelopersindia.com/testfile/sample (6).json')
+	function handleTemplateClick(tempdata) {
+		mainLoader(true);
+		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getuserCertificateTemplate/${tempdata?.id}`, {
+			headers: {
+				Authorization: `Bearer ${userData.accessToken}`,
+			},
+		})
 			.then(response => response.json())
 			.then(data => {
-				// Assuming data contains fabric.js objects or object data
-				canvasRef.handler.importJSON(data.objects);
+				try {
+					const objects = data?.templateCode?.objects;
+					const pageSize = tempdata?.pageSize;
+					onPageSizeChange(pageSize);
+					canvasRef.handler.clear();
+
+					if (objects && Array.isArray(objects)) {
+						canvasRef.handler.importJSON(objects);
+					} else {
+						console.error('Invalid objects data format:', objects);
+					}
+				} catch (error) {
+					console.error('Error:', error);
+				}
+
+				mainLoader(false);
 			})
-			.catch(error => console.error('Error fetching JSON:', error));
+			.catch(error => console.error('Error fetching templates:', error));
 	}
 
+	if (loading) {
+		return <Spin size="large" className="loader-class" />;
+	}
+ console.log("dataaa", templatesData);
 	return (
-		<div className="DesignsSection">
-			{!selectedDesign &&
-				designs.map((design, index) => (
-					<div key={index} className="design">
-						<Row className="design-row">
-							<Col span={18}>
-								<h3>{design.name}</h3>
-							</Col>
-							<Col span={6}>
-								<span onClick={() => handleSeeAllClick(index)}>See All</span>
-							</Col>
-						</Row>
-
-						<Row>
-							{design.images.slice(0, 2).map((image, imgIndex) => (
-								<Col key={imgIndex} span={12}>
-									<div className={design.className}>
-										<img
-											src={image.thumbnail}
-											onClick={handleDesignClick} className="design-img" alt={`Design ${imgIndex + 1}`}
-										/>
-									</div>
-								</Col>
-							))}
-						</Row>
-					</div>
-				))}
-
-			{selectedDesign && (
-				<div className="design-all">
-					<Row className="design-row">
-						<Col span={8}>
-							<span onClick={handleBackClick}>All Design</span>
+		<div className="TemplatesSection">
+			{!selectedTemplate && templatesData.a4LandscapeTemplates && templatesData.a4LandscapeTemplates.count > 0 && (
+				<div className="template-design">
+					<Row className="template-row">
+						<Col span={18}>
+							<h3>A4 Landscape</h3>
 						</Col>
-						<Col span={16}>
-							<h3>{selectedDesign.name}</h3>
+						<Col span={6}>
+							<span onClick={() => handleSeeAllClick('a4LandscapeTemplates')}>See All</span>
 						</Col>
 					</Row>
 
 					<Row>
-						{selectedDesign.images.map((image, imgIndex) => (
+						{templatesData.a4LandscapeTemplates?.slice(0, 2).map((item, imgIndex) => (
 							<Col key={imgIndex} span={12}>
-								<div className={selectedDesign.className}>
-								<img
-											src={image.thumbnail}
-											onClick={handleDesignClick} className="design-img" alt={`Design ${imgIndex + 1}`}
-										/>
+								<div className="certificate-img1">
+									<img
+										src={item.imageLink}
+										onClick={() => handleTemplateClick(item)}
+										className="template-img"
+										alt={`Template Landscape} Image ${imgIndex + 1}`}
+									/>
+								</div>
+							</Col>
+						))}
+					</Row>
+				</div>
+			)}
+
+			{!selectedTemplate && templatesData.a4PortraitTemplates && templatesData.a4PortraitTemplates.length > 1 &&  (
+				<div className="template-design">
+					<Row className="template-row">
+						<Col span={18}>
+							<h3>A4 Portrait</h3>
+						</Col>
+						<Col span={6}>
+							<span onClick={() => handleSeeAllClick('a4PortraitTemplates')}>See All</span>
+						</Col>
+					</Row>
+
+					<Row>
+						{templatesData.a4PortraitTemplates?.slice(0, 2).map((item, imgIndex) => (
+							<Col key={imgIndex} span={12}>
+								<div className="certificate-img2">
+									<img
+										src={item.imageLink}
+										onClick={() => handleTemplateClick(item)}
+										className="template-img"
+										alt={`Template Portrait} Image ${imgIndex + 1}`}
+									/>
+								</div>
+							</Col>
+						))}
+					</Row>
+				</div>
+			)}
+
+			{(templatesData.a4PortraitTemplates.length === 0 && templatesData.a4LandscapeTemplates.length === 0) &&(
+				<Row className="template-row">
+				<Col span={24}>
+					<h3>No designs available.</h3>
+				</Col>
+			</Row>
+			)}
+
+			{selectedTemplate && (
+				<div className="template-design-all">
+					<Row className="template-row">
+						<Col span={8}>
+							<span onClick={handleBackClick}>All Templates</span>
+						</Col>
+						<Col span={16}>
+							<h3>{selectedTemplate[0].pageSize === 'a4portrait' ? 'A4 Portrait' : 'A4 Landscape'}</h3>
+						</Col>
+					</Row>
+
+					<Row>
+						{selectedTemplate.map((item, imgIndex) => (
+							<Col key={imgIndex} span={12}>
+								<div
+									className={item.pageSize === 'a4portrait' ? 'certificate-img2' : 'certificate-img1'}
+								>
+									<img
+										src={item.imageLink}
+										onClick={() => handleTemplateClick(item)}
+										className="template-img"
+									/>
 								</div>
 							</Col>
 						))}

@@ -10,28 +10,42 @@ const Templates = ({ canvasRef, onPageSizeChange, mainLoader }) => {
 		a4LandscapeTemplates: [],
 	});
 	const [loading, setLoading] = useState(true);
+	const [userData, setUserData] = useState([])
 
 	useEffect(() => {
-		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getAllCertificateTemplates`, {
-			headers: {
-				Authorization: `Bearer ${API_CONSTANT.REACT_APP_API_TOKEN}`,
-			},
+		const queryParams = new URLSearchParams(window.location.search);
+		const designCode = queryParams.get('designCode');	
+
+		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
+			headers: {},
 		})
 			.then(response => response.json())
 			.then(data => {
-				const portraitTemplates = data?.templates?.filter(template => template.pageSize === 'a4portrait') || [];
-				const landscapeTemplates =
-					data?.templates?.filter(template => template.pageSize === 'a4landscape') || [];
+				setUserData(data)
 
-				setTemplatesData({
-					...templatesData,
-					a4PortraitTemplates: portraitTemplates,
-					a4LandscapeTemplates: landscapeTemplates,
-				});
-
-				setLoading(false);
+				fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getAllCertificateTemplates`, {
+					headers: {
+						Authorization: `Bearer ${data.accessToken}`,
+					},
+				})
+					.then(response => response.json())
+					.then(data => {
+						const portraitTemplates = data?.templates?.filter(template => template.pageSize === 'a4portrait') || [];
+						const landscapeTemplates =
+							data?.templates?.filter(template => template.pageSize === 'a4landscape') || [];
+		
+						setTemplatesData({
+							...templatesData,
+							a4PortraitTemplates: portraitTemplates,
+							a4LandscapeTemplates: landscapeTemplates,
+						});
+		
+						setLoading(false);
+					})
+					.catch(error => console.error('Error fetching templates:', error));
 			})
-			.catch(error => console.error('Error fetching templates:', error));
+			.catch(error => console.error('Error fetching usertoken:', error));
+
 	}, []);
 
 	const handleSeeAllClick = templateType => {
@@ -50,7 +64,7 @@ const Templates = ({ canvasRef, onPageSizeChange, mainLoader }) => {
 		mainLoader(true);
 		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getCertificateTemplate/${tempdata?.id}`, {
 			headers: {
-				Authorization: `Bearer ${API_CONSTANT.REACT_APP_API_TOKEN}`,
+				Authorization: `Bearer ${userData.accessToken}`,
 			},
 		})
 			.then(response => response.json())

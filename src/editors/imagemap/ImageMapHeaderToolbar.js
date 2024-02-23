@@ -22,6 +22,8 @@ class ImageMapHeaderToolbar extends Component {
 		const isCropping = canvasRef ? canvasRef.handler?.interactionMode === 'crop' : false;
 
 		const currentPath = window.location.pathname;
+		const isAdminPath = currentPath.includes("admin");
+		const isCertificatePath = currentPath.includes("certificate-designer");
 
 		return (
 			<Flex className="rde-editor-header-toolbar-container" flex="1">
@@ -175,7 +177,7 @@ class ImageMapHeaderToolbar extends Component {
 					/>
 				</Flex.Item>
 				<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-history">
-					{currentPath === '/certificate-designer' && (
+					{isCertificatePath && (
 						<Select
 							placeholder="Page Size"
 							style={{ width: 120 }}

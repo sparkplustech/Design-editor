@@ -6,26 +6,43 @@ import API_CONSTANT from '../../../constant';
 const BadgeBackground = ({ canvasRef, mainLoader }) => {
 	const [templatesData, setTemplatesData] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [userData, setUserData] = useState([]);
+	const [designCode, setDesignCode] = useState("");
 
 	useEffect(() => {
-		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getAllBadgeTemplates`, {
-			headers: {
-				Authorization: `Bearer ${API_CONSTANT.REACT_APP_API_TOKEN}`,
-			},
+
+		const queryParams = new URLSearchParams(window.location.search);
+        const designCode = queryParams.get('designCode');
+		setDesignCode(designCode);
+
+		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
+			headers: {},
 		})
 			.then(response => response.json())
 			.then(data => {
-				setTemplatesData(data);
-				setLoading(false);
+				setUserData(data);
+
+				fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getAllBadgeTemplates`, {
+					headers: {
+						Authorization: `Bearer ${data.accessToken}`,
+					},
+				})
+					.then(response => response.json())
+					.then(data => {
+						setTemplatesData(data);
+						setLoading(false);
+					})
+					.catch(error => console.error('Error fetching templates:', error));
+
 			})
-			.catch(error => console.error('Error fetching templates:', error));
+			.catch(error => console.error('Error fetching usertoken:', error));
 	}, []);
 
 	function handleTemplateClick(tempdata) {
 		mainLoader(true);
 		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getBadgeTemplate/${tempdata?.id}`, {
 			headers: {
-				Authorization: `Bearer ${API_CONSTANT.REACT_APP_API_TOKEN}`,
+				Authorization: `Bearer ${userData.accessToken}`,
 			},
 		})
 			.then(response => response.json())

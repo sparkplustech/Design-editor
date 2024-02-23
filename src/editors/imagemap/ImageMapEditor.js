@@ -95,6 +95,12 @@ class ImageMapEditor extends Component {
 		editId: '',
 		templateData: [],
 		isEdit: false,
+		isAdminPath: false,
+		isCertificatePath: false,
+		isBadgePath: false,
+		designCode: '',
+		credId: '',
+		userData: '',
 	};
 
 	componentDidMount() {
@@ -130,45 +136,69 @@ class ImageMapEditor extends Component {
 		// 	//console.log(JSON.stringify(exportDatas, null, '\t'));
 		// }, 15000);
 
+		const queryParams = new URLSearchParams(window.location.search);
+		const designCode = queryParams.get('designCode');	
+
+		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
+			headers: {},
+		})
+			.then(response => response.json())
+			.then(data => {
+				this.setState({userData: data})
+			})
+			.catch(error => console.error('Error fetching usertoken:', error));
+
 		//for badge
+
 		const currentPath = window.location.pathname;
-		if (currentPath === '/badge-designer') {
+		
+
+		const isAdminPath = currentPath.includes("admin");
+		const isCertificatePath = currentPath.includes("certificate-designer");
+		const isBadgePath = currentPath.includes("badge-designer");
+		if (isBadgePath) {
 			this.canvasHandlers.onChangeWokarea('width', '', { width: 600, height: 600 });
 			this.canvasHandlers.onChangeWokarea('src', './images/sample/transparentBg.png', '');
 		}
 
 		this.setState({
 			currentPath: currentPath,
+			isAdminPath: isAdminPath,
+			isCertificatePath: isCertificatePath,
+			isBadgePath: isBadgePath,
+			designCode: designCode,
 		});
 
 		//edit
-		const queryParams = new URLSearchParams(window.location.search);
+		
 		const isEdit = queryParams.get('edit') === 'true';
 		const id = queryParams.get('id');
-		this.setState({ editId: id, isEdit: isEdit });
+		const credId = queryParams.get('cid');
+		const userData = this.state.userData;
+
+		this.setState({ editId: id, isEdit: isEdit, credId: credId, designCode: designCode });
 		if (isEdit && id) {
 			this.setState({ loading: true });
 			const templateEndpoint =
-				currentPath === '/badge-designer'
+				isBadgePath
 					? `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getBadgeTemplate/${id}`
 					: `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getCertificateTemplate/${id}`;
 
 			fetch(templateEndpoint, {
 				headers: {
-					Authorization: `Bearer ${API_CONSTANT.REACT_APP_API_TOKEN}`,
+					Authorization: `Bearer ${userData.accessToken}`,
 				},
 			})
 				.then(response => response.json())
 				.then(data => {
-					
-					if(data.statusCode === 400){
+					if (data.statusCode === 400) {
 						queryParams.delete('id');
 						queryParams.delete('edit');
 						const newUrl = `${window.location.pathname}`;
 						window.history.replaceState({}, '', newUrl);
 						this.setState({ loading: false, inputData: '', isInputEmpty: false, editId: '' });
-					}else{
-						if (data?.templateCode !== "") {
+					} else {
+						if (data?.templateCode !== '') {
 							const objects = data?.templateCode?.objects;
 							this.canvasRef.handler.clear();
 							if (objects && Array.isArray(objects)) {
@@ -177,8 +207,13 @@ class ImageMapEditor extends Component {
 								console.error('Invalid objects data format:', objects);
 							}
 						}
-						this.setState({ loading: false, inputData: data?.name, isInputEmpty: false, selectedPageSize: data?.pageSize });
-					}				
+						this.setState({
+							loading: false,
+							inputData: data?.name,
+							isInputEmpty: false,
+							selectedPageSize: data?.pageSize,
+						});
+					}
 				})
 				.catch(error => console.error('Error fetching templates:', error));
 		}
@@ -678,84 +713,114 @@ class ImageMapEditor extends Component {
 		},
 
 		onSaveImageAndJson: () => {
-			const path = this.state.currentPath;
+			const isCertificatePath = this.state.isCertificatePath;
+			const isAdminPath = this.state.isAdminPath
 			const isEdit = this.state.isEdit;
 			const editId = this.state.editId;
-		  
+            const credId = this.state.credId;
+			const designCode = this.state.designCode;
+			const userData = this.state.userData;
+
 			// Get canvas image data URL
 			const dataURL = this.canvasRef.canvas.toDataURL('image/png');
-		  
+
 			// Convert data URL to Blob
 			const blobPromise = fetch(dataURL).then(res => res.blob());
-		  
+
 			blobPromise.then(blob => {
-			  const name = this.state.inputData;
-			  const pageSize = this.state.selectedPageSize;
-			  const objects = this.canvasRef.handler.exportJSON().filter(obj => {
-				if (!obj.id) {
-				  return false;
-				}
-				return true;
-			  });
-			  const { animations, styles, dataSources } = this.state;
-			  const exportDatas = {
-				objects,
-				animations,
-				styles,
-				dataSources,
-			  };
-			  const templateCode = JSON.stringify(exportDatas, null, '\t');
-		  
-			  const formData = new FormData();
-			  formData.append('image', blob, 'image.png');
-			  formData.append('templateCode', templateCode);
-			  formData.append('name', name);
-			  formData.append('pageSize', pageSize);
-		  
-			  let endpoint;
-		  
-			  if (isEdit) {
-				endpoint =
-				  path === '/certificate-designer'
-					? `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/editCertificateTemplate/${editId}`
-					: `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/editBadgeTemplate/${editId}`;
-			  } else {
-				endpoint =
-				  path === '/certificate-designer'
-					? `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/createcertificateTemplate`
-					: `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/createBadgeTemplate`;
-			  }
-		  
-			  fetch(endpoint, {
-				method: isEdit ? 'PATCH' : 'POST',
-				headers: {
-				  Authorization: `Bearer ${API_CONSTANT.REACT_APP_API_TOKEN}`,
-				},
-				body: formData,
-			  })
-				.then(response => {
-				  if (response.ok) {
-					message.success(
-					  `${isEdit ? 'Template updated' : path === '/certificate-designer' ? 'Certificate' : 'Badge'} ${
-						isEdit ? 'successfully' : 'created successfully'
-					  }`,
-					);
-					return response.json();
-				  } else {
-					message.error(`Failed to ${isEdit ? 'update' : 'create'} ${path === '/certificate-designer' ? 'certificate' : 'badge'}`);
-					throw new Error('API Error');
-				  }
-				})
-				.then(data => {
-				  window.location.reload();
-				  return data;
-				})
-				.catch(error => {
-				  console.error('API Error:', error);
-				  throw error;
+				const name = this.state.inputData;
+				const pageSize = this.state.selectedPageSize;
+				const objects = this.canvasRef.handler.exportJSON().filter(obj => {
+					if (!obj.id) {
+						return false;
+					}
+					return true;
 				});
+				const { animations, styles, dataSources } = this.state;
+				const exportDatas = {
+					objects,
+					animations,
+					styles,
+					dataSources,
+				};
+				const templateCode = JSON.stringify(exportDatas, null, '\t');
+
+				const formData = new FormData();
+				formData.append('image', blob, 'image.png');
+				formData.append('name', name);
+				formData.append('pageSize', pageSize);
+
+				if(isAdminPath){
+					formData.append('templateCode', templateCode);
+				} else{
+					formData.append('jsonCode', templateCode);
+					formData.append('designCode', designCode);
+				}
+
+				let endpoint;
+
+				if (isAdminPath) {
+					endpoint = isEdit
+						? isCertificatePath
+						? `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/editCertificateTemplate/${editId}`
+						: `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/editBadgeTemplate/${editId}`
+						: isCertificatePath
+						? `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/createcertificateTemplate`
+						: `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/createBadgeTemplate`;
+				} else {
+					endpoint = isEdit
+						? isCertificatePath
+							? `${API_CONSTANT.REACT_APP_API_BASE_URL}/user/editCertificateTemplate/${editId}`
+							: `${API_CONSTANT.REACT_APP_API_BASE_URL}/user/editBadgeTemplate/${editId}`
+						: isCertificatePath
+							? `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/saveCertificateDesign`
+							: `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/saveBadgeDesign`;
+				}
+
+				fetch(endpoint, {
+					method: isEdit ? 'PATCH' : 'POST',
+					headers: {
+						Authorization: `Bearer ${userData.accessToken}`,
+					},
+					body: formData,
+				})
+					.then(response => {
+						if (response.ok) {
+							message.success(
+								`${
+									isEdit
+										? 'Template updated'
+										: isCertificatePath
+										? 'Certificate'
+										: 'Badge'
+								} ${isEdit ? 'successfully' : 'created successfully'}`,
+							);
+							return response.json();
+						} else {
+							message.error(
+								`Failed to ${isEdit ? 'update' : 'create'} ${
+									isCertificatePath ? 'certificate' : 'badge'
+								}`,
+							);
+							throw new Error('API Error');
+						}
+					})
+					.then(data => {
+						if(isAdminPath){
+							window.location.reload();
+						}else{
+							window.location.href =
+							`https://testapp.thesolo.network/select-credentials?cid=${credId}`;
+						  }
+						
+						return data;
+					})
+					.catch(error => {
+						console.error('API Error:', error);
+						throw error;
+					});
 			});
-		  },
+		},
 	};
 
 	transformList = () => {
@@ -785,8 +850,8 @@ class ImageMapEditor extends Component {
 	};
 
 	handleMainLoader = value => {
-		this.setState({ loading: value});
-	}
+		this.setState({ loading: value });
+	};
 
 	render() {
 		const {
@@ -806,6 +871,10 @@ class ImageMapEditor extends Component {
 			selectedPageSize,
 			currentPath,
 			editId,
+			isAdminPath,
+			isBadgePath,
+			isCertificatePath,
+			userData,
 		} = this.state;
 		const {
 			onAdd,
@@ -831,7 +900,7 @@ class ImageMapEditor extends Component {
 		} = this.handlers;
 
 		const canvasStyle =
-			currentPath === '/badge-designer'
+			isBadgePath
 				? { width: '600px', height: '600px' }
 				: { width: '800px', height: '618px' };
 
@@ -900,7 +969,7 @@ class ImageMapEditor extends Component {
 		const title = <ImageMapTitle title={titleContent} action={action} />;
 		const content = (
 			<div className="rde-editor">
-				{loading && <Spin size="large" />}
+				{/* {loading && <Spin size="large" />} */}
 				<ImageMapItems
 					ref={c => {
 						this.itemsRef = c;
@@ -909,6 +978,7 @@ class ImageMapEditor extends Component {
 					descriptors={descriptors}
 					onPageSizeChange={this.handlePageSizeChange}
 					mainLoader={this.handleMainLoader}
+					userData={userData}
 				/>
 				<div className="rde-editor-canvas-container" style={{ overflow: 'scroll', minWidth: '200px' }}>
 					<div className="rde-editor-header-toolbar">
