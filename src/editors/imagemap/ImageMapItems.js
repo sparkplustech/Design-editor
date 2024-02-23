@@ -402,6 +402,10 @@ class ImageMapItems extends Component {
 		const isAdminPath = currentPath.includes('admin');
 		const isCertificatePath = currentPath.includes('certificate-designer');
 
+		if(isAdminPath){
+			this.setState({activeSection: 'template'})
+		}
+
 		console.log('is admin', isAdminPath);
 		return (
 			<div className={className}>
@@ -518,7 +522,7 @@ class ImageMapItems extends Component {
 									)}
 								</Flex>
 							)}
-							{activeSection === 'design' && (
+							{activeSection === 'design' && !isAdminPath && (
 								<Flex flex="1" style={{ overflowY: 'hidden' }}>
 									{isCertificatePath ? (
 										<Design

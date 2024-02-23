@@ -101,6 +101,8 @@ class ImageMapEditor extends Component {
 		designCode: '',
 		credId: '',
 		userData: '',
+		badgeId: '',
+		certId: '',
 	};
 
 	componentDidMount() {
@@ -138,16 +140,6 @@ class ImageMapEditor extends Component {
 
 		const queryParams = new URLSearchParams(window.location.search);
 		const designCode = queryParams.get('designCode');	
-
-		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
-			headers: {},
-		})
-			.then(response => response.json())
-			.then(data => {
-				this.setState({userData: data})
-			})
-			.catch(error => console.error('Error fetching usertoken:', error));
-
 		//for badge
 
 		const currentPath = window.location.pathname;
@@ -174,49 +166,64 @@ class ImageMapEditor extends Component {
 		const isEdit = queryParams.get('edit') === 'true';
 		const id = queryParams.get('id');
 		const credId = queryParams.get('cid');
+		const badgeId = queryParams.get('bid');
+		const certId = queryParams.get('ctid');
+
 		const userData = this.state.userData;
 
-		this.setState({ editId: id, isEdit: isEdit, credId: credId, designCode: designCode });
-		if (isEdit && id) {
-			this.setState({ loading: true });
-			const templateEndpoint =
-				isBadgePath
-					? `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getBadgeTemplate/${id}`
-					: `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getCertificateTemplate/${id}`;
+		this.setState({ editId: id, isEdit: isEdit, credId: credId, designCode: designCode, badgeId: badgeId, certId: certId });
 
-			fetch(templateEndpoint, {
-				headers: {
-					Authorization: `Bearer ${userData.accessToken}`,
-				},
-			})
-				.then(response => response.json())
-				.then(data => {
-					if (data.statusCode === 400) {
-						queryParams.delete('id');
-						queryParams.delete('edit');
-						const newUrl = `${window.location.pathname}`;
-						window.history.replaceState({}, '', newUrl);
-						this.setState({ loading: false, inputData: '', isInputEmpty: false, editId: '' });
-					} else {
-						if (data?.templateCode !== '') {
-							const objects = data?.templateCode?.objects;
-							this.canvasRef.handler.clear();
-							if (objects && Array.isArray(objects)) {
-								this.canvasRef.handler.importJSON(objects);
+		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
+			headers: {},
+		})
+			.then(response => response.json())
+			.then(data => {
+				this.setState({userData: data})
+				if (isEdit && id) {
+					this.setState({ loading: true });
+					const templateEndpoint =
+						isBadgePath
+							? `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getBadgeTemplate/${id}`
+							: `${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getCertificateTemplate/${id}`;
+		
+					fetch(templateEndpoint, {
+						headers: {
+							Authorization: `Bearer ${data.accessToken}`,
+						},
+					})
+						.then(response => response.json())
+						.then(data => {
+							if (data.statusCode === 400) {
+								queryParams.delete('id');
+								queryParams.delete('edit');
+								const newUrl = `${window.location.pathname}`;
+								window.history.replaceState({}, '', newUrl);
+								this.setState({ loading: false, inputData: '', isInputEmpty: false, editId: '' });
 							} else {
-								console.error('Invalid objects data format:', objects);
+								if (data?.templateCode !== '') {
+									console.log("check data", data);
+									const objects = data?.templateCode?.objects;
+									this.canvasRef.handler.clear();
+									if (objects && Array.isArray(objects)) {
+										this.canvasRef.handler.importJSON(objects);
+									} else {
+										console.error('Invalid objects data format:', objects);
+									}
+								}
+								this.setState({
+									loading: false,
+									inputData: data?.name,
+									isInputEmpty: false,
+									selectedPageSize: data?.pageSize,
+								});
 							}
-						}
-						this.setState({
-							loading: false,
-							inputData: data?.name,
-							isInputEmpty: false,
-							selectedPageSize: data?.pageSize,
-						});
-					}
-				})
-				.catch(error => console.error('Error fetching templates:', error));
-		}
+						})
+						.catch(error => console.error('Error fetching templates:', error));
+				}
+
+			})
+			.catch(error => console.error('Error fetching usertoken:', error));
+
 	}
 
 	canvasHandlers = {
@@ -714,12 +721,15 @@ class ImageMapEditor extends Component {
 
 		onSaveImageAndJson: () => {
 			const isCertificatePath = this.state.isCertificatePath;
+			const isBadgePath = this.state.isBadgePath;
 			const isAdminPath = this.state.isAdminPath
 			const isEdit = this.state.isEdit;
 			const editId = this.state.editId;
             const credId = this.state.credId;
 			const designCode = this.state.designCode;
 			const userData = this.state.userData;
+			const badgeId = this.state.badgeId;
+			const certId = this.state.certId;
 
 			// Get canvas image data URL
 			const dataURL = this.canvasRef.canvas.toDataURL('image/png');
@@ -809,8 +819,14 @@ class ImageMapEditor extends Component {
 						if(isAdminPath){
 							window.location.reload();
 						}else{
-							window.location.href =
-							`https://testapp.thesolo.network/select-credentials?cid=${credId}`;
+							if(isCertificatePath){
+								window.location.href =
+								`https://testapp.thesolo.network/credential-template?type=certificate&cid=${credId}&bid=${badgeId}&ctid=${certId}`;
+							}else if(isBadgePath){
+								window.location.href =
+								`https://testapp.thesolo.network/credential-template?type=badge&cid=${credId}&bid=${badgeId}&ctid=${certId}`;
+							}
+							
 						  }
 						
 						return data;

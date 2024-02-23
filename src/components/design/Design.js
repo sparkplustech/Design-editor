@@ -31,9 +31,9 @@ const Design = ({ canvasRef, onPageSizeChange, mainLoader }) => {
 				})
 					.then(response => response.json())
 					.then(data => {
-						const portraitTemplates = data?.templates?.filter(template => template.pageSize === 'a4portrait') || [];
+						const portraitTemplates = data?.certificates?.filter(template => template.pageSize === 'a4portrait') || [];
 						const landscapeTemplates =
-							data?.templates?.filter(template => template.pageSize === 'a4landscape') || [];
+							data?.certificates?.filter(template => template.pageSize === 'a4landscape') || [];
 		
 						setTemplatesData({
 							...templatesData,
@@ -95,7 +95,7 @@ const Design = ({ canvasRef, onPageSizeChange, mainLoader }) => {
  console.log("dataaa", templatesData);
 	return (
 		<div className="TemplatesSection">
-			{!selectedTemplate && templatesData.a4LandscapeTemplates && templatesData.a4LandscapeTemplates.count > 0 && (
+			{!selectedTemplate && templatesData.a4LandscapeTemplates && templatesData.a4LandscapeTemplates.length > 0 && (
 				<div className="template-design">
 					<Row className="template-row">
 						<Col span={18}>
