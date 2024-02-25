@@ -801,8 +801,8 @@ class ImageMapEditor extends Component {
 									isEdit
 										? 'Template updated'
 										: isCertificatePath
-										? 'Certificate'
-										: 'Badge'
+										? 'Certificate template'
+										: 'Badge template'
 								} ${isEdit ? 'successfully' : 'created successfully'}`,
 							);
 							return response.json();
@@ -817,7 +817,7 @@ class ImageMapEditor extends Component {
 					})
 					.then(data => {
 						if(isAdminPath){
-							window.location.reload();
+							window.location.href = `https://testapp.thesolo.network/credentials-templates`
 						}else{
 							if(isCertificatePath){
 								window.location.href =
@@ -826,7 +826,6 @@ class ImageMapEditor extends Component {
 								window.location.href =
 								`https://testapp.thesolo.network/credential-template?type=badge&cid=${credId}&bid=${badgeId}&ctid=${certId}`;
 							}
-							
 						  }
 						
 						return data;
@@ -928,7 +927,7 @@ class ImageMapEditor extends Component {
 					onChange={this.onChangeInput}
 					value={inputData}
 				/>
-				<span className="text-width">You have unsaved changes</span>
+				<span className="text-width">{isInputEmpty ? "Enter a name to save" : "You have unsaved changes"}</span>
 				{/* <span className='text-width'>No unsaved changes</span> */}
 				<CommonButton name="Save & Close" onClick={onSaveImageAndJson} disabled={isInputEmpty} />
 				<CommonButton
