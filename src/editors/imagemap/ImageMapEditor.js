@@ -203,7 +203,7 @@ class ImageMapEditor extends Component {
 								this.setState({ loading: false, inputData: '', isInputEmpty: false, editId: '' });
 							} else {
 								if (data?.templateCode !== '') {
-									console.log("check data", data);
+									// console.log("check data", data);
 									const objects = data?.templateCode?.objects;
 									this.canvasRef.handler.clear();
 									if (objects && Array.isArray(objects)) {
@@ -630,6 +630,58 @@ class ImageMapEditor extends Component {
 					};
 					reader.onload = e => {
 						const { objects, animations, styles, dataSources } = JSON.parse(e.target.result);
+
+						if (this.state.isBadgePath) {
+							const newObject = {
+								"type": "image",
+								"version": "4.6.0",
+								"originX": "left",
+								"originY": "top",
+								"left": 0,
+								"top": 0,
+								"width": 500,
+								"height": 500,
+								"fill": "rgb(0,0,0)",
+								"stroke": null,
+								"strokeWidth": 0,
+								"strokeDashArray": null,
+								"strokeLineCap": "butt",
+								"strokeDashOffset": 0,
+								"strokeLineJoin": "miter",
+								"strokeUniform": false,
+								"strokeMiterLimit": 4,
+								"scaleX": 1.2,
+								"scaleY": 1.2,
+								"angle": 0,
+								"flipX": false,
+								"flipY": false,
+								"opacity": 1,
+								"shadow": null,
+								"visible": true,
+								"backgroundColor": "#fff",
+								"fillRule": "nonzero",
+								"paintFirst": "fill",
+								"globalCompositeOperation": "source-over",
+								"skewX": 0,
+								"skewY": 0,
+								"cropX": 0,
+								"cropY": 0,
+								"id": "workarea",
+								"name": "",
+								"src": "./images/sample/transparentBg.png",
+								"link": {},
+								"tooltip": {
+									"enabled": false
+								},
+								"layout": "fixed",
+								"workareaWidth": 800,
+								"workareaHeight": 618,
+								"crossOrigin": "anonymous",
+								"filters": []
+							};
+							objects.unshift(newObject);
+						}
+
 						this.setState({
 							animations,
 							styles,
@@ -676,6 +728,9 @@ class ImageMapEditor extends Component {
 				}
 				return true;
 			});
+			if (this.state.isBadgePath) {
+				objects.shift();
+			}
 			const { animations, styles, dataSources } = this.state;
 			const exportDatas = {
 				objects,
@@ -748,6 +803,9 @@ class ImageMapEditor extends Component {
 					}
 					return true;
 				});
+				if (isBadgePath) {
+					objects.shift();
+				}
 				const { animations, styles, dataSources } = this.state;
 				const exportDatas = {
 					objects,

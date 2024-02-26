@@ -406,7 +406,7 @@ class ImageMapItems extends Component {
 			this.setState({activeSection: 'template'})
 		}
 
-		console.log('is admin', isAdminPath);
+		// console.log('is admin', isAdminPath);
 		return (
 			<div className={className}>
 				<Flex flex="1" flexDirection="row" style={{ height: '100%' }}>
