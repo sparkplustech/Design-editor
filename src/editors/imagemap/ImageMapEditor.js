@@ -150,7 +150,9 @@ class ImageMapEditor extends Component {
 		const isBadgePath = currentPath.includes("badge-designer");
 		if (isBadgePath) {
 			this.canvasHandlers.onChangeWokarea('width', '', { width: 600, height: 600 });
+			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
 			this.canvasHandlers.onChangeWokarea('src', './images/sample/transparentBg.png', '');
+
 		}
 
 		this.setState({
