@@ -16,7 +16,6 @@ import ImageMapItems from './ImageMapItems';
 import ImageMapPreview from './ImageMapPreview';
 import ImageMapTitle from './ImageMapTitle';
 import API_CONSTANT from '../../../constant';
-import data from '../workflow/configuration/data';
 
 const propertiesToInclude = [
 	'id',
@@ -104,7 +103,6 @@ class ImageMapEditor extends Component {
 		userData: '',
 		badgeId: '',
 		certId: '',
-		dataURL: '',
 	};
 
 	componentDidMount() {
