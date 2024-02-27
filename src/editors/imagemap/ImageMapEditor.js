@@ -16,6 +16,7 @@ import ImageMapItems from './ImageMapItems';
 import ImageMapPreview from './ImageMapPreview';
 import ImageMapTitle from './ImageMapTitle';
 import API_CONSTANT from '../../../constant';
+import data from '../workflow/configuration/data';
 
 const propertiesToInclude = [
 	'id',
@@ -103,6 +104,7 @@ class ImageMapEditor extends Component {
 		userData: '',
 		badgeId: '',
 		certId: '',
+		dataURL: '',
 	};
 
 	componentDidMount() {
@@ -788,9 +790,15 @@ class ImageMapEditor extends Component {
 			const badgeId = this.state.badgeId;
 			const certId = this.state.certId;
 
+			if (isBadgePath) {
+				this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
+			    this.canvasHandlers.onChangeWokarea('src', '', '');
+			}
+		
+
 			// Get canvas image data URL
 			const dataURL = this.canvasRef.canvas.toDataURL('image/png');
-
+		
 			// Convert data URL to Blob
 			const blobPromise = fetch(dataURL).then(res => res.blob());
 
@@ -814,6 +822,11 @@ class ImageMapEditor extends Component {
 					dataSources,
 				};
 				const templateCode = JSON.stringify(exportDatas, null, '\t');
+
+				if (isBadgePath) {
+					this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
+			        this.canvasHandlers.onChangeWokarea('src', './images/sample/transparentBg.png', '');
+				}
 
 				const formData = new FormData();
 				formData.append('image', blob, 'image.png');
