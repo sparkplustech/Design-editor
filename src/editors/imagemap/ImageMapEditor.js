@@ -939,6 +939,20 @@ class ImageMapEditor extends Component {
 		this.setState({ loading: value });
 	};
 
+	handleBackButton = () => {
+		if(this.state.isAdminPath){
+			window.location.href = `https://testapp.thesolo.network/credentials-templates`
+		}else{
+			if(this.state.isCertificatePath){
+				window.location.href =
+				`https://testapp.thesolo.network/credential-template?type=certificate&cid=${this.state.credId}&bid=${this.state.badgeId}&ctid=${this.state.certId}`;
+			}else if(this.state.isBadgePath){
+				window.location.href =
+				`https://testapp.thesolo.network/credential-template?type=badge&cid=${this.state.credId}&bid=${this.state.badgeId}&ctid=${this.state.certId}`;
+			}
+		  }
+	}
+
 	render() {
 		const {
 			preview,
@@ -1048,7 +1062,7 @@ class ImageMapEditor extends Component {
 		);
 		const titleContent = (
 			<React.Fragment>
-				<CommonButton icon="arrow-left" />
+				<CommonButton icon="arrow-left" onClick={this.handleBackButton}/>
 				<span style={{ marginLeft: '10px' }}>SOLO Certificate Designer</span>
 			</React.Fragment>
 		);

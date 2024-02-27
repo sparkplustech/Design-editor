@@ -92,7 +92,7 @@ const Design = ({ canvasRef, onPageSizeChange, mainLoader }) => {
 	if (loading) {
 		return <Spin size="large" className="loader-class" />;
 	}
- console.log("dataaa", templatesData);
+//  console.log("dataaa", templatesData);
 	return (
 		<div className="TemplatesSection">
 			{!selectedTemplate && templatesData.a4LandscapeTemplates && templatesData.a4LandscapeTemplates.length > 0 && (
