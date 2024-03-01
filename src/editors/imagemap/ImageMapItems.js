@@ -53,7 +53,14 @@ class ImageMapItems extends Component {
 	componentDidMount() {
 		const { canvasRef } = this.props;
 		this.waitForCanvasRender(canvasRef);
-		this.setState({ currentPath: window.location.pathname });
+		const currentPath = window.location.pathname
+		this.setState({ currentPath: currentPath  });
+
+		const isAdminPath = currentPath.includes('admin');
+
+		if(isAdminPath){
+			this.setState({activeSection: 'template'})
+		}
 	}
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
@@ -203,22 +210,10 @@ class ImageMapItems extends Component {
 				};
 			});
 		},
-		onDesignClick: () => {
-			this.setState({ activeSection: 'design' });
+		onSectionChange: (section) => {
+			this.setState({ activeSection: section });
 			this.setState({ collapse: false });
-		},
-		onTemplateClick: () => {
-			this.setState({ activeSection: 'template' });
-			this.setState({ collapse: false });
-		},
-		onComponentsClick: () => {
-			this.setState({ activeSection: 'components' });
-			this.setState({ collapse: false });
-		},
-		onAttributeClick: () => {
-			this.setState({ activeSection: 'attribute' });
-			this.setState({ collapse: false });
-		},
+		}
 	};
 
 	events = {
@@ -402,10 +397,6 @@ class ImageMapItems extends Component {
 		const isAdminPath = currentPath.includes('admin');
 		const isCertificatePath = currentPath.includes('certificate-designer');
 
-		if(isAdminPath){
-			this.setState({activeSection: 'template'})
-		}
-
 		// console.log('is admin', isAdminPath);
 		return (
 			<div className={className}>
@@ -429,12 +420,13 @@ class ImageMapItems extends Component {
 								className={`${
 									activeSection === 'design' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
 								}`}
+								onClick={() => this.handlers.onSectionChange('design')}
 							>
 								<AntDesignOutlined
-									onClick={() => this.handlers.onDesignClick()}
+									
 									style={{ fontSize: '32px' }}
 								/>{' '}
-								<span onClick={() => this.handlers.onDesignClick()}>Designs</span>{' '}
+								<span >Designs</span>{' '}
 							</Flex>
 						)}
 						{isCertificatePath ? (
@@ -443,12 +435,13 @@ class ImageMapItems extends Component {
 								className={`${
 									activeSection === 'template' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
 								}`}
+								onClick={() => this.handlers.onSectionChange('template')}
 							>
 								<ProfileOutlined
-									onClick={() => this.handlers.onTemplateClick()}
+									
 									style={{ fontSize: '32px' }}
 								/>{' '}
-								<span onClick={() => this.handlers.onTemplateClick()}>Templates</span>{' '}
+								<span >Templates</span>{' '}
 							</Flex>
 						) : (
 							<Flex
@@ -456,12 +449,13 @@ class ImageMapItems extends Component {
 								className={`${
 									activeSection === 'template' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
 								}`}
+								onClick={() => this.handlers.onSectionChange('template')}
 							>
 								<PictureOutlined
-									onClick={() => this.handlers.onTemplateClick()}
+									
 									style={{ fontSize: '32px' }}
 								/>{' '}
-								<span onClick={() => this.handlers.onTemplateClick()}>Backgrounds</span>{' '}
+								<span >Backgrounds</span>{' '}
 							</Flex>
 						)}
 
@@ -470,24 +464,26 @@ class ImageMapItems extends Component {
 							className={`${
 								activeSection === 'components' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
 							}`}
+							onClick={() => this.handlers.onSectionChange('components')}
 						>
 							<LayoutOutlined
-								onClick={() => this.handlers.onComponentsClick()}
+								
 								style={{ fontSize: '32px' }}
 							/>{' '}
-							<span onClick={() => this.handlers.onComponentsClick()}>Components</span>{' '}
+							<span >Components</span>{' '}
 						</Flex>
 						<Flex
 							flexDirection="column"
 							className={`${
 								activeSection === 'attribute' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
 							}`}
+							onClick={() => this.handlers.onSectionChange('attribute')}
 						>
 							<TagOutlined
-								onClick={() => this.handlers.onAttributeClick()}
+								
 								style={{ fontSize: '32px' }}
 							/>{' '}
-							<span onClick={() => this.handlers.onAttributeClick()}>Attributes</span>{' '}
+							<span >Attributes</span>{' '}
 						</Flex>
 					</Flex>
 

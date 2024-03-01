@@ -830,12 +830,12 @@ class ImageMapEditor extends Component {
 				formData.append('image', blob, 'image.png');
 				formData.append('name', name);
 				formData.append('pageSize', pageSize);
+				formData.append('designCode', designCode);
 
 				if(isAdminPath){
 					formData.append('templateCode', templateCode);
 				} else{
 					formData.append('jsonCode', templateCode);
-					formData.append('designCode', designCode);
 				}
 
 				let endpoint;
