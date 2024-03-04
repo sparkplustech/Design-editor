@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Spin } from 'antd';
 import './TemplatesStyle.less';
-import API_CONSTANT from '../../../constant';
+import CONSTANTS from '../../../constant';
 
 const Templates = ({ canvasRef, onPageSizeChange, mainLoader }) => {
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -16,14 +16,14 @@ const Templates = ({ canvasRef, onPageSizeChange, mainLoader }) => {
 		const queryParams = new URLSearchParams(window.location.search);
 		const designCode = queryParams.get('designCode');	
 
-		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
+		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
 			headers: {},
 		})
 			.then(response => response.json())
 			.then(data => {
 				setUserData(data)
 
-				fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getAllCertificateTemplates`, {
+				fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getAllCertificateTemplates`, {
 					headers: {
 						Authorization: `Bearer ${data.accessToken}`,
 					},
@@ -62,18 +62,25 @@ const Templates = ({ canvasRef, onPageSizeChange, mainLoader }) => {
 
 	function handleTemplateClick(tempdata) {
 		mainLoader(true);
-		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getCertificateTemplate/${tempdata?.id}`, {
+		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getCertificateTemplate/${tempdata?.id}`, {
 			headers: {
 				Authorization: `Bearer ${userData.accessToken}`,
 			},
 		})
 			.then(response => response.json())
 			.then(data => {
+				
 				try {
 					const objects = data?.templateCode?.objects;
 					const pageSize = tempdata?.pageSize;
 					onPageSizeChange(pageSize);
 					canvasRef.handler.clear();
+					
+						if(pageSize === 'a4landscape'){
+							objects.unshift(CONSTANTS.JSON_CONSTANT.LANDSCAPE_CERTIFICATE);
+						}else{
+							objects.unshift(CONSTANTS.JSON_CONSTANT.PORTRAIT_CERTIFICATE);
+						}
 
 					if (objects && Array.isArray(objects)) {
 						canvasRef.handler.importJSON(objects);
@@ -114,7 +121,7 @@ const Templates = ({ canvasRef, onPageSizeChange, mainLoader }) => {
 										src={item.imageLink}
 										onClick={() => handleTemplateClick(item)}
 										className="template-img"
-										alt={`Template Landscape} Image ${imgIndex + 1}`}
+										alt={`Template Landscape Image ${imgIndex + 1}`}
 									/>
 								</div>
 							</Col>
@@ -142,7 +149,7 @@ const Templates = ({ canvasRef, onPageSizeChange, mainLoader }) => {
 										src={item.imageLink}
 										onClick={() => handleTemplateClick(item)}
 										className="template-img"
-										alt={`Template Portrait} Image ${imgIndex + 1}`}
+										alt={`Template Portrait Image ${imgIndex + 1}`}
 									/>
 								</div>
 							</Col>

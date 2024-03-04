@@ -40,7 +40,7 @@ export const workareaOption: Partial<WorkareaObject> = {
 	lockScalingY: true,
 	scaleX: 1,
 	scaleY: 1,
-//	backgroundColor: '#fff',
+	// backgroundColor: '#fff',
 	hasBorders: false,
 	hasControls: false,
 	selectable: false,

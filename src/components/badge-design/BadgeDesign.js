@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Spin } from 'antd';
 import '../badge-background/BadgeBackgroundStyle.less';
-import API_CONSTANT from '../../../constant';
+import CONSTANTS from '../../../constant';
 
 const BadgeDesign = ({ canvasRef, mainLoader }) => {
 	const [templatesData, setTemplatesData] = useState([]);
@@ -14,14 +14,14 @@ const BadgeDesign = ({ canvasRef, mainLoader }) => {
         const designCode = queryParams.get('designCode');
 		setDesignCode(designCode);
 
-		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
+		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
 			headers: {},
 		})
 			.then(response => response.json())
 			.then(data => {
 				setUserData(data);
 
-				fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getalluserbadgeTemplates`, {
+				fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getalluserbadgeTemplates`, {
 					headers: {
 						Authorization: `Bearer ${data.accessToken}`,
 					},
@@ -39,7 +39,7 @@ const BadgeDesign = ({ canvasRef, mainLoader }) => {
 
 	function handleTemplateClick(tempdata) {
 		mainLoader(true);
-		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getuserBadgeTemplate//${tempdata?.id}`, {
+		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getuserBadgeTemplate//${tempdata?.id}`, {
 			headers: {
 				Authorization: `Bearer ${userData.accessToken}`,
 			},
@@ -49,7 +49,7 @@ const BadgeDesign = ({ canvasRef, mainLoader }) => {
 				try {
 					const objects = data?.templateCode?.objects;
 					canvasRef.handler.clear();
-
+					objects.unshift(CONSTANTS.JSON_CONSTANT.BADGE);
 					if (objects && Array.isArray(objects)) {
 						canvasRef.handler.importJSON(objects);
 					} else {
@@ -86,7 +86,7 @@ const BadgeDesign = ({ canvasRef, mainLoader }) => {
 										src={item.imageLink}
 										onClick={() => handleTemplateClick(item)}
 										className="template-img"
-										alt={`Template Badge} Image ${imgIndex + 1}`}
+										alt={`Template Badge Image ${imgIndex + 1}`}
 									/>
 								</div>
 							</Col>

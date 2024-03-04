@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Spin } from 'antd';
 import './DesignStyle.less';
-import API_CONSTANT from '../../../constant';
+import CONSTANTS from '../../../constant';
 
 const Design = ({ canvasRef, onPageSizeChange, mainLoader }) => {
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -18,13 +18,13 @@ const Design = ({ canvasRef, onPageSizeChange, mainLoader }) => {
         const designCode = queryParams.get('designCode');
 		setDesignCode(designCode);
 
-		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
+		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
 			headers: {},
 		})
 			.then(response => response.json())
 			.then(data => {
 				setUserData(data);
-				fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getallusercertificateTemplates`, {
+				fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getallusercertificateTemplates`, {
 					headers: {
 						Authorization: `Bearer ${data.accessToken}`,
 					},
@@ -62,7 +62,7 @@ const Design = ({ canvasRef, onPageSizeChange, mainLoader }) => {
 
 	function handleTemplateClick(tempdata) {
 		mainLoader(true);
-		fetch(`${API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getuserCertificateTemplate/${tempdata?.id}`, {
+		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getuserCertificateTemplate/${tempdata?.id}`, {
 			headers: {
 				Authorization: `Bearer ${userData.accessToken}`,
 			},
@@ -74,7 +74,11 @@ const Design = ({ canvasRef, onPageSizeChange, mainLoader }) => {
 					const pageSize = tempdata?.pageSize;
 					onPageSizeChange(pageSize);
 					canvasRef.handler.clear();
-
+					if(pageSize === 'a4landscape'){
+						objects.unshift(CONSTANTS.JSON_CONSTANT.LANDSCAPE_CERTIFICATE);
+					}else{
+						objects.unshift(CONSTANTS.JSON_CONSTANT.PORTRAIT_CERTIFICATE);
+					}
 					if (objects && Array.isArray(objects)) {
 						canvasRef.handler.importJSON(objects);
 					} else {
@@ -92,7 +96,7 @@ const Design = ({ canvasRef, onPageSizeChange, mainLoader }) => {
 	if (loading) {
 		return <Spin size="large" className="loader-class" />;
 	}
-//  console.log("dataaa", templatesData);
+
 	return (
 		<div className="TemplatesSection">
 			{!selectedTemplate && templatesData.a4LandscapeTemplates && templatesData.a4LandscapeTemplates.length > 0 && (
