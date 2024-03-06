@@ -723,7 +723,18 @@ class ImageMapEditor extends Component {
 			});
 		},
 		onSaveImage: () => {
+			const isBadgePath = this.state.isBadgePath;
+			if (isBadgePath) {
+				this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
+			    this.canvasHandlers.onChangeWokarea('src', '', '');
+			}
+			
 			this.canvasRef.handler.saveCanvasImage();
+
+			if (isBadgePath) {
+				this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
+				this.canvasHandlers.onChangeWokarea('src', './images/sample/transparentBg.png', '');
+			}
 		},
 
 		onSaveImageAndJson: () => {
