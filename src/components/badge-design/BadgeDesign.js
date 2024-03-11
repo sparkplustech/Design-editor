@@ -3,7 +3,7 @@ import { Row, Col, Spin } from 'antd';
 import '../badge-background/BadgeBackgroundStyle.less';
 import CONSTANTS from '../../../constant';
 
-const BadgeDesign = ({ canvasRef, mainLoader }) => {
+const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange }) => {
 	const [templatesData, setTemplatesData] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [designCode, setDesignCode] = useState("");
@@ -52,6 +52,7 @@ const BadgeDesign = ({ canvasRef, mainLoader }) => {
 					objects.unshift(CONSTANTS.JSON_CONSTANT.BADGE);
 					if (objects && Array.isArray(objects)) {
 						canvasRef.handler.importJSON(objects);
+						onCanvasChange(true);
 					} else {
 						console.error('Invalid objects data format:', objects);
 					}

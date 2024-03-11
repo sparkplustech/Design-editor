@@ -1028,6 +1028,10 @@ class ImageMapEditor extends Component {
 		this.setState({ selectedPageSize: value });
 	};
 
+	handleCanvasChange = (value) => {
+		this.setState({ editing: value});
+	}
+
 	handleMainLoader = value => {
 		this.setState({ loading: value });
 	};
@@ -1173,6 +1177,7 @@ class ImageMapEditor extends Component {
 					canvasRef={this.canvasRef}
 					descriptors={descriptors}
 					onPageSizeChange={this.handlePageSizeChange}
+					onCanvasChange={this.handleCanvasChange}
 					mainLoader={this.handleMainLoader}
 					userData={userData}
 				/>

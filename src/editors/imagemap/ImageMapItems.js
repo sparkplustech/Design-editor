@@ -35,6 +35,7 @@ class ImageMapItems extends Component {
 		canvasRef: PropTypes.any,
 		descriptors: PropTypes.object,
 		onPageSizeChange: PropTypes.any,
+		onCanvasChange: PropTypes.any,
 		mainLoader: PropTypes.bool,
 	};
 
@@ -524,12 +525,14 @@ class ImageMapItems extends Component {
 										<Design
 											canvasRef={this.props.canvasRef}
 											onPageSizeChange={this.props.onPageSizeChange}
+											onCanvasChange={this.props.onCanvasChange}
 											mainLoader={this.props.mainLoader}
 										/>
 									) : (
 										<BadgeDesign
 											canvasRef={this.props.canvasRef}
 											mainLoader={this.props.mainLoader}
+											onCanvasChange={this.props.onCanvasChange}
 										/>
 									)}
 								</Flex>
@@ -541,12 +544,14 @@ class ImageMapItems extends Component {
 										<Templates
 											canvasRef={this.props.canvasRef}
 											onPageSizeChange={this.props.onPageSizeChange}
+											onCanvasChange={this.props.onCanvasChange}
 											mainLoader={this.props.mainLoader}
 										/>
 									) : (
 										<BadgeBackground
 											canvasRef={this.props.canvasRef}
 											mainLoader={this.props.mainLoader}
+											onCanvasChange={this.props.onCanvasChange}
 										/>
 									)}
 								</Flex>

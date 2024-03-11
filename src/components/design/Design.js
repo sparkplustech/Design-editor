@@ -3,7 +3,7 @@ import { Row, Col, Spin } from 'antd';
 import './DesignStyle.less';
 import CONSTANTS from '../../../constant';
 
-const Design = ({ canvasRef, onPageSizeChange, mainLoader }) => {
+const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => {
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
 	const [templatesData, setTemplatesData] = useState({
 		a4PortraitTemplates: [],
@@ -81,6 +81,7 @@ const Design = ({ canvasRef, onPageSizeChange, mainLoader }) => {
 					}
 					if (objects && Array.isArray(objects)) {
 						canvasRef.handler.importJSON(objects);
+						onCanvasChange(true);
 					} else {
 						console.error('Invalid objects data format:', objects);
 					}
