@@ -51,7 +51,7 @@ module.exports = merge(baseConfig, {
 		new webpack.HotModuleReplacementPlugin(),
 		new HtmlWebpackPlugin({
 			filename: 'index.html',
-			title: 'React Design Editor',
+			title: 'SOLO Designer',
 		}),
 		new Dotenv({
 			API_URL: `.env.${process.env.API_URL}`,

@@ -13,7 +13,7 @@ const plugins = [
 	}),
 	new HtmlWebpackPlugin({
 		filename: 'index.html',
-		title: 'React Design Editor',
+		title: 'SOLO Designer',
 		meta: {
 			description: `React Design Editor has started to developed direct manipulation of editable design tools like Powerpoint, We've developed it with react.js, ant.design, fabric.js`,
 		},
