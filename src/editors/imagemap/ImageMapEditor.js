@@ -105,6 +105,7 @@ class ImageMapEditor extends Component {
 		certId: '',
 		isSaving: false,
 		autoSaveId: '',
+		createTemplateCalled: false,
 	};
 
 	componentDidMount() {
@@ -169,7 +170,7 @@ class ImageMapEditor extends Component {
 			.then(data => {
 				this.setState({ userData: data });
 				if (isEdit && id) {
-					this.setState({ loading: true });
+					this.setState({ loading: true, createTemplateCalled: true });
 					const templateEndpoint = isAdminPath
 						? isBadgePath
 							? `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getBadgeTemplate/${id}`
@@ -220,19 +221,25 @@ class ImageMapEditor extends Component {
 							}
 						})
 						.catch(error => console.error('Error fetching templates:', error));
-				}else{
-					this.setState({userData: data})
-					this.createTemplate(data);
 				}
 			})
 			.catch(error => console.error('Error fetching usertoken:', error));
 
 			this.autoSave = setInterval(() => {
-				if(this.state.editing){
+				if(this.state.editing && this.state.createTemplateCalled){
 					this.editTemplate("autoSave");
 				}
 			  }, 30000);
 	}
+
+	componentDidUpdate(prevState) {
+		if (!prevState.editing && this.state.editing && !this.state.createTemplateCalled && !this.state.isEdit) {
+		  this.createTemplate(this.state.userData);
+		  this.setState({
+			createTemplateCalled: true,
+		  });
+		}
+	  }
 
 	componentWillUnmount() {
 		clearInterval(this.autoSave);
@@ -248,10 +255,18 @@ class ImageMapEditor extends Component {
 		const isBadgePath = currentPath.includes('badge-designer');
         const accessToken = data.accessToken;
 		
-		this.canvasHandlers.onChangeWokarea('backgroundColor', '#FFFFFF', '');
-		this.canvasHandlers.onChangeWokarea('src', '', '');
+		if (isBadgePath) {
+			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
+			this.canvasHandlers.onChangeWokarea('src', '', '');
+		}
 
 		const dataURL = this.canvasRef.canvas.toDataURL('image/png');
+
+		if (isBadgePath) {
+			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
+			this.canvasHandlers.onChangeWokarea('src', './images/sample/transparentBg.png', '');
+		}
+
 		const blobPromise = fetch(dataURL).then(res => res.blob());
 		blobPromise.then(blob => {
 			const pageSize = this.state.selectedPageSize;
@@ -273,11 +288,6 @@ class ImageMapEditor extends Component {
 				dataSources,
 			};
 			const templateCode = JSON.stringify(exportDatas, null, '\t');
-
-			if (isBadgePath) {
-				this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
-				this.canvasHandlers.onChangeWokarea('src', './images/sample/transparentBg.png', '');
-			}
 
 			const formData = new FormData();
 			formData.append('image', blob, 'image.png');
@@ -329,7 +339,11 @@ class ImageMapEditor extends Component {
 					}
 				})
 				.then(data => {
-                    this.setState({autoSaveId: data.id, inputData: data.name})
+					// console.log("check create data", data);
+                    this.setState({
+						autoSaveId: data.id,
+						inputData: isAdminPath ? data.TemplateName : data.name,
+					  });
 					return data;
 				})
 				.catch(error => {
