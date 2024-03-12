@@ -919,6 +919,7 @@ class ImageMapEditor extends Component {
 								return true;
 							});
 							this.canvasRef.handler.importJSON(data);
+							this.setState({editing: true})
 						}
 					};
 					reader.onloadend = () => {
