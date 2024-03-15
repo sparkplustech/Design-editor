@@ -10,6 +10,8 @@ class Attributes extends Component {
 	};
 
 	getItem(name) {
+		const currentPath = window.location.pathname;
+		const isAdminBadgePath = currentPath.includes('admin-badge-designer');
 		let item = {
 			name: 'Text',
 			description: '',
@@ -25,7 +27,7 @@ class Attributes extends Component {
 				width: 400,
 				height: 30,
 				fontSize: 20,
-				name: 'attribute',
+				name: isAdminBadgePath? 'badgeAttribute':'attribute',
 				textAlign: 'center',
 			},
 		};

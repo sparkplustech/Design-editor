@@ -3,7 +3,7 @@ import { Row, Col, Spin } from 'antd';
 import './BadgeBackgroundStyle.less';
 import CONSTANTS from '../../../constant';
 
-const BadgeBackground = ({ canvasRef, mainLoader, onCanvasChange }) => {
+const BadgeBackground = ({ canvasRef, mainLoader, onCanvasChange, badgeType }) => {
 	const [templatesData, setTemplatesData] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [userData, setUserData] = useState([]);
@@ -29,7 +29,9 @@ const BadgeBackground = ({ canvasRef, mainLoader, onCanvasChange }) => {
 				})
 					.then(response => response.json())
 					.then(data => {
-						setTemplatesData(data);
+						const background = data?.badges?.filter(template => template.type !== 'template') || [];
+						const templates = data?.badges?.filter(template => template.type === 'template') || [];
+						setTemplatesData(badgeType === "template"? templates : background );
 						setLoading(false);
 					})
 					.catch(error => console.error('Error fetching templates:', error));
@@ -70,18 +72,20 @@ const BadgeBackground = ({ canvasRef, mainLoader, onCanvasChange }) => {
 		return <Spin size="large" className='loader-class'/>;
 	}
 
+	console.log("badge list", templatesData);
+
 	return (
 		<div className="BadgeSection">
 			{templatesData && (
 				<div  className="template-design">
 					<Row className="template-row">
 						<Col span={24}>
-							<h3>Background Shapes</h3>
+							<h3>{badgeType === "template"? "Template": "Background"} Shapes</h3>
 						</Col>
 					</Row>
 
 					<Row>
-						{templatesData?.badges?.map((item, imgIndex) => (
+						{templatesData?.map((item, imgIndex) => (
 							<Col key={imgIndex} span={12}>
 								<div className="certificate-img1">
 									<img

@@ -54,13 +54,13 @@ class ImageMapItems extends Component {
 	componentDidMount() {
 		const { canvasRef } = this.props;
 		this.waitForCanvasRender(canvasRef);
-		const currentPath = window.location.pathname
-		this.setState({ currentPath: currentPath  });
+		const currentPath = window.location.pathname;
+		this.setState({ currentPath: currentPath });
 
 		const isAdminPath = currentPath.includes('admin');
 
 		if(isAdminPath){
-			this.setState({activeSection: 'template'})
+			this.setState({activeSection: 'template'});
 		}
 	}
 
@@ -211,10 +211,10 @@ class ImageMapItems extends Component {
 				};
 			});
 		},
-		onSectionChange: (section) => {
+		onSectionChange: section => {
 			this.setState({ activeSection: section });
 			this.setState({ collapse: false });
-		}
+		},
 	};
 
 	events = {
@@ -397,6 +397,7 @@ class ImageMapItems extends Component {
 
 		const isAdminPath = currentPath.includes('admin');
 		const isCertificatePath = currentPath.includes('certificate-designer');
+		const isAdminBadgePath = currentPath.includes('admin-badge-designer');
 
 		// console.log('is admin', isAdminPath);
 		return (
@@ -423,11 +424,7 @@ class ImageMapItems extends Component {
 								}`}
 								onClick={() => this.handlers.onSectionChange('design')}
 							>
-								<AntDesignOutlined
-									
-									style={{ fontSize: '32px' }}
-								/>{' '}
-								<span >Designs</span>{' '}
+								<AntDesignOutlined style={{ fontSize: '32px' }} /> <span>Designs</span>{' '}
 							</Flex>
 						)}
 						{isCertificatePath ? (
@@ -438,11 +435,7 @@ class ImageMapItems extends Component {
 								}`}
 								onClick={() => this.handlers.onSectionChange('template')}
 							>
-								<ProfileOutlined
-									
-									style={{ fontSize: '32px' }}
-								/>{' '}
-								<span >Templates</span>{' '}
+								<ProfileOutlined style={{ fontSize: '32px' }} /> <span>Templates</span>{' '}
 							</Flex>
 						) : (
 							<Flex
@@ -452,11 +445,21 @@ class ImageMapItems extends Component {
 								}`}
 								onClick={() => this.handlers.onSectionChange('template')}
 							>
-								<PictureOutlined
-									
-									style={{ fontSize: '32px' }}
-								/>{' '}
-								<span >Backgrounds</span>{' '}
+								<PictureOutlined style={{ fontSize: '32px' }} /> <span>Backgrounds</span>{' '}
+							</Flex>
+						)}
+
+						{isAdminBadgePath && (
+							<Flex
+								flexDirection="column"
+								className={`${
+									activeSection === 'badge-template'
+										? 'leftbarmenu leftbarmenu-active'
+										: 'leftbarmenu'
+								}`}
+								onClick={() => this.handlers.onSectionChange('badge-template')}
+							>
+								<ProfileOutlined style={{ fontSize: '32px' }} /> <span>Templates</span>{' '}
 							</Flex>
 						)}
 
@@ -467,11 +470,7 @@ class ImageMapItems extends Component {
 							}`}
 							onClick={() => this.handlers.onSectionChange('components')}
 						>
-							<LayoutOutlined
-								
-								style={{ fontSize: '32px' }}
-							/>{' '}
-							<span >Components</span>{' '}
+							<LayoutOutlined style={{ fontSize: '32px' }} /> <span>Components</span>{' '}
 						</Flex>
 						<Flex
 							flexDirection="column"
@@ -480,11 +479,7 @@ class ImageMapItems extends Component {
 							}`}
 							onClick={() => this.handlers.onSectionChange('attribute')}
 						>
-							<TagOutlined
-								
-								style={{ fontSize: '32px' }}
-							/>{' '}
-							<span >Attributes</span>{' '}
+							<TagOutlined style={{ fontSize: '32px' }} /> <span>Attributes</span>{' '}
 						</Flex>
 					</Flex>
 
@@ -554,6 +549,16 @@ class ImageMapItems extends Component {
 											onCanvasChange={this.props.onCanvasChange}
 										/>
 									)}
+								</Flex>
+							)}
+							{activeSection === 'badge-template' && (
+								<Flex flex="1" style={{ overflowY: 'hidden' }}>
+									<BadgeBackground
+										canvasRef={this.props.canvasRef}
+										mainLoader={this.props.mainLoader}
+										onCanvasChange={this.props.onCanvasChange}
+										badgeType="template"
+									/>
 								</Flex>
 							)}
 							{activeSection === 'attribute' && (

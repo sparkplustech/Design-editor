@@ -5,6 +5,10 @@ import i18n from 'i18next';
 export default {
 	render(canvasRef, form, data) {
 		const { getFieldDecorator } = form;
+		const currentPath = window.location.pathname;
+		const isAdminBadgePath = currentPath.includes('admin-badge-designer');
+		const isBadgeAttribute = data.name === 'badgeAttribute';
+		const isNameDisabled = isAdminBadgePath && isBadgeAttribute;
 		return (
 			<React.Fragment>
 				<Row>
@@ -38,7 +42,7 @@ export default {
 				<Form.Item label={i18n.t('common.name')} colon={false} >
 					{getFieldDecorator('name', {
 						initialValue: data.name,
-					})(<Input />)}
+					})(<Input disabled={isNameDisabled}/>)}
 				</Form.Item>
 				<Row style={{ marginTop: '10px' }}>
 					<Col span={12}>

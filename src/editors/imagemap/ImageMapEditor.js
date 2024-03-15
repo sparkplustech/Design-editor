@@ -279,7 +279,7 @@ class ImageMapEditor extends Component {
 
 			// remove bg
 			objects.shift();
-
+			const badgeAttribute = objects.some(obj => obj.name === 'badgeAttribute');
 			const { animations, styles, dataSources } = this.state;
 			const exportDatas = {
 				objects,
@@ -297,6 +297,9 @@ class ImageMapEditor extends Component {
 
 			if (isAdminPath) {
 				formData.append('templateCode', templateCode);
+				if(isBadgePath){
+					formData.append('type', badgeAttribute? "template": "background")
+				}
 			} else {
 				formData.append('jsonCode', templateCode);
 			}
@@ -390,7 +393,7 @@ class ImageMapEditor extends Component {
 
 			// remove bg
 			objects.shift();
-
+			const badgeAttribute = objects.some(obj => obj.name === 'badgeAttribute');
 			const { animations, styles, dataSources } = this.state;
 			const exportDatas = {
 				objects,
@@ -408,6 +411,9 @@ class ImageMapEditor extends Component {
 
 			if (isAdminPath) {
 				formData.append('templateCode', templateCode);
+				if(isBadgePath){
+					formData.append('type', badgeAttribute? "template": "background")
+				}
 			} else {
 				formData.append('jsonCode', templateCode);
 			}
