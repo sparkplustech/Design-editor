@@ -106,6 +106,8 @@ class ImageMapEditor extends Component {
 		isSaving: false,
 		autoSaveId: '',
 		createTemplateCalled: false,
+		prebuildCertificate: '',
+		prebuildBadge: '',
 	};
 
 	componentDidMount() {
@@ -153,6 +155,8 @@ class ImageMapEditor extends Component {
 		const credId = queryParams.get('cid');
 		const badgeId = queryParams.get('bid');
 		const certId = queryParams.get('ctid');
+		const prebuildCertificate = queryParams.get('pbCt');
+		const prebuildBadge = queryParams.get('pbBg');
 
 		this.setState({
 			editId: id,
@@ -161,6 +165,8 @@ class ImageMapEditor extends Component {
 			designCode: designCode,
 			badgeId: badgeId,
 			certId: certId,
+			prebuildCertificate: prebuildCertificate,
+			prebuildBadge: prebuildBadge,
 		});
 
 		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
@@ -225,40 +231,41 @@ class ImageMapEditor extends Component {
 			})
 			.catch(error => console.error('Error fetching usertoken:', error));
 
-			this.autoSave = setInterval(() => {
-				if(this.state.editing && this.state.createTemplateCalled){
-					this.editTemplate("autoSave");
-				}
-			  }, 30000);
+		this.autoSave = setInterval(() => {
+			if (this.state.editing && this.state.createTemplateCalled) {
+				this.editTemplate('autoSave');
+			}
+		}, 30000);
 	}
 
 	componentDidUpdate(prevState) {
 		if (!prevState.editing && this.state.editing && !this.state.createTemplateCalled && !this.state.isEdit) {
-		  this.createTemplate(this.state.userData);
-		  this.setState({
-			createTemplateCalled: true,
-		  });
+			this.createTemplate(this.state.userData);
+			this.setState({
+				createTemplateCalled: true,
+			});
 		}
-	  }
+	}
 
 	componentWillUnmount() {
 		clearInterval(this.autoSave);
-	  }
+	}
 
-	createTemplate = (data) => {
+	createTemplate = data => {
 		const queryParams = new URLSearchParams(window.location.search);
 		const designCode = queryParams.get('designCode');
-	
 		const currentPath = window.location.pathname;
 		const isAdminPath = currentPath.includes('admin');
 		const isCertificatePath = currentPath.includes('certificate-designer');
 		const isBadgePath = currentPath.includes('badge-designer');
-        const accessToken = data.accessToken;
-		
-		if (isBadgePath) {
+		const accessToken = data.accessToken;
+        if(isCertificatePath){
+			this.canvasHandlers.onChangeWokarea('backgroundColor', '#FFFFFF', '');
+			this.canvasHandlers.onChangeWokarea('src', '', '');
+		}else{
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
 			this.canvasHandlers.onChangeWokarea('src', '', '');
-		}
+		}		
 
 		const dataURL = this.canvasRef.canvas.toDataURL('image/png');
 
@@ -297,8 +304,8 @@ class ImageMapEditor extends Component {
 
 			if (isAdminPath) {
 				formData.append('templateCode', templateCode);
-				if(isBadgePath){
-					formData.append('type', badgeAttribute? "template": "background")
+				if (isBadgePath) {
+					formData.append('type', badgeAttribute ? 'template' : 'background');
 				}
 			} else {
 				formData.append('jsonCode', templateCode);
@@ -311,7 +318,7 @@ class ImageMapEditor extends Component {
 					? `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/createcertificateTemplate`
 					: `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/createBadgeTemplate`;
 			} else {
-				endpoint =  isCertificatePath
+				endpoint = isCertificatePath
 					? `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/saveCertificateDesign`
 					: `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/saveBadgeDesign`;
 			}
@@ -326,27 +333,22 @@ class ImageMapEditor extends Component {
 				.then(response => {
 					if (response.ok) {
 						message.success(
-							`${ isCertificatePath
-									? 'Certificate template'
-									: 'Badge template'
-							} ${ 'created successfully'}`,
+							`${
+								isCertificatePath ? 'Certificate template' : 'Badge template'
+							} ${'created successfully'}`,
 						);
 						return response.json();
 					} else {
-						message.error(
-							`Failed to ${'create'} ${
-								isCertificatePath ? 'certificate' : 'badge'
-							}`,
-						);
+						message.error(`Failed to ${'create'} ${isCertificatePath ? 'certificate' : 'badge'}`);
 						throw new Error('API Error');
 					}
 				})
 				.then(data => {
 					// console.log("check create data", data);
-                    this.setState({
+					this.setState({
 						autoSaveId: data.id,
 						inputData: isAdminPath ? data.TemplateName : data.name,
-					  });
+					});
 					return data;
 				})
 				.catch(error => {
@@ -354,28 +356,30 @@ class ImageMapEditor extends Component {
 					throw error;
 				});
 		});
+	};
 
-	}
-
-	editTemplate = (editType) => {
+	editTemplate = editType => {
 		const designCode = this.state.designCode;
 		const isAdminPath = this.state.isAdminPath;
 		const isCertificatePath = this.state.isCertificatePath;
 		const isEdit = this.state.isEdit;
 		const isBadgePath = this.state.isBadgePath;
-        const accessToken = this.state.userData.accessToken;
+		const accessToken = this.state.userData.accessToken;
 		const editId = isEdit ? this.state.editId : this.state.autoSaveId;
 		const credId = this.state.credId;
 		const badgeId = this.state.badgeId;
 		const certId = this.state.certId;
-		
+		const prebuildCertificate = this.state.prebuildCertificate;
+		const prebuildBadge = this.state.prebuildBadge;
+		const pageSize = this.state.selectedPageSize;
+
 		if (isBadgePath) {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
 			this.canvasHandlers.onChangeWokarea('src', '', '');
 		}
 
 		const dataURL = this.canvasRef.canvas.toDataURL('image/png');
-		
+
 		if (isBadgePath) {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
 			this.canvasHandlers.onChangeWokarea('src', './images/sample/transparentBg.png', '');
@@ -411,8 +415,8 @@ class ImageMapEditor extends Component {
 
 			if (isAdminPath) {
 				formData.append('templateCode', templateCode);
-				if(isBadgePath){
-					formData.append('type', badgeAttribute? "template": "background")
+				if (isBadgePath) {
+					formData.append('type', badgeAttribute ? 'template' : 'background');
 				}
 			} else {
 				formData.append('jsonCode', templateCode);
@@ -422,15 +426,15 @@ class ImageMapEditor extends Component {
 
 			if (isAdminPath) {
 				endpoint = isCertificatePath
-				? `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/editCertificateTemplate/${editId}`
-				: `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/editBadgeTemplate/${editId}`
+					? `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/editCertificateTemplate/${editId}`
+					: `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/editBadgeTemplate/${editId}`;
 			} else {
-				endpoint =  isCertificatePath
-				? `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/editCertificateDesign/${editId}`
-				: `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/editBadgeDesign/${editId}`
+				endpoint = isCertificatePath
+					? `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/editCertificateDesign/${editId}`
+					: `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/editBadgeDesign/${editId}`;
 			}
-			if(editType ==="click"){
-				this.setState({isSaving: true});
+			if (editType === 'click') {
+				this.setState({ isSaving: true });
 			}
 			fetch(endpoint, {
 				method: 'PATCH',
@@ -442,46 +446,46 @@ class ImageMapEditor extends Component {
 				.then(response => {
 					if (response.ok) {
 						if (editType === 'autoSave') {
-							message.success(`${isCertificatePath ? 'Certificate' : 'Badge'} template autosaved successfully`);
-						  } else {
 							message.success(
-							  `${
-								isEdit
-								  ? 'Template updated'
-								  : isCertificatePath
-								  ? 'Certificate template'
-								  : 'Badge template'
-							  } ${isEdit ? 'successfully' : 'created successfully'}`,
+								`${isCertificatePath ? 'Certificate' : 'Badge'} template autosaved successfully`,
 							);
-						  }
+						} else {
+							message.success(
+								`${
+									isEdit
+										? 'Template updated'
+										: isCertificatePath
+										? 'Certificate template'
+										: 'Badge template'
+								} ${isEdit ? 'successfully' : 'created successfully'}`,
+							);
+						}
 						return response.json();
 					} else {
-						if(editType ==="autoSave"){
-							message.error(
-								`Failed to autosave ${
-									isCertificatePath ? 'certificate' : 'badge'
-								}`,
-							);
-						}else{
+						if (editType === 'autoSave') {
+							message.error(`Failed to autosave ${isCertificatePath ? 'certificate' : 'badge'}`);
+						} else {
 							message.error(
 								`Failed to ${isEdit ? 'update' : 'create'} ${
 									isCertificatePath ? 'certificate' : 'badge'
 								}`,
 							);
 						}
-						
+
 						throw new Error('API Error');
 					}
 				})
 				.then(data => {
-					if(editType === "click"){
+					if (editType === 'click') {
 						if (isAdminPath) {
 							window.location.href = `https://testapp.thesolo.network/credentials-templates`;
 						} else {
 							if (isCertificatePath) {
-								window.location.href = `https://testapp.thesolo.network/credential-template?type=certificate&cid=${credId}&bid=${badgeId}&ctid=${certId}`;
+								window.location.href = `https://testapp.thesolo.network/credential-template?type=certificate&cid=${credId}&bid=${badgeId}&ctid=${certId}&design=true&pbCt=${prebuildCertificate}&pbBg=${prebuildBadge}&pg=${
+									pageSize === 'a4landscape' ? 'ls' : 'pt'
+								}`;
 							} else if (isBadgePath) {
-								window.location.href = `https://testapp.thesolo.network/credential-template?type=badge&cid=${credId}&bid=${badgeId}&ctid=${certId}`;
+								window.location.href = `https://testapp.thesolo.network/credential-template?type=badge&cid=${credId}&bid=${badgeId}&ctid=${certId}&design=true&design=true&pbCt=${prebuildCertificate}&pbBg=${prebuildBadge}`;
 							}
 						}
 					}
@@ -492,11 +496,10 @@ class ImageMapEditor extends Component {
 					throw error;
 				})
 				.finally(() => {
-					this.setState({isSaving: false});
+					this.setState({ isSaving: false });
 				});
 		});
-
-	}
+	};
 
 	canvasHandlers = {
 		onAdd: target => {
@@ -925,7 +928,7 @@ class ImageMapEditor extends Component {
 								return true;
 							});
 							this.canvasRef.handler.importJSON(data);
-							this.setState({editing: true})
+							this.setState({ editing: true });
 						}
 					};
 					reader.onloadend = () => {
@@ -1019,7 +1022,7 @@ class ImageMapEditor extends Component {
 		},
 
 		onSaveImageAndJson: () => {
-			this.editTemplate("click")
+			this.editTemplate('click');
 		},
 	};
 
@@ -1049,9 +1052,9 @@ class ImageMapEditor extends Component {
 		this.setState({ selectedPageSize: value });
 	};
 
-	handleCanvasChange = (value) => {
-		this.setState({ editing: value});
-	}
+	handleCanvasChange = value => {
+		this.setState({ editing: value });
+	};
 
 	handleMainLoader = value => {
 		this.setState({ loading: value });
@@ -1062,9 +1065,9 @@ class ImageMapEditor extends Component {
 			window.location.href = `https://testapp.thesolo.network/credentials-templates`;
 		} else {
 			if (this.state.isCertificatePath) {
-				window.location.href = `https://testapp.thesolo.network/credential-template?type=certificate&cid=${this.state.credId}&bid=${this.state.badgeId}&ctid=${this.state.certId}`;
+				window.location.href = `https://testapp.thesolo.network/credential-template?type=certificate&cid=${this.state.credId}&bid=${this.state.badgeId}&ctid=${this.state.certId}&design=true&pbCt=${this.state.prebuildCertificate}&pbBg=${this.state.prebuildBadge}&pg=${this.state.selectedPageSize === 'a4landscape' ? 'ls' : 'pt'}`;
 			} else if (this.state.isBadgePath) {
-				window.location.href = `https://testapp.thesolo.network/credential-template?type=badge&cid=${this.state.credId}&bid=${this.state.badgeId}&ctid=${this.state.certId}`;
+				window.location.href = `https://testapp.thesolo.network/credential-template?type=badge&cid=${this.state.credId}&bid=${this.state.badgeId}&ctid=${this.state.certId}&design=true&pbCt=${this.state.prebuildCertificate}&pbBg=${this.state.prebuildBadge}`;
 			}
 		}
 	};
@@ -1091,7 +1094,7 @@ class ImageMapEditor extends Component {
 			isBadgePath,
 			isCertificatePath,
 			userData,
-			isSaving
+			isSaving,
 		} = this.state;
 		const {
 			onAdd,
@@ -1130,12 +1133,9 @@ class ImageMapEditor extends Component {
 					onChange={this.onChangeInput}
 					value={inputData}
 				/>
-				<span className={`text-width ${!editing? "text-opa":""}`}>You have unsaved changes</span>
+				<span className={`text-width ${!editing ? 'text-opa' : ''}`}>You have unsaved changes</span>
 				{/* <span className='text-width'>No unsaved changes</span> */}
-				<CommonButton 
-				name="Save & Close" 
-				onClick={onSaveImageAndJson} 
-				disabled={isSaving  || !editing} />
+				<CommonButton name="Save & Close" onClick={onSaveImageAndJson} disabled={isSaving || !editing} />
 				<CommonButton
 					className="rde-action-btn"
 					shape="circle"
@@ -1184,7 +1184,7 @@ class ImageMapEditor extends Component {
 		const titleContent = (
 			<React.Fragment>
 				<CommonButton icon="arrow-left" onClick={this.handleBackButton} />
-				<span style={{ marginLeft: '10px' }}>SOLO {isBadgePath? "Badge":"Certificate"} Designer</span>
+				<span style={{ marginLeft: '10px' }}>SOLO {isBadgePath ? 'Badge' : 'Certificate'} Designer</span>
 			</React.Fragment>
 		);
 		const title = <ImageMapTitle title={titleContent} action={action} />;

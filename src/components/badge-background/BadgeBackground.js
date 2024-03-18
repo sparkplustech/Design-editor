@@ -72,7 +72,7 @@ const BadgeBackground = ({ canvasRef, mainLoader, onCanvasChange, badgeType }) =
 		return <Spin size="large" className='loader-class'/>;
 	}
 
-	console.log("badge list", templatesData);
+	// console.log("badge list", templatesData);
 
 	return (
 		<div className="BadgeSection">

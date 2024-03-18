@@ -30,6 +30,7 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 				})
 					.then(response => response.json())
 					.then(data => {
+						// console.log("check certificate data", data);
 						const portraitTemplates = data?.templates?.filter(template => template.pageSize === 'a4portrait') || [];
 						const landscapeTemplates =
 							data?.templates?.filter(template => template.pageSize === 'a4landscape') || [];
