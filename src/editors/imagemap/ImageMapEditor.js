@@ -533,9 +533,6 @@ class ImageMapEditor extends Component {
 					console.error('API Error:', error);
 					throw error;
 				})
-				.finally(() => {
-					this.setState({ isSaving: false });
-				});
 		});
 	};
 
