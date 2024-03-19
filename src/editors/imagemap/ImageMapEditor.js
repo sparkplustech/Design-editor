@@ -518,14 +518,14 @@ class ImageMapEditor extends Component {
 				.then(data => {
 					if (editType === 'click') {
 						if (isAdminPath) {
-							window.location.href = `https://testapp.thesolo.network/credentials-templates`;
+							window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credentials-templates`;
 						} else {
 							if (isCertificatePath) {
-								window.location.href = `https://testapp.thesolo.network/credential-template?type=certificate&cid=${credId}&bid=${badgeId}&ctid=${certId}&design=true&pbCt=${prebuildCertificate}&pbBg=${prebuildBadge}&pg=${
+								window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credential-template?type=certificate&cid=${credId}&bid=${badgeId}&ctid=${certId}&design=true&pbCt=${prebuildCertificate}&pbBg=${prebuildBadge}&pg=${
 									pageSize === 'a4landscape' ? 'ls' : 'pt'
 								}`;
 							} else if (isBadgePath) {
-								window.location.href = `https://testapp.thesolo.network/credential-template?type=badge&cid=${credId}&bid=${badgeId}&ctid=${certId}&design=true&design=true&pbCt=${prebuildCertificate}&pbBg=${prebuildBadge}`;
+								window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credential-template?type=badge&cid=${credId}&bid=${badgeId}&ctid=${certId}&design=true&design=true&pbCt=${prebuildCertificate}&pbBg=${prebuildBadge}`;
 							}
 						}
 					}
@@ -1102,16 +1102,16 @@ class ImageMapEditor extends Component {
 
 	handleBackButton = () => {
 		if (this.state.isAdminPath) {
-			window.location.href = `https://testapp.thesolo.network/credentials-templates`;
+			window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credentials-templates`;
 		} else {
 			if (this.state.isCertificatePath) {
-				window.location.href = `https://testapp.thesolo.network/credential-template?type=certificate&cid=${
+				window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credential-template?type=certificate&cid=${
 					this.state.credId
 				}&bid=${this.state.badgeId}&ctid=${this.state.certId}&design=true&pbCt=${
 					this.state.prebuildCertificate
 				}&pbBg=${this.state.prebuildBadge}&pg=${this.state.selectedPageSize === 'a4landscape' ? 'ls' : 'pt'}`;
 			} else if (this.state.isBadgePath) {
-				window.location.href = `https://testapp.thesolo.network/credential-template?type=badge&cid=${this.state.credId}&bid=${this.state.badgeId}&ctid=${this.state.certId}&design=true&pbCt=${this.state.prebuildCertificate}&pbBg=${this.state.prebuildBadge}`;
+				window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credential-template?type=badge&cid=${this.state.credId}&bid=${this.state.badgeId}&ctid=${this.state.certId}&design=true&pbCt=${this.state.prebuildCertificate}&pbBg=${this.state.prebuildBadge}`;
 			}
 		}
 	};
