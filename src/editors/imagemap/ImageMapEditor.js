@@ -473,9 +473,7 @@ class ImageMapEditor extends Component {
 					if (response.ok) {
 						let successMessage = '';
 						if (editType === 'autoSave') {
-							successMessage = `${
-								isCertificatePath ? 'Certificate' : 'Badge'
-							} template autosaved!`;
+							successMessage = `${isCertificatePath ? 'Certificate' : 'Badge'} template autosaved!`;
 						} else {
 							successMessage = `${
 								isEdit
@@ -1063,6 +1061,10 @@ class ImageMapEditor extends Component {
 
 		onSaveImageAndJson: () => {
 			this.editTemplate('click');
+			const successMessage = this.state.isEdit
+				? 'Template edited successfully!'
+				: 'Template created successfully!';
+			message.success(successMessage);
 		},
 	};
 
@@ -1181,7 +1183,7 @@ class ImageMapEditor extends Component {
 				{!this.state.successMessage && (
 					<span className={`text-width ${!editing ? 'text-opa' : ''}`}>You have unsaved changes</span>
 				)}
-				{this.state.successMessage && <div className='org-txt'>{this.state.successMessage}</div>}
+				{this.state.successMessage && <div className="org-txt">{this.state.successMessage}</div>}
 
 				{/* <span className='text-width'>No unsaved changes</span> */}
 				<CommonButton name="Save & Close" onClick={onSaveImageAndJson} disabled={isSaving || !editing} />
