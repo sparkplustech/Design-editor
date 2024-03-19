@@ -108,6 +108,7 @@ class ImageMapEditor extends Component {
 		createTemplateCalled: false,
 		prebuildCertificate: '',
 		prebuildBadge: '',
+		successMessage: '',
 	};
 
 	componentDidMount() {
@@ -243,12 +244,26 @@ class ImageMapEditor extends Component {
 			this.createTemplate(this.state.userData);
 			this.setState({
 				createTemplateCalled: true,
+				successMessage: '',
+				successMessageVisible: true,
 			});
+
+			if (this.clearSuccessMessageTimer) {
+				clearTimeout(this.clearSuccessMessageTimer);
+			}
+
+			this.clearSuccessMessageTimer = setTimeout(() => {
+				this.setState({
+					successMessage: '',
+					successMessageVisible: false,
+				});
+			}, 10000);
 		}
 	}
 
 	componentWillUnmount() {
 		clearInterval(this.autoSave);
+		clearTimeout(this.clearSuccessMessageTimer);
 	}
 
 	createTemplate = data => {
@@ -259,13 +274,13 @@ class ImageMapEditor extends Component {
 		const isCertificatePath = currentPath.includes('certificate-designer');
 		const isBadgePath = currentPath.includes('badge-designer');
 		const accessToken = data.accessToken;
-        if(isCertificatePath){
+		if (isCertificatePath) {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '#FFFFFF', '');
 			this.canvasHandlers.onChangeWokarea('src', '', '');
-		}else{
+		} else {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
 			this.canvasHandlers.onChangeWokarea('src', '', '');
-		}		
+		}
 
 		const dataURL = this.canvasRef.canvas.toDataURL('image/png');
 
@@ -332,14 +347,25 @@ class ImageMapEditor extends Component {
 			})
 				.then(response => {
 					if (response.ok) {
-						message.success(
-							`${
-								isCertificatePath ? 'Certificate template' : 'Badge template'
-							} ${'created successfully'}`,
-						);
+						const successMessage = `${
+							isCertificatePath ? 'Certificate template' : 'Badge template'
+						} created successfully!`;
+						this.setState({
+							successMessage: successMessage,
+							successMessageVisible: true,
+						});
+
+						this.clearSuccessMessageTimer = setTimeout(() => {
+							this.setState({
+								successMessage: '',
+								successMessageVisible: false,
+							});
+						}, 10000);
+
 						return response.json();
 					} else {
-						message.error(`Failed to ${'create'} ${isCertificatePath ? 'certificate' : 'badge'}`);
+						const errorMessage = `Failed to create ${isCertificatePath ? 'certificate' : 'badge'}`;
+						message.error(errorMessage);
 						throw new Error('API Error');
 					}
 				})
@@ -445,21 +471,35 @@ class ImageMapEditor extends Component {
 			})
 				.then(response => {
 					if (response.ok) {
+						let successMessage = '';
 						if (editType === 'autoSave') {
-							message.success(
-								`${isCertificatePath ? 'Certificate' : 'Badge'} template autosaved successfully`,
-							);
+							successMessage = `${
+								isCertificatePath ? 'Certificate' : 'Badge'
+							} template autosaved successfully!`;
 						} else {
-							message.success(
-								`${
-									isEdit
-										? 'Template updated'
-										: isCertificatePath
-										? 'Certificate template'
-										: 'Badge template'
-								} ${isEdit ? 'successfully' : 'created successfully'}`,
-							);
+							successMessage = `${
+								isEdit
+									? 'Template updated'
+									: isCertificatePath
+									? 'Certificate template'
+									: 'Badge template'
+							} ${isEdit ? 'successfully!' : 'created successfully!'}`;
 						}
+						this.setState({
+							successMessage,
+							successMessageVisible: true,
+						});
+
+						if (this.clearSuccessMessageTimer) {
+							clearTimeout(this.clearSuccessMessageTimer);
+						}
+						this.clearSuccessMessageTimer = setTimeout(() => {
+							this.setState({
+								successMessage: '',
+								successMessageVisible: false,
+							});
+						}, 10000);
+
 						return response.json();
 					} else {
 						if (editType === 'autoSave') {
@@ -471,10 +511,10 @@ class ImageMapEditor extends Component {
 								}`,
 							);
 						}
-
 						throw new Error('API Error');
 					}
 				})
+
 				.then(data => {
 					if (editType === 'click') {
 						if (isAdminPath) {
@@ -1065,7 +1105,11 @@ class ImageMapEditor extends Component {
 			window.location.href = `https://testapp.thesolo.network/credentials-templates`;
 		} else {
 			if (this.state.isCertificatePath) {
-				window.location.href = `https://testapp.thesolo.network/credential-template?type=certificate&cid=${this.state.credId}&bid=${this.state.badgeId}&ctid=${this.state.certId}&design=true&pbCt=${this.state.prebuildCertificate}&pbBg=${this.state.prebuildBadge}&pg=${this.state.selectedPageSize === 'a4landscape' ? 'ls' : 'pt'}`;
+				window.location.href = `https://testapp.thesolo.network/credential-template?type=certificate&cid=${
+					this.state.credId
+				}&bid=${this.state.badgeId}&ctid=${this.state.certId}&design=true&pbCt=${
+					this.state.prebuildCertificate
+				}&pbBg=${this.state.prebuildBadge}&pg=${this.state.selectedPageSize === 'a4landscape' ? 'ls' : 'pt'}`;
 			} else if (this.state.isBadgePath) {
 				window.location.href = `https://testapp.thesolo.network/credential-template?type=badge&cid=${this.state.credId}&bid=${this.state.badgeId}&ctid=${this.state.certId}&design=true&pbCt=${this.state.prebuildCertificate}&pbBg=${this.state.prebuildBadge}`;
 			}
@@ -1133,9 +1177,15 @@ class ImageMapEditor extends Component {
 					onChange={this.onChangeInput}
 					value={inputData}
 				/>
-				<span className={`text-width ${!editing ? 'text-opa' : ''}`}>You have unsaved changes</span>
+
+				{!this.state.successMessage && (
+					<span className={`text-width ${!editing ? 'text-opa' : ''}`}>You have unsaved changes</span>
+				)}
+				{this.state.successMessage && <div>{this.state.successMessage}</div>}
+
 				{/* <span className='text-width'>No unsaved changes</span> */}
 				<CommonButton name="Save & Close" onClick={onSaveImageAndJson} disabled={isSaving || !editing} />
+
 				<CommonButton
 					className="rde-action-btn"
 					shape="circle"
