@@ -4881,7 +4881,7 @@ readers do not read off random characters that represent icons */
 	margin-right: 10px;
 }
 /*Right side panel styles start*/
-.ant-slider{
+.ant-slider {
 	margin: 5px !important;
 }
 .ant-slider-handle {
@@ -4953,4 +4953,7 @@ readers do not read off random characters that represent icons */
 }
 .ant-form-item .ant-switch {
 	margin: -20px 0px 0px !important;
+}
+.org-txt {
+	color: #ff6c36;
 }
