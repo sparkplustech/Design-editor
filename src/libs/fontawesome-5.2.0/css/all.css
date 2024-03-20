@@ -4956,6 +4956,7 @@ readers do not read off random characters that represent icons */
 }
 .org-txt {
 	color: #ff6c36;
+	margin-right: 10px;
 }
 .err-txt{
 	color: red;
