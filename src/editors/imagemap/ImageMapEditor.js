@@ -544,7 +544,7 @@ class ImageMapEditor extends Component {
 				.catch(error => {
 					console.error('API Error:', error);
 					throw error;
-				})
+				});
 		});
 	};
 
@@ -1191,7 +1191,7 @@ class ImageMapEditor extends Component {
 					value={inputData}
 				/>
 
-				{!this.state.successMessage && (
+				{!this.state.successMessage && this.state.errorMessage ? null : (
 					<span className={`text-width ${!editing ? 'text-opa' : ''}`}>You have unsaved changes</span>
 				)}
 				{this.state.successMessage && <div className="org-txt">{this.state.successMessage}</div>}
