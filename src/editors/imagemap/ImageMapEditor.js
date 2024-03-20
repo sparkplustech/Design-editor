@@ -109,6 +109,7 @@ class ImageMapEditor extends Component {
 		prebuildCertificate: '',
 		prebuildBadge: '',
 		successMessage: '',
+		errorMessage: '',
 	};
 
 	componentDidMount() {
@@ -365,7 +366,10 @@ class ImageMapEditor extends Component {
 						return response.json();
 					} else {
 						const errorMessage = `Failed to create ${isCertificatePath ? 'certificate' : 'badge'}`;
-						message.error(errorMessage);
+						this.setState({
+							successMessage: '',
+							errorMessage: errorMessage,
+						});
 						throw new Error('API Error');
 					}
 				})
@@ -501,13 +505,19 @@ class ImageMapEditor extends Component {
 						return response.json();
 					} else {
 						if (editType === 'autoSave') {
-							message.error(`Failed to autosave ${isCertificatePath ? 'certificate' : 'badge'}`);
+							const errorMessage = `Failed to autosave ${isCertificatePath ? 'certificate' : 'badge'}`;
+							this.setState({
+								successMessage: '',
+								errorMessage: errorMessage,
+							});
 						} else {
-							message.error(
-								`Failed to ${isEdit ? 'update' : 'create'} ${
-									isCertificatePath ? 'certificate' : 'badge'
-								}`,
-							);
+							const errorMessage = `Failed to ${isEdit ? 'update' : 'create'} ${
+								isCertificatePath ? 'certificate' : 'badge'
+							}`;
+							this.setState({
+								successMessage: '',
+								errorMessage: errorMessage,
+							});
 						}
 						throw new Error('API Error');
 					}
@@ -519,7 +529,9 @@ class ImageMapEditor extends Component {
 							window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credentials-templates`;
 						} else {
 							if (isCertificatePath) {
-								window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credential-template?type=certificate&cid=${credId}&bid=${badgeId}&ctid=${certId}&design=true&pbCt=${prebuildCertificate}&pbBg=${prebuildBadge}&pg=${
+								window.location.href = `${
+									CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL
+								}/credential-template?type=certificate&cid=${credId}&bid=${badgeId}&ctid=${certId}&design=true&pbCt=${prebuildCertificate}&pbBg=${prebuildBadge}&pg=${
 									pageSize === 'a4landscape' ? 'ls' : 'pt'
 								}`;
 							} else if (isBadgePath) {
@@ -1107,11 +1119,13 @@ class ImageMapEditor extends Component {
 			window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credentials-templates`;
 		} else {
 			if (this.state.isCertificatePath) {
-				window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credential-template?type=certificate&cid=${
-					this.state.credId
-				}&bid=${this.state.badgeId}&ctid=${this.state.certId}&design=true&pbCt=${
-					this.state.prebuildCertificate
-				}&pbBg=${this.state.prebuildBadge}&pg=${this.state.selectedPageSize === 'a4landscape' ? 'ls' : 'pt'}`;
+				window.location.href = `${
+					CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL
+				}/credential-template?type=certificate&cid=${this.state.credId}&bid=${this.state.badgeId}&ctid=${
+					this.state.certId
+				}&design=true&pbCt=${this.state.prebuildCertificate}&pbBg=${this.state.prebuildBadge}&pg=${
+					this.state.selectedPageSize === 'a4landscape' ? 'ls' : 'pt'
+				}`;
 			} else if (this.state.isBadgePath) {
 				window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credential-template?type=badge&cid=${this.state.credId}&bid=${this.state.badgeId}&ctid=${this.state.certId}&design=true&pbCt=${this.state.prebuildCertificate}&pbBg=${this.state.prebuildBadge}`;
 			}
@@ -1184,6 +1198,7 @@ class ImageMapEditor extends Component {
 					<span className={`text-width ${!editing ? 'text-opa' : ''}`}>You have unsaved changes</span>
 				)}
 				{this.state.successMessage && <div className="org-txt">{this.state.successMessage}</div>}
+				{this.state.errorMessage && <div className="err-txt">{this.state.errorMessage}</div>}
 
 				{/* <span className='text-width'>No unsaved changes</span> */}
 				<CommonButton name="Save & Close" onClick={onSaveImageAndJson} disabled={isSaving || !editing} />
