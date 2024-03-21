@@ -157,8 +157,6 @@ class ImageMapEditor extends Component {
 		const credId = queryParams.get('cid');
 		const badgeId = queryParams.get('bid');
 		const certId = queryParams.get('ctid');
-		const prebuildCertificate = queryParams.get('pbCt');
-		const prebuildBadge = queryParams.get('pbBg');
 
 		this.setState({
 			editId: id,
@@ -167,8 +165,6 @@ class ImageMapEditor extends Component {
 			designCode: designCode,
 			badgeId: badgeId,
 			certId: certId,
-			prebuildCertificate: prebuildCertificate,
-			prebuildBadge: prebuildBadge,
 		});
 
 		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
@@ -399,8 +395,6 @@ class ImageMapEditor extends Component {
 		const credId = this.state.credId;
 		const badgeId = this.state.badgeId;
 		const certId = this.state.certId;
-		const prebuildCertificate = this.state.prebuildCertificate;
-		const prebuildBadge = this.state.prebuildBadge;
 		const pageSize = this.state.selectedPageSize;
 
 		if (isBadgePath) {
@@ -517,6 +511,7 @@ class ImageMapEditor extends Component {
 							this.setState({
 								successMessage: '',
 								errorMessage: errorMessage,
+								isSaving: false,
 							});
 						}
 						throw new Error('API Error');
@@ -531,11 +526,11 @@ class ImageMapEditor extends Component {
 							if (isCertificatePath) {
 								window.location.href = `${
 									CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL
-								}/credential-template?type=certificate&cid=${credId}&bid=${badgeId}&ctid=${certId}&design=true&pbCt=${prebuildCertificate}&pbBg=${prebuildBadge}&pg=${
+								}/credential-template?type=certificate&cid=${credId}&bid=${badgeId}&ctid=${certId}&design=true&pg=${
 									pageSize === 'a4landscape' ? 'ls' : 'pt'
 								}`;
 							} else if (isBadgePath) {
-								window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credential-template?type=badge&cid=${credId}&bid=${badgeId}&ctid=${certId}&design=true&design=true&pbCt=${prebuildCertificate}&pbBg=${prebuildBadge}`;
+								window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credential-template?type=badge&cid=${credId}&bid=${badgeId}&ctid=${certId}&design=true&design=true`;
 							}
 						}
 					}
@@ -1120,11 +1115,11 @@ class ImageMapEditor extends Component {
 					CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL
 				}/credential-template?type=certificate&cid=${this.state.credId}&bid=${this.state.badgeId}&ctid=${
 					this.state.certId
-				}&design=true&pbCt=${this.state.prebuildCertificate}&pbBg=${this.state.prebuildBadge}&pg=${
+				}&design=true&pg=${
 					this.state.selectedPageSize === 'a4landscape' ? 'ls' : 'pt'
 				}`;
 			} else if (this.state.isBadgePath) {
-				window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credential-template?type=badge&cid=${this.state.credId}&bid=${this.state.badgeId}&ctid=${this.state.certId}&design=true&pbCt=${this.state.prebuildCertificate}&pbBg=${this.state.prebuildBadge}`;
+				window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credential-template?type=badge&cid=${this.state.credId}&bid=${this.state.badgeId}&ctid=${this.state.certId}&design=true`;
 			}
 		}
 	};
