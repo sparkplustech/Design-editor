@@ -4877,7 +4877,7 @@ readers do not read off random characters that represent icons */
 }
 /* Text width on top navbar */
 .text-width {
-	width: 175px;
+	/* width: 175px; */
 	margin-right: 10px;
 }
 /*Right side panel styles start*/
@@ -4960,4 +4960,5 @@ readers do not read off random characters that represent icons */
 }
 .err-txt{
 	color: red;
+	margin-right: 10px;
 }
