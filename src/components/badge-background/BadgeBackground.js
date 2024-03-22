@@ -76,7 +76,7 @@ const BadgeBackground = ({ canvasRef, mainLoader, onCanvasChange, badgeType }) =
 
 	return (
 		<div className="BadgeSection">
-			{templatesData && (
+			{templatesData && templatesData.length > 0 && (
 				<div  className="template-design">
 					<Row className="template-row">
 						<Col span={24}>
@@ -99,6 +99,13 @@ const BadgeBackground = ({ canvasRef, mainLoader, onCanvasChange, badgeType }) =
 						))}
 					</Row>
 				</div>
+			)}
+			{templatesData.length === 0 && (
+				<Row className="template-row">
+					<Col span={24}>
+						<h3>No {badgeType === "template"? "templates":"backgrounds"} available.</h3>
+					</Col>
+				</Row>
 			)}
 		</div>
 	);

@@ -10,18 +10,18 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 		a4LandscapeTemplates: [],
 	});
 	const [loading, setLoading] = useState(true);
-	const [userData, setUserData] = useState([])
+	const [userData, setUserData] = useState([]);
 
 	useEffect(() => {
 		const queryParams = new URLSearchParams(window.location.search);
-		const designCode = queryParams.get('designCode');	
+		const designCode = queryParams.get('designCode');
 
 		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
 			headers: {},
 		})
 			.then(response => response.json())
 			.then(data => {
-				setUserData(data)
+				setUserData(data);
 
 				fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getAllCertificateTemplates`, {
 					headers: {
@@ -31,22 +31,22 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 					.then(response => response.json())
 					.then(data => {
 						// console.log("check certificate data", data);
-						const portraitTemplates = data?.templates?.filter(template => template.pageSize === 'a4portrait') || [];
+						const portraitTemplates =
+							data?.templates?.filter(template => template.pageSize === 'a4portrait') || [];
 						const landscapeTemplates =
 							data?.templates?.filter(template => template.pageSize === 'a4landscape') || [];
-		
+
 						setTemplatesData({
 							...templatesData,
 							a4PortraitTemplates: portraitTemplates,
 							a4LandscapeTemplates: landscapeTemplates,
 						});
-		
+
 						setLoading(false);
 					})
 					.catch(error => console.error('Error fetching templates:', error));
 			})
 			.catch(error => console.error('Error fetching usertoken:', error));
-
 	}, []);
 
 	const handleSeeAllClick = templateType => {
@@ -70,18 +70,17 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 		})
 			.then(response => response.json())
 			.then(data => {
-				
 				try {
 					const objects = data?.templateCode?.objects;
 					const pageSize = tempdata?.pageSize;
 					onPageSizeChange(pageSize);
 					canvasRef.handler.clear();
-					
-						if(pageSize === 'a4landscape'){
-							objects.unshift(CONSTANTS.JSON_CONSTANT.LANDSCAPE_CERTIFICATE);
-						}else{
-							objects.unshift(CONSTANTS.JSON_CONSTANT.PORTRAIT_CERTIFICATE);
-						}
+
+					if (pageSize === 'a4landscape') {
+						objects.unshift(CONSTANTS.JSON_CONSTANT.LANDSCAPE_CERTIFICATE);
+					} else {
+						objects.unshift(CONSTANTS.JSON_CONSTANT.PORTRAIT_CERTIFICATE);
+					}
 
 					if (objects && Array.isArray(objects)) {
 						canvasRef.handler.importJSON(objects);
@@ -104,7 +103,7 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 
 	return (
 		<div className="TemplatesSection">
-			{!selectedTemplate && templatesData.a4LandscapeTemplates && (
+			{!selectedTemplate && templatesData.a4LandscapeTemplates && templatesData.a4LandscapeTemplates.length > 0 && (
 				<div className="template-design">
 					<Row className="template-row">
 						<Col span={18}>
@@ -132,7 +131,7 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 				</div>
 			)}
 
-			{!selectedTemplate && templatesData.a4PortraitTemplates && (
+			{!selectedTemplate && templatesData.a4PortraitTemplates && templatesData.a4PortraitTemplates.length > 0 && (
 				<div className="template-design">
 					<Row className="template-row">
 						<Col span={18}>
@@ -158,6 +157,14 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 						))}
 					</Row>
 				</div>
+			)}
+
+			{templatesData.a4PortraitTemplates.length === 0 && templatesData.a4LandscapeTemplates.length === 0 && (
+				<Row className="template-row">
+					<Col span={24}>
+						<h3>No templates available.</h3>
+					</Col>
+				</Row>
 			)}
 
 			{selectedTemplate && (

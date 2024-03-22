@@ -15,6 +15,11 @@ if(designCode && designCode.startsWith('DCL')){
 		REACT_APP_API_BASE_URL: 'https://testapi.thesolo.network/api',
 		REACT_APP_BASE_URL: 'https://testapp.thesolo.network',
 	};
+}else if(designCode && designCode.startsWith('LDC')){
+	API_CONSTANT = {
+		REACT_APP_API_BASE_URL: 'https://leafapi.thesolo.network/api',
+		REACT_APP_BASE_URL: 'https://leaf.thesolo.network',
+	};
 }else{
 	API_CONSTANT = {
 		REACT_APP_API_BASE_URL: '',

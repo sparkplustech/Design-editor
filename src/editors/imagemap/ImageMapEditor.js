@@ -1146,6 +1146,7 @@ class ImageMapEditor extends Component {
 			isCertificatePath,
 			userData,
 			isSaving,
+			isEdit,
 		} = this.state;
 		const {
 			onAdd,
@@ -1201,7 +1202,7 @@ class ImageMapEditor extends Component {
 					className="rde-action-btn"
 					shape="circle"
 					icon="file-download"
-					disabled={!editing}
+					disabled={!editing && !isEdit}
 					tooltipTitle={i18n.t('action.download')}
 					onClick={onDownload}
 					tooltipPlacement="bottomRight"
