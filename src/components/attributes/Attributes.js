@@ -89,6 +89,12 @@ class Attributes extends Component {
 					</p>
 					<p
 						className="sub-attribute"
+						onClick={e => this.handlers.onAddItem(this.getItem('[CredentialName]'), true)}
+					>
+						Credential Name
+					</p>
+					<p
+						className="sub-attribute"
 						onClick={e => this.handlers.onAddItem(this.getItem('[CredentialILicenseId]'), true)}
 					>
 						Credential License ID
