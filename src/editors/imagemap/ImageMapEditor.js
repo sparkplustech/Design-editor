@@ -108,6 +108,7 @@ class ImageMapEditor extends Component {
 		createTemplateCalled: false,
 		successMessage: '',
 		errorMessage: '',
+		isDesignTemplate: false,
 	};
 
 	componentDidMount() {
@@ -155,6 +156,7 @@ class ImageMapEditor extends Component {
 		const credId = queryParams.get('cid');
 		const badgeId = queryParams.get('bid');
 		const certId = queryParams.get('ctid');
+		const isDesignTemplate = queryParams.get('dt') === 'true';
 
 		this.setState({
 			editId: id,
@@ -163,6 +165,7 @@ class ImageMapEditor extends Component {
 			designCode: designCode,
 			badgeId: badgeId,
 			certId: certId,
+			isDesignTemplate: isDesignTemplate,
 		});
 
 		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
@@ -521,6 +524,14 @@ class ImageMapEditor extends Component {
 					if (editType === 'click') {
 						if (isAdminPath) {
 							window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credentials-templates`;
+						} else if (isDesignTemplate) {
+							if (isCertificatePath) {
+								window.location.href = `${
+									CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL
+								}/template-designs?type=certificate&pg=${pageSize === 'a4landscape' ? 'ls' : 'pt'}`;
+							} else if (isBadgePath) {
+								window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/template-designs?type=badge`;
+							}
 						} else {
 							if (isCertificatePath) {
 								window.location.href = `${
@@ -529,7 +540,7 @@ class ImageMapEditor extends Component {
 									pageSize === 'a4landscape' ? 'ls' : 'pt'
 								}`;
 							} else if (isBadgePath) {
-								window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credential-template?type=badge&cid=${credId}&bid=${badgeId}&ctid=${certId}&design=true&design=true`;
+								window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credential-template?type=badge&cid=${credId}&bid=${badgeId}&ctid=${certId}&design=true`;
 							}
 						}
 					}
@@ -1108,15 +1119,21 @@ class ImageMapEditor extends Component {
 	handleBackButton = () => {
 		if (this.state.isAdminPath) {
 			window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credentials-templates`;
+		} else if (this.state.isDesignTemplate) {
+			if (this.state.isCertificatePath) {
+				window.location.href = `${
+					CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL
+				}/template-designs?type=certificate&pg=${this.state.pageSize === 'a4landscape' ? 'ls' : 'pt'}`;
+			} else if (this.state.isBadgePath) {
+				window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/template-designs?type=badge`;
+			}
 		} else {
 			if (this.state.isCertificatePath) {
 				window.location.href = `${
 					CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL
 				}/credential-template?type=certificate&cid=${this.state.credId}&bid=${this.state.badgeId}&ctid=${
 					this.state.certId
-				}&design=true&pg=${
-					this.state.selectedPageSize === 'a4landscape' ? 'ls' : 'pt'
-				}`;
+				}&design=true&pg=${this.state.selectedPageSize === 'a4landscape' ? 'ls' : 'pt'}`;
 			} else if (this.state.isBadgePath) {
 				window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credential-template?type=badge&cid=${this.state.credId}&bid=${this.state.badgeId}&ctid=${this.state.certId}&design=true`;
 			}
