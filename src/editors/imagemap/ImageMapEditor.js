@@ -126,11 +126,11 @@ class ImageMapEditor extends Component {
 		this.setState({
 			selectedItem: null,
 		});
-
+	
 		const queryParams = new URLSearchParams(window.location.search);
 		const designCode = queryParams.get('designCode');
 		//for badge
-
+	
 		const currentPath = window.location.pathname;
 		const isAdminPath = currentPath.includes('admin');
 		const isCertificatePath = currentPath.includes('certificate-designer');
@@ -140,7 +140,7 @@ class ImageMapEditor extends Component {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
 			this.canvasHandlers.onChangeWokarea('src', './images/sample/transparentBg.png', '');
 		}
-
+	
 		this.setState({
 			currentPath: currentPath,
 			isAdminPath: isAdminPath,
@@ -148,16 +148,16 @@ class ImageMapEditor extends Component {
 			isBadgePath: isBadgePath,
 			designCode: designCode,
 		});
-
+	
 		//edit
-
+	
 		const isEdit = queryParams.get('edit') === 'true';
 		const id = queryParams.get('id');
 		const credId = queryParams.get('cid');
 		const badgeId = queryParams.get('bid');
 		const certId = queryParams.get('ctid');
 		const isDesignTemplate = queryParams.get('dt') === 'true';
-
+	
 		this.setState({
 			editId: id,
 			isEdit: isEdit,
@@ -167,97 +167,110 @@ class ImageMapEditor extends Component {
 			certId: certId,
 			isDesignTemplate: isDesignTemplate,
 		});
-
+	
+		const handleFetch = (accessToken, isBadgePath, id) => {
+			this.setState({ loading: true, createTemplateCalled: true });
+			const templateEndpoint = isAdminPath
+				? isBadgePath
+					? `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getBadgeTemplate/${id}`
+					: `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getCertificateTemplate/${id}`
+				: isBadgePath
+				? `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getUserBadgeTemplate/${id}`
+				: `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getUserCertificateTemplate/${id}`;
+	
+			fetch(templateEndpoint, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`,
+				},
+			})
+				.then(response => response.json())
+				.then(data => {
+					if (data.statusCode === 400) {
+						queryParams.delete('id');
+						queryParams.delete('edit');
+						const newUrl = `${window.location.pathname}?designCode=${designCode}`;
+						window.history.replaceState({}, '', newUrl);
+						this.setState({ loading: false, inputData: '', isInputEmpty: false, editId: '' });
+					} else {
+						if (data?.templateCode !== '') {
+							const objects = data?.templateCode?.objects;
+							const pageSize = data?.pageSize;
+							this.canvasRef.handler.clear();
+							if (this.state.isBadgePath) {
+								objects.unshift(CONSTANTS.JSON_CONSTANT.BADGE);
+							} else if (this.state.isCertificatePath) {
+								if (pageSize === 'a4landscape') {
+									objects.unshift(CONSTANTS.JSON_CONSTANT.LANDSCAPE_CERTIFICATE);
+								} else {
+									objects.unshift(CONSTANTS.JSON_CONSTANT.PORTRAIT_CERTIFICATE);
+								}
+							}
+							if (objects && Array.isArray(objects)) {
+								this.canvasRef.handler.importJSON(objects);
+							} else {
+								console.error('Invalid objects data format:', objects);
+							}
+						}
+						this.setState({
+							loading: false,
+							inputData: data?.name,
+							isInputEmpty: false,
+							selectedPageSize: data?.pageSize,
+						});
+					}
+				})
+				.catch(error => console.error('Error fetching templates:', error));
+		};
+	
 		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
 			headers: {},
 		})
 			.then(response => response.json())
 			.then(data => {
 				this.setState({ userData: data });
-				if (isEdit && id) {
-					this.setState({ loading: true, createTemplateCalled: true });
-					const templateEndpoint = isAdminPath
-						? isBadgePath
-							? `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getBadgeTemplate/${id}`
-							: `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getCertificateTemplate/${id}`
-						: isBadgePath
-						? `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getUserBadgeTemplate/${id}`
-						: `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getUserCertificateTemplate/${id}`;
-
-					fetch(templateEndpoint, {
-						headers: {
-							Authorization: `Bearer ${data.accessToken}`,
-						},
-					})
-						.then(response => response.json())
-						.then(data => {
-							if (data.statusCode === 400) {
-								queryParams.delete('id');
-								queryParams.delete('edit');
-								const newUrl = `${window.location.pathname}?designCode=${designCode}`;
-								window.history.replaceState({}, '', newUrl);
-								this.setState({ loading: false, inputData: '', isInputEmpty: false, editId: '' });
-							} else {
-								if (data?.templateCode !== '') {
-									const objects = data?.templateCode?.objects;
-									const pageSize = data?.pageSize;
-									this.canvasRef.handler.clear();
-									if (this.state.isBadgePath) {
-										objects.unshift(CONSTANTS.JSON_CONSTANT.BADGE);
-									} else if (this.state.isCertificatePath) {
-										if (pageSize === 'a4landscape') {
-											objects.unshift(CONSTANTS.JSON_CONSTANT.LANDSCAPE_CERTIFICATE);
-										} else {
-											objects.unshift(CONSTANTS.JSON_CONSTANT.PORTRAIT_CERTIFICATE);
-										}
-									}
-									if (objects && Array.isArray(objects)) {
-										this.canvasRef.handler.importJSON(objects);
-									} else {
-										console.error('Invalid objects data format:', objects);
-									}
-								}
-								this.setState({
-									loading: false,
-									inputData: data?.name,
-									isInputEmpty: false,
-									selectedPageSize: data?.pageSize,
-								});
-							}
-						})
-						.catch(error => console.error('Error fetching templates:', error));
+				console.log("check data", data);
+				if (data.designId !== null) {
+					this.setState({ loading: true, createTemplateCalled: true, isEdit: true, editId: data.designId });
+					const isBadgePath = data.type === "badge";
+					handleFetch(data.accessToken, isBadgePath, data.designId);
+				} else if (isEdit && id) {
+					handleFetch(data.accessToken, isBadgePath, id);
+				} else {
+					this.setState({ loading: true })
+					this.createTemplate(data);
 				}
 			})
 			.catch(error => console.error('Error fetching usertoken:', error));
-
+	
 		this.autoSave = setInterval(() => {
-			if (this.state.editing && this.state.createTemplateCalled) {
+			if (this.state.createTemplateCalled) {
 				this.editTemplate('autoSave');
 			}
 		}, 30000);
 	}
+	
 
-	componentDidUpdate(prevState) {
-		if (!prevState.editing && this.state.editing && !this.state.createTemplateCalled && !this.state.isEdit) {
-			this.createTemplate(this.state.userData);
-			this.setState({
-				createTemplateCalled: true,
-				successMessage: '',
-				successMessageVisible: true,
-			});
+	// componentDidUpdate(prevState) {
+	// 	if (!prevState.editing && this.state.editing && !this.state.createTemplateCalled && !this.state.isEdit) {
+	// 		this.createTemplate(this.state.userData);
+	// 		this.setState({
+	// 			createTemplateCalled: true,
+	// 			successMessage: '',
+	// 			successMessageVisible: true,
+	// 		});
 
-			if (this.clearSuccessMessageTimer) {
-				clearTimeout(this.clearSuccessMessageTimer);
-			}
+	// 		if (this.clearSuccessMessageTimer) {
+	// 			clearTimeout(this.clearSuccessMessageTimer);
+	// 		}
 
-			this.clearSuccessMessageTimer = setTimeout(() => {
-				this.setState({
-					successMessage: '',
-					successMessageVisible: false,
-				});
-			}, 10000);
-		}
-	}
+	// 		this.clearSuccessMessageTimer = setTimeout(() => {
+	// 			this.setState({
+	// 				successMessage: '',
+	// 				successMessageVisible: false,
+	// 			});
+	// 		}, 10000);
+	// 	}
+	// }
 
 	componentWillUnmount() {
 		clearInterval(this.autoSave);
@@ -324,6 +337,8 @@ class ImageMapEditor extends Component {
 				formData.append('jsonCode', templateCode);
 			}
 
+			this.setState({ loading: true });
+
 			let endpoint;
 
 			if (isAdminPath) {
@@ -351,6 +366,7 @@ class ImageMapEditor extends Component {
 						this.setState({
 							successMessage: successMessage,
 							successMessageVisible: true,
+							createTemplateCalled: true,
 						});
 
 						this.clearSuccessMessageTimer = setTimeout(() => {
@@ -381,7 +397,10 @@ class ImageMapEditor extends Component {
 				.catch(error => {
 					console.error('API Error:', error);
 					throw error;
-				});
+				})
+				.finally(() => {
+					this.setState({ loading: false });
+				  });
 		});
 	};
 
@@ -397,6 +416,7 @@ class ImageMapEditor extends Component {
 		const badgeId = this.state.badgeId;
 		const certId = this.state.certId;
 		const pageSize = this.state.selectedPageSize;
+		const isDesignTemplate = this.state.isDesignTemplate;
 
 		if (isBadgePath) {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
@@ -1213,7 +1233,7 @@ class ImageMapEditor extends Component {
 				)}
 
 				{/* <span className='text-width'>No unsaved changes</span> */}
-				<CommonButton name="Save & Close" onClick={onSaveImageAndJson} disabled={isSaving || !editing} />
+				<CommonButton name="Save & Close" onClick={onSaveImageAndJson} disabled={isSaving} />
 
 				<CommonButton
 					className="rde-action-btn"
