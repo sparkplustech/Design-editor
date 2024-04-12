@@ -407,7 +407,7 @@ class ImageMapItems extends Component {
 						justifyContent="top"
 						flexDirection="column"
 						alignItems="center"
-						style={{ height: '100%', padding: '5px 0px', background: '#e7e8ea' }}
+						style={{ height: '100%', padding: '5px 0px', background: '#F2F4F8' }}
 					>
 						<CommonButton
 							icon={collapse ? 'angle-double-right' : 'angle-double-left'}
@@ -483,7 +483,7 @@ class ImageMapItems extends Component {
 						</Flex>
 					</Flex>
 
-					<Flex flex="1" flexDirection="column" style={{ overflowY: 'hidden', width: '400px' }}>
+					<Flex flex="1" flexDirection="column" style={{ overflowY: 'hidden', width: '400px', backgroundColor: '#FFFFFF' }}>
 						{/* {collapse ? null : (
 							<Input
 								style={{ margin: '8px' }}

@@ -126,11 +126,11 @@ class ImageMapEditor extends Component {
 		this.setState({
 			selectedItem: null,
 		});
-	
+
 		const queryParams = new URLSearchParams(window.location.search);
 		const designCode = queryParams.get('designCode');
 		//for badge
-	
+
 		const currentPath = window.location.pathname;
 		const isAdminPath = currentPath.includes('admin');
 		const isCertificatePath = currentPath.includes('certificate-designer');
@@ -140,7 +140,7 @@ class ImageMapEditor extends Component {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
 			this.canvasHandlers.onChangeWokarea('src', './images/sample/transparentBg.png', '');
 		}
-	
+
 		this.setState({
 			currentPath: currentPath,
 			isAdminPath: isAdminPath,
@@ -148,16 +148,16 @@ class ImageMapEditor extends Component {
 			isBadgePath: isBadgePath,
 			designCode: designCode,
 		});
-	
+
 		//edit
-	
+
 		const isEdit = queryParams.get('edit') === 'true';
 		const id = queryParams.get('id');
 		const credId = queryParams.get('cid');
 		const badgeId = queryParams.get('bid');
 		const certId = queryParams.get('ctid');
 		const isDesignTemplate = queryParams.get('dt') === 'true';
-	
+
 		this.setState({
 			editId: id,
 			isEdit: isEdit,
@@ -167,7 +167,7 @@ class ImageMapEditor extends Component {
 			certId: certId,
 			isDesignTemplate: isDesignTemplate,
 		});
-	
+
 		const handleFetch = (accessToken, isBadgePath, id) => {
 			this.setState({ loading: true, createTemplateCalled: true });
 			const templateEndpoint = isAdminPath
@@ -177,7 +177,7 @@ class ImageMapEditor extends Component {
 				: isBadgePath
 				? `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getUserBadgeTemplate/${id}`
 				: `${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getUserCertificateTemplate/${id}`;
-	
+
 			fetch(templateEndpoint, {
 				headers: {
 					Authorization: `Bearer ${accessToken}`,
@@ -221,34 +221,33 @@ class ImageMapEditor extends Component {
 				})
 				.catch(error => console.error('Error fetching templates:', error));
 		};
-	
+
 		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
 			headers: {},
 		})
 			.then(response => response.json())
 			.then(data => {
 				this.setState({ userData: data });
-				console.log("check data", data);
+				// console.log("check data", data);
 				if (data.designId !== null) {
 					this.setState({ loading: true, createTemplateCalled: true, isEdit: true, editId: data.designId });
-					const isBadgePath = data.type === "badge";
+					const isBadgePath = data.type === 'badge';
 					handleFetch(data.accessToken, isBadgePath, data.designId);
 				} else if (isEdit && id) {
 					handleFetch(data.accessToken, isBadgePath, id);
 				} else {
-					this.setState({ loading: true })
+					this.setState({ loading: true });
 					this.createTemplate(data);
 				}
 			})
 			.catch(error => console.error('Error fetching usertoken:', error));
-	
+
 		this.autoSave = setInterval(() => {
 			if (this.state.createTemplateCalled) {
 				this.editTemplate('autoSave');
 			}
 		}, 30000);
 	}
-	
 
 	// componentDidUpdate(prevState) {
 	// 	if (!prevState.editing && this.state.editing && !this.state.createTemplateCalled && !this.state.isEdit) {
@@ -400,7 +399,7 @@ class ImageMapEditor extends Component {
 				})
 				.finally(() => {
 					this.setState({ loading: false });
-				  });
+				});
 		});
 	};
 
@@ -1211,7 +1210,7 @@ class ImageMapEditor extends Component {
 		const canvasStyle = isBadgePath
 			? { width: '600px', height: '600px' }
 			: selectedPageSize === 'a4landscape'
-			? { width: '800px', height: '618px', backgroundColor: '#FFFFFF' }
+			? { width: '800px', height: '618px', backgroundColor: '#FFFFFF', boxShadow: '2px 2px 16px 0px rgb(242,244,248)' }
 			: { width: '618px', height: '800px', backgroundColor: '#FFFFFF' };
 
 		const action = (
@@ -1233,51 +1232,54 @@ class ImageMapEditor extends Component {
 				)}
 
 				{/* <span className='text-width'>No unsaved changes</span> */}
-				<CommonButton name="Save & Close" onClick={onSaveImageAndJson} disabled={isSaving} />
-
-				<CommonButton
-					className="rde-action-btn"
-					shape="circle"
-					icon="file-download"
-					disabled={!editing && !isEdit}
-					tooltipTitle={i18n.t('action.download')}
-					onClick={onDownload}
-					tooltipPlacement="bottomRight"
-				/>
-				{editing ? (
-					<Popconfirm
-						title={i18n.t('imagemap.imagemap-editing-confirm')}
-						okText={i18n.t('action.ok')}
-						cancelText={i18n.t('action.cancel')}
-						onConfirm={onUpload}
-						placement="bottomRight"
-					>
+				<CommonButton name="Save & Close" className="saveBtn" onClick={onSaveImageAndJson} disabled={isSaving} />
+				{isAdminPath && (
+					<div>
 						<CommonButton
 							className="rde-action-btn"
 							shape="circle"
-							icon="file-upload"
-							tooltipTitle={i18n.t('action.upload')}
+							icon="file-download"
+							disabled={!editing && !isEdit}
+							tooltipTitle={i18n.t('action.download')}
+							onClick={onDownload}
 							tooltipPlacement="bottomRight"
 						/>
-					</Popconfirm>
-				) : (
-					<CommonButton
-						className="rde-action-btn"
-						shape="circle"
-						icon="file-upload"
-						tooltipTitle={i18n.t('action.upload')}
-						tooltipPlacement="bottomRight"
-						onClick={onUpload}
-					/>
+						{editing ? (
+							<Popconfirm
+								title={i18n.t('imagemap.imagemap-editing-confirm')}
+								okText={i18n.t('action.ok')}
+								cancelText={i18n.t('action.cancel')}
+								onConfirm={onUpload}
+								placement="bottomRight"
+							>
+								<CommonButton
+									className="rde-action-btn"
+									shape="circle"
+									icon="file-upload"
+									tooltipTitle={i18n.t('action.upload')}
+									tooltipPlacement="bottomRight"
+								/>
+							</Popconfirm>
+						) : (
+							<CommonButton
+								className="rde-action-btn"
+								shape="circle"
+								icon="file-upload"
+								tooltipTitle={i18n.t('action.upload')}
+								tooltipPlacement="bottomRight"
+								onClick={onUpload}
+							/>
+						)}
+						<CommonButton
+							className="rde-action-btn"
+							shape="circle"
+							icon="image"
+							tooltipTitle={i18n.t('action.image-save')}
+							onClick={onSaveImage}
+							tooltipPlacement="bottomRight"
+						/>
+					</div>
 				)}
-				<CommonButton
-					className="rde-action-btn"
-					shape="circle"
-					icon="image"
-					tooltipTitle={i18n.t('action.image-save')}
-					onClick={onSaveImage}
-					tooltipPlacement="bottomRight"
-				/>
 			</React.Fragment>
 		);
 		const titleContent = (
