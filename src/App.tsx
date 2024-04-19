@@ -3,7 +3,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Helmet } from 'react-helmet';
 import Title from './components/layout/Title';
 import FlowContainer from './containers/FlowContainer';
-import { FiberEditor, FlowEditor, HexGridEditor, ImageMapEditor, WorkflowEditor } from './editors';
+import { FiberEditor, HexGridEditor, WorkflowEditor } from './editors';
+
+import loadable from '@loadable/component';
+const ImageMapEditor = loadable(() => import('./editors/imagemap'));
+const FlowEditor = loadable(() => import('./editors/flow'));
 
 type EditorType = 'imagemap' | 'workflow' | 'flow' | 'hexgrid' | 'fiber';
 
@@ -45,10 +49,7 @@ class App extends Component<any, IState> {
 					<Helmet>
 						<meta charSet="utf-8" />
 						<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-						<meta
-							name="description"
-							content="React Design Editor has started to developed direct manipulation of editable design tools like Powerpoint, We've developed it with react.js, ant.design, fabric.js "
-						/>
+						<meta name="description" content=" " />
 						<link rel="manifest" href="./manifest.json" />
 						<link rel="shortcut icon" href="./favicon.ico" />
 						<link rel="stylesheet" href="https://fonts.googleapis.com/earlyaccess/notosanskr.css" />

@@ -4,12 +4,22 @@ const merge = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const baseConfig = require('./webpack.common.js');
 
 const plugins = [
 	new webpack.LoaderOptionsPlugin({
 		minimize: true,
+	}),
+	new BundleAnalyzerPlugin(),
+
+	new CompressionPlugin({
+		algorithm: 'gzip',
+		test: new RegExp('.(' + ['js', 'css', 'mjs'].join('|') + ')$'),
+		threshold: 1024,
+		minRatio: 0.8,
 	}),
 	new HtmlWebpackPlugin({
 		filename: 'index.html',
@@ -18,6 +28,7 @@ const plugins = [
 			description: `React Design Editor has started to developed direct manipulation of editable design tools like Powerpoint, We've developed it with react.js, ant.design, fabric.js`,
 		},
 	}),
+
 	new WorkboxPlugin.GenerateSW({
 		skipWaiting: true,
 		clientsClaim: true,
@@ -37,6 +48,21 @@ module.exports = merge(baseConfig, {
 		publicPath: './',
 	},
 	optimization: {
+		splitChunks: {
+			cacheGroups: {
+				vendor: {
+					name: 'node_vendors', // part of the bundle name and
+					// can be used in chunks array of HtmlWebpackPlugin
+					test: /[\\/]node_modules[\\/]/,
+					chunks: 'all',
+				},
+				common: {
+					test: /[\\/]src[\\/]components[\\/]/,
+					chunks: 'all',
+					minSize: 0,
+				},
+			},
+		},
 		minimizer: [
 			new TerserPlugin({
 				cache: true,
