@@ -1211,7 +1211,7 @@ class ImageMapEditor extends Component {
 			? { width: '600px', height: '600px' }
 			: selectedPageSize === 'a4landscape'
 			? { width: '800px', height: '618px', backgroundColor: '#FFFFFF', boxShadow: '2px 2px 16px 0px rgb(242,244,248)' }
-			: { width: '618px', height: '800px', backgroundColor: '#FFFFFF' };
+			: { width: '618px', height: '800px', backgroundColor: '#FFFFFF', boxShadow: '2px 2px 16px 0px rgb(242,244,248)' };
 
 		const action = (
 			<React.Fragment>
