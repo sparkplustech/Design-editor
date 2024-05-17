@@ -3,7 +3,12 @@ let JSON_CONSTANT;
 
 const urlParams = new URLSearchParams(window.location.search);
 const designCode = urlParams.get('designCode');
+const lf = urlParams.get('lf');
 
+let decryptedLf = '';
+if (lf) {
+  decryptedLf = atob(lf);
+}
 
 if(designCode && designCode.startsWith('DCL')){
 	API_CONSTANT = {
@@ -18,7 +23,7 @@ if(designCode && designCode.startsWith('DCL')){
 }else if(designCode && designCode.startsWith('LDC')){
 	API_CONSTANT = {
 		REACT_APP_API_BASE_URL: 'https://leafapi.thesolo.network/api',
-		REACT_APP_BASE_URL: 'https://leaf.thesolo.network',
+		REACT_APP_BASE_URL: `https://${decryptedLf}`,
 	};
 }else{
 	API_CONSTANT = {
