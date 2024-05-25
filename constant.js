@@ -6,7 +6,7 @@ let decryptedRU = '';
 if (ru) {
   decryptedRU = atob(ru);
 }
-console.log("decrypted", decryptedRU);
+// console.log("decrypted", decryptedRU);
 let apiBaseUrl = '';
 let reactAppBaseUrl = '';
 
@@ -18,7 +18,7 @@ if (designCode && designCode.startsWith('DCL')) {
   apiBaseUrl = 'https://leafapi.thesolo.network/api';
 }
 
-if (decryptedRU == 'localHost') {
+if (decryptedRU == 'localhost') {
   reactAppBaseUrl = 'http://localhost:4900';
 } else {
   reactAppBaseUrl = `https://${decryptedRU}`;

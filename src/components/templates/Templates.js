@@ -76,11 +76,6 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 					onPageSizeChange(pageSize);
 					canvasRef.handler.clear();
 
-					if (pageSize === 'a4landscape') {
-						objects.unshift(CONSTANTS.JSON_CONSTANT.LANDSCAPE_CERTIFICATE);
-					} else {
-						objects.unshift(CONSTANTS.JSON_CONSTANT.PORTRAIT_CERTIFICATE);
-					}
 
 					if (objects && Array.isArray(objects)) {
 						canvasRef.handler.importJSON(objects);

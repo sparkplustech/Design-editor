@@ -198,13 +198,7 @@ class ImageMapEditor extends Component {
 							this.canvasRef.handler.clear();
 							if (this.state.isBadgePath) {
 								objects.unshift(CONSTANTS.JSON_CONSTANT.BADGE);
-							} else if (this.state.isCertificatePath) {
-								if (pageSize === 'a4landscape') {
-									objects.unshift(CONSTANTS.JSON_CONSTANT.LANDSCAPE_CERTIFICATE);
-								} else {
-									objects.unshift(CONSTANTS.JSON_CONSTANT.PORTRAIT_CERTIFICATE);
-								}
-							}
+							} 
 							if (objects && Array.isArray(objects)) {
 								this.canvasRef.handler.importJSON(objects);
 							} else {
@@ -284,6 +278,7 @@ class ImageMapEditor extends Component {
 		const isCertificatePath = currentPath.includes('certificate-designer');
 		const isBadgePath = currentPath.includes('badge-designer');
 		const accessToken = data.accessToken;
+		const pageSize = this.state.selectedPageSize;
 		if (isCertificatePath) {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '#FFFFFF', '');
 			this.canvasHandlers.onChangeWokarea('src', '', '');
@@ -311,6 +306,15 @@ class ImageMapEditor extends Component {
 
 			// remove bg
 			objects.shift();
+
+			if (isCertificatePath) {
+				if (pageSize === 'a4landscape') {
+					objects.unshift(CONSTANTS.JSON_CONSTANT.LANDSCAPE_CERTIFICATE);
+				} else {
+					objects.unshift(CONSTANTS.JSON_CONSTANT.PORTRAIT_CERTIFICATE);
+				}
+			}
+			
 			const badgeAttribute = objects.some(obj => obj.name === 'badgeAttribute');
 			const { animations, styles, dataSources } = this.state;
 			const exportDatas = {
@@ -439,8 +443,17 @@ class ImageMapEditor extends Component {
 				return true;
 			});
 
-			// remove bg
+			// remove bg 	
 			objects.shift();
+
+			if (isCertificatePath) {
+				if (pageSize === 'a4landscape') {
+					objects.unshift(CONSTANTS.JSON_CONSTANT.LANDSCAPE_CERTIFICATE);
+				} else {
+					objects.unshift(CONSTANTS.JSON_CONSTANT.PORTRAIT_CERTIFICATE);
+				}
+			}
+			
 			const badgeAttribute = objects.some(obj => obj.name === 'badgeAttribute');
 			const { animations, styles, dataSources } = this.state;
 			const exportDatas = {
@@ -465,7 +478,7 @@ class ImageMapEditor extends Component {
 			} else {
 				formData.append('jsonCode', templateCode);
 			}
-
+            // console.log("template code", templateCode );
 			let endpoint;
 
 			if (isAdminPath) {
@@ -977,13 +990,7 @@ class ImageMapEditor extends Component {
 
 						if (this.state.isBadgePath) {
 							objects.unshift(CONSTANTS.JSON_CONSTANT.BADGE);
-						} else if (this.state.isCertificatePath) {
-							if (this.state.selectedPageSize === 'a4landscape') {
-								objects.unshift(CONSTANTS.JSON_CONSTANT.LANDSCAPE_CERTIFICATE);
-							} else {
-								objects.unshift(CONSTANTS.JSON_CONSTANT.PORTRAIT_CERTIFICATE);
-							}
-						}
+						} 
 
 						this.setState({
 							animations,
@@ -1035,6 +1042,14 @@ class ImageMapEditor extends Component {
 
 			// remove bg
 			objects.shift();
+
+			if (this.state.isCertificatePath) {
+				if (this.state.selectedPageSize === 'a4landscape') {
+					objects.unshift(CONSTANTS.JSON_CONSTANT.LANDSCAPE_CERTIFICATE);
+				} else {
+					objects.unshift(CONSTANTS.JSON_CONSTANT.PORTRAIT_CERTIFICATE);
+				}
+			}
 
 			const { animations, styles, dataSources } = this.state;
 			const exportDatas = {
