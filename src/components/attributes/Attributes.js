@@ -63,7 +63,7 @@ class Attributes extends Component {
 						Issuer Name
 					</p>
 					<Divider />
-					<h4 className="main-attribute">Group</h4>
+					{/* <h4 className="main-attribute">Group</h4>
 
 					<p
 						className="sub-attribute"
@@ -79,7 +79,7 @@ class Attributes extends Component {
 					>
 						Course Description
 					</p>
-					<Divider />
+					<Divider /> */}
 					<h4 className="main-attribute"> Credential</h4>
 					<p
 						className="sub-attribute"
