@@ -23,7 +23,7 @@ class Attributes extends Component {
 					src: "../../../images/sample/issuerlogo.png",
 					width:200,
 					height:60,
-						name:isAdminBadgePath? 'badgeAttribute':'attribute'
+					name:'attribute'
 				}
 			}
 			}
@@ -45,7 +45,7 @@ class Attributes extends Component {
 				width: 400,
 				height: 30,
 				fontSize: 20,
-				name: isAdminBadgePath? 'badgeAttribute':'attribute',
+				name: 'attribute',
 				textAlign: 'center',
 			},
 		};

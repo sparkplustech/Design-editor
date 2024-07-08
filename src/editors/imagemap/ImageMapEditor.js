@@ -110,6 +110,7 @@ class ImageMapEditor extends Component {
 		successMessage: '',
 		errorMessage: '',
 		isDesignTemplate: false,
+		isAdminBadgePath: false,
 	};
 
 	componentDidMount() {
@@ -136,6 +137,7 @@ class ImageMapEditor extends Component {
 		const isAdminPath = currentPath.includes('admin');
 		const isCertificatePath = currentPath.includes('certificate-designer');
 		const isBadgePath = currentPath.includes('badge-designer');
+		const isAdminBadgePath = currentPath.includes('admin-badge-designer');
 		if (isBadgePath) {
 			this.canvasHandlers.onChangeWokarea('width', '', { width: 600, height: 600 });
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
@@ -148,6 +150,7 @@ class ImageMapEditor extends Component {
 			isCertificatePath: isCertificatePath,
 			isBadgePath: isBadgePath,
 			designCode: designCode,
+			isAdminBadgePath: isAdminBadgePath,
 		});
 
 		//edit
@@ -278,6 +281,7 @@ class ImageMapEditor extends Component {
 		const isAdminPath = currentPath.includes('admin');
 		const isCertificatePath = currentPath.includes('certificate-designer');
 		const isBadgePath = currentPath.includes('badge-designer');
+		const isAdminBadgePath = currentPath.includes('admin-badge-designer');
 		const accessToken = data.accessToken;
 		const pageSize = this.state.selectedPageSize;
 		if (isCertificatePath) {
@@ -316,7 +320,7 @@ class ImageMapEditor extends Component {
 				}
 			}
 			
-			const badgeAttribute = objects.some(obj => obj.name === 'badgeAttribute');
+			const badgeAttribute = isAdminBadgePath && objects.some(obj => obj.name === 'attribute');
 			const { animations, styles, dataSources } = this.state;
 			const exportDatas = {
 				objects,
@@ -421,6 +425,7 @@ class ImageMapEditor extends Component {
 		const certId = this.state.certId;
 		const pageSize = this.state.selectedPageSize;
 		const isDesignTemplate = this.state.isDesignTemplate;
+		const isAdminBadgePath = this.state.isAdminBadgePath;
 
 		if (isBadgePath) {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
@@ -455,7 +460,7 @@ class ImageMapEditor extends Component {
 				}
 			}
 			
-			const badgeAttribute = objects.some(obj => obj.name === 'badgeAttribute');
+			const badgeAttribute = isAdminBadgePath && objects.some(obj => obj.name === 'attribute');
 			const { animations, styles, dataSources } = this.state;
 			const exportDatas = {
 				objects,
