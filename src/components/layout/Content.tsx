@@ -9,6 +9,7 @@ interface IProps {
 	rightSider?: React.ReactNode;
 	className?: string;
 	loading?: boolean;
+	previewModal?: React.ReactNode;
 }
 
 class Content extends Component<IProps> {
@@ -19,6 +20,7 @@ class Content extends Component<IProps> {
 		rightSider: PropTypes.any,
 		className: PropTypes.string,
 		loading: PropTypes.bool,
+		previewModal: PropTypes.any,
 	};
 
 	static defaultProps = {
@@ -27,7 +29,7 @@ class Content extends Component<IProps> {
 	};
 
 	render() {
-		const { title, leftSider, content, rightSider, className, loading, children } = this.props;
+		const { title, leftSider, content, rightSider, className, loading, children, previewModal } = this.props;
 		return (
 			<Spin spinning={loading}>
 				<Layout className="rde-content-layout">
@@ -44,6 +46,7 @@ class Content extends Component<IProps> {
 						{leftSider}
 						{content || children}
 						{rightSider}
+						{previewModal}
 					</Layout>
 				</Layout>
 			</Spin>

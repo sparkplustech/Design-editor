@@ -4962,3 +4962,13 @@ readers do not read off random characters that represent icons */
 	color: red;
 	margin-right: 10px;
 }
+
+.ant-modal-body{
+	background-color: #ebebeb;
+}
+
+.previewPop-Img{
+	width: 100%;
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgb(242, 244, 248) 2px 2px 16px 0px;
+}

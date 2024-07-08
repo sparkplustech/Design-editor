@@ -2,7 +2,7 @@ import { Badge, Button, Menu, Popconfirm, message, Spin } from 'antd';
 import i18n from 'i18next';
 import debounce from 'lodash/debounce';
 import React, { Component } from 'react';
-import { Input } from 'antd';
+import { Input, Modal } from 'antd';
 import Canvas from '../../canvas/Canvas';
 import CommonButton from '../../components/common/CommonButton';
 import { Content } from '../../components/layout';
@@ -111,6 +111,8 @@ class ImageMapEditor extends Component {
 		errorMessage: '',
 		isDesignTemplate: false,
 		isAdminBadgePath: false,
+		previewVisible: false,
+		previewImage: '',
 	};
 
 	componentDidMount() {
@@ -202,7 +204,7 @@ class ImageMapEditor extends Component {
 							this.canvasRef.handler.clear();
 							if (this.state.isBadgePath) {
 								objects.unshift(CONSTANTS.JSON_CONSTANT.BADGE);
-							} 
+							}
 							if (objects && Array.isArray(objects)) {
 								this.canvasRef.handler.importJSON(objects);
 							} else {
@@ -319,7 +321,7 @@ class ImageMapEditor extends Component {
 					objects.unshift(CONSTANTS.JSON_CONSTANT.PORTRAIT_CERTIFICATE);
 				}
 			}
-			
+
 			const badgeAttribute = isAdminBadgePath && objects.some(obj => obj.name === 'attribute');
 			const { animations, styles, dataSources } = this.state;
 			const exportDatas = {
@@ -449,7 +451,7 @@ class ImageMapEditor extends Component {
 				return true;
 			});
 
-			// remove bg 	
+			// remove bg
 			objects.shift();
 
 			if (isCertificatePath) {
@@ -459,7 +461,7 @@ class ImageMapEditor extends Component {
 					objects.unshift(CONSTANTS.JSON_CONSTANT.PORTRAIT_CERTIFICATE);
 				}
 			}
-			
+
 			const badgeAttribute = isAdminBadgePath && objects.some(obj => obj.name === 'attribute');
 			const { animations, styles, dataSources } = this.state;
 			const exportDatas = {
@@ -484,7 +486,7 @@ class ImageMapEditor extends Component {
 			} else {
 				formData.append('jsonCode', templateCode);
 			}
-            // console.log("template code", templateCode );
+			// console.log("template code", templateCode );
 			let endpoint;
 
 			if (isAdminPath) {
@@ -996,7 +998,7 @@ class ImageMapEditor extends Component {
 
 						if (this.state.isBadgePath) {
 							objects.unshift(CONSTANTS.JSON_CONSTANT.BADGE);
-						} 
+						}
 
 						this.setState({
 							animations,
@@ -1180,6 +1182,21 @@ class ImageMapEditor extends Component {
 		}
 	};
 
+	handlePreview = () => {
+		const dataURL = this.canvasRef.canvas.toDataURL('image/png');
+		this.setState({
+			previewVisible: true,
+			previewImage: dataURL,
+		});
+	};
+
+	handleCancelPreview = () => {
+		this.setState({
+			previewVisible: false,
+			previewImage: '',
+		});
+	};
+
 	render() {
 		const {
 			preview,
@@ -1204,6 +1221,8 @@ class ImageMapEditor extends Component {
 			userData,
 			isSaving,
 			isEdit,
+			previewVisible,
+			previewImage,
 		} = this.state;
 		const {
 			onAdd,
@@ -1231,8 +1250,18 @@ class ImageMapEditor extends Component {
 		const canvasStyle = isBadgePath
 			? { width: '600px', height: '600px' }
 			: selectedPageSize === 'a4landscape'
-			? { width: '800px', height: '618px', backgroundColor: '#FFFFFF', boxShadow: '2px 2px 16px 0px rgb(242,244,248)' }
-			: { width: '618px', height: '800px', backgroundColor: '#FFFFFF', boxShadow: '2px 2px 16px 0px rgb(242,244,248)' };
+			? {
+					width: '800px',
+					height: '618px',
+					backgroundColor: '#FFFFFF',
+					boxShadow: '2px 2px 16px 0px rgb(242,244,248)',
+			  }
+			: {
+					width: '618px',
+					height: '800px',
+					backgroundColor: '#FFFFFF',
+					boxShadow: '2px 2px 16px 0px rgb(242,244,248)',
+			  };
 
 		const action = (
 			<React.Fragment>
@@ -1253,7 +1282,12 @@ class ImageMapEditor extends Component {
 				)}
 
 				{/* <span className='text-width'>No unsaved changes</span> */}
-				<CommonButton name="Save & Close" className="saveBtn" onClick={onSaveImageAndJson} disabled={isSaving} />
+				<CommonButton
+					name="Save & Close"
+					className="saveBtn"
+					onClick={onSaveImageAndJson}
+					disabled={isSaving}
+				/>
 				{isAdminPath && (
 					<div>
 						<CommonButton
@@ -1301,6 +1335,14 @@ class ImageMapEditor extends Component {
 						/>
 					</div>
 				)}
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					icon="eye"
+					tooltipTitle={i18n.t('action.preview')}
+					onClick={this.handlePreview}
+					tooltipPlacement="bottomRight"
+				/>
 			</React.Fragment>
 		);
 		const titleContent = (
@@ -1324,7 +1366,7 @@ class ImageMapEditor extends Component {
 					mainLoader={this.handleMainLoader}
 					userData={userData}
 				/>
-				<div style={{display:"flex", flexDirection:'column', flex:"1"}}>
+				<div style={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
 					<div className="rde-editor-header-toolbar">
 						<ImageMapHeaderToolbar
 							canvasRef={this.canvasRef}
@@ -1334,60 +1376,62 @@ class ImageMapEditor extends Component {
 							selectedPageSize={selectedPageSize}
 						/>
 					</div>
-				<div className="rde-editor-canvas-container" style={{ overflow: 'scroll', minWidth: '200px' }}>
-				
-					<div
-						ref={c => {
-							this.container = c;
-						}}
-						className="rde-editor-canvas"
-						style={{paddingBottom:"20x",paddingTop:"20x"}}
-					>
-						<Canvas
+					<div className="rde-editor-canvas-container" style={{ overflow: 'scroll', minWidth: '200px' }}>
+						<div
 							ref={c => {
-								this.canvasRef = c;
+								this.container = c;
 							}}
-							className="rde-canvas"
-							minZoom={1}
-							maxZoom={500}
-							objectOption={defaultOption}
-							propertiesToInclude={propertiesToInclude}
-							onModified={onModified}
-							onAdd={onAdd}
-							onRemove={onRemove}
-							onSelect={onSelect}
-							onZoom={onZoom}
-							onTooltip={onTooltip}
-							onClick={onClick}
-							onContext={onContext}
-							onTransaction={onTransaction}
-							keyEvent={{
-								transaction: true,
-							}}
-							canvasOption={{
-								selectionColor: 'rgba(8, 151, 156, 0.3)',
-							}}
-							style={{
-								marginTop:'30px',
-								left: '50%',
-								transform: 'translate(-50%, 0)',
-								position:"relative",
-								marginBottom:"70px",
-								...canvasStyle,
-							}}
+							className="rde-editor-canvas"
+							style={{ paddingBottom: '20x', paddingTop: '20x' }}
+						>
+							<Canvas
+								ref={c => {
+									this.canvasRef = c;
+								}}
+								className="rde-canvas"
+								minZoom={1}
+								maxZoom={500}
+								objectOption={defaultOption}
+								propertiesToInclude={propertiesToInclude}
+								onModified={onModified}
+								onAdd={onAdd}
+								onRemove={onRemove}
+								onSelect={onSelect}
+								onZoom={onZoom}
+								onTooltip={onTooltip}
+								onClick={onClick}
+								onContext={onContext}
+								onTransaction={onTransaction}
+								keyEvent={{
+									transaction: true,
+								}}
+								canvasOption={{
+									selectionColor: 'rgba(8, 151, 156, 0.3)',
+								}}
+								style={{
+									marginTop: '30px',
+									left: '50%',
+									transform: 'translate(-50%, 0)',
+									position: 'relative',
+									marginBottom: '70px',
+									...canvasStyle,
+								}}
 
-							// style={{width:'800px',height:'618px', top:'50%',left:'50%',transform:'translate(-50%,-50%'}}
-						/>
+								// style={{width:'800px',height:'618px', top:'50%',left:'50%',transform:'translate(-50%,-50%'}}
+							/>
+						</div>
+						<div
+							className="rde-editor-footer-toolbar"
+							style={{ position: 'fixed', width: '400px', bottom: '-5px' }}
+						>
+							<ImageMapFooterToolbar
+								canvasRef={this.canvasRef}
+								preview={preview}
+								onChangePreview={onChangePreview}
+								zoomRatio={zoomRatio}
+							/>
+						</div>
 					</div>
-					<div className="rde-editor-footer-toolbar" style={{position:"fixed",width:"400px",bottom:"-5px" }}>
-						<ImageMapFooterToolbar
-							canvasRef={this.canvasRef}
-							preview={preview}
-							onChangePreview={onChangePreview}
-							zoomRatio={zoomRatio}
-						/>
-					</div>
-				</div>
 				</div>
 				<ImageMapConfigurations
 					canvasRef={this.canvasRef}
@@ -1409,7 +1453,17 @@ class ImageMapEditor extends Component {
 				/>
 			</div>
 		);
-		return <Content title={title} content={content} loading={loading} className="" />;
+		const previewModal = (
+			<Modal
+				title="Preview"
+				visible={this.state.previewVisible}
+				footer={null}
+				onCancel={this.handleCancelPreview}
+			>
+				<img alt="Preview" className='previewPop-Img' src={this.state.previewImage} />
+			</Modal>
+		);
+		return <Content title={title} content={content} loading={loading} previewModal={previewModal} className="" />;
 	}
 }
 
