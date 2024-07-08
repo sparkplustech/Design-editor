@@ -16,6 +16,7 @@ import ImageMapItems from './ImageMapItems';
 import ImageMapPreview from './ImageMapPreview';
 import ImageMapTitle from './ImageMapTitle';
 import CONSTANTS from '../../../constant';
+import { Flex } from '../../components/flex';
 
 const propertiesToInclude = [
 	'id',
@@ -1318,7 +1319,7 @@ class ImageMapEditor extends Component {
 					mainLoader={this.handleMainLoader}
 					userData={userData}
 				/>
-				<div className="rde-editor-canvas-container" style={{ overflow: 'scroll', minWidth: '200px' }}>
+				<div style={{display:"flex", flexDirection:'column', flex:"1"}}>
 					<div className="rde-editor-header-toolbar">
 						<ImageMapHeaderToolbar
 							canvasRef={this.canvasRef}
@@ -1328,11 +1329,14 @@ class ImageMapEditor extends Component {
 							selectedPageSize={selectedPageSize}
 						/>
 					</div>
+				<div className="rde-editor-canvas-container" style={{ overflow: 'scroll', minWidth: '200px' }}>
+				
 					<div
 						ref={c => {
 							this.container = c;
 						}}
 						className="rde-editor-canvas"
+						style={{paddingBottom:"20x",paddingTop:"20x"}}
 					>
 						<Canvas
 							ref={c => {
@@ -1359,16 +1363,18 @@ class ImageMapEditor extends Component {
 								selectionColor: 'rgba(8, 151, 156, 0.3)',
 							}}
 							style={{
-								top: '50%',
+								marginTop:'30px',
 								left: '50%',
-								transform: 'translate(-50%, -50%)',
+								transform: 'translate(-50%, 0)',
+								position:"relative",
+								marginBottom:"70px",
 								...canvasStyle,
 							}}
 
 							// style={{width:'800px',height:'618px', top:'50%',left:'50%',transform:'translate(-50%,-50%'}}
 						/>
 					</div>
-					<div className="rde-editor-footer-toolbar">
+					<div className="rde-editor-footer-toolbar" style={{position:"fixed",width:"400px",bottom:"-5px" }}>
 						<ImageMapFooterToolbar
 							canvasRef={this.canvasRef}
 							preview={preview}
@@ -1376,6 +1382,7 @@ class ImageMapEditor extends Component {
 							zoomRatio={zoomRatio}
 						/>
 					</div>
+				</div>
 				</div>
 				<ImageMapConfigurations
 					canvasRef={this.canvasRef}
