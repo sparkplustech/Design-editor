@@ -12,10 +12,30 @@ class Attributes extends Component {
 	getItem(name) {
 		const currentPath = window.location.pathname;
 		const isAdminBadgePath = currentPath.includes('admin-badge-designer');
-		let item = {
+	
+		let item={}
+		if(name=="[IssuerLogo]")
+			{
+				item = {	
+					editable: false,
+					type: 'image',
+
+					option: {
+					type: 'image',
+					src: "https://fastly.picsum.photos/id/257/200/300.jpg?hmac=j0NVivHS9qSXBGkBOUjchG0Ckt6pje1KSfHsnwtr_8M",
+
+					
+				
+				}
+			}
+			}
+
+			else
+			{
+		item = {
 			name: 'Text',
 			description: '',
-			type: 'text',
+			type: 'textbox',
 			editable: false,
 			icon: {
 				prefix: 'fas',
@@ -31,6 +51,9 @@ class Attributes extends Component {
 				textAlign: 'center',
 			},
 		};
+
+
+	}
 		return item;
 	}
 	handlers = {
@@ -61,6 +84,13 @@ class Attributes extends Component {
 						onClick={e => this.handlers.onAddItem(this.getItem('[IssuerName]'), true)}
 					>
 						Issuer Name
+					</p>
+					<p
+						className="sub-attribute"
+						draggable
+						onClick={e => this.handlers.onAddItem(this.getItem('[IssuerLogo]'), true)}
+					>
+						Issuer Logo
 					</p>
 					<Divider />
 					{/* <h4 className="main-attribute">Group</h4>
