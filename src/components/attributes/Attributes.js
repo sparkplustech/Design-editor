@@ -17,15 +17,13 @@ class Attributes extends Component {
 		if(name=="[IssuerLogo]")
 			{
 				item = {	
-					editable: false,
 					type: 'image',
-
 					option: {
 					type: 'image',
-					src: "https://fastly.picsum.photos/id/257/200/300.jpg?hmac=j0NVivHS9qSXBGkBOUjchG0Ckt6pje1KSfHsnwtr_8M",
-
-					
-				
+					src: "../../../images/sample/issuerlogo.png",
+					width:200,
+					height:60,
+						name:isAdminBadgePath? 'badgeAttribute':'attribute'
 				}
 			}
 			}

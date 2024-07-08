@@ -749,7 +749,7 @@ class Handler implements HandlerOptions {
 			obj,
 			{
 				container: this.container.id,
-				editable,
+				editable
 			},
 			option,
 		);
@@ -761,6 +761,7 @@ class Handler implements HandlerOptions {
 		// Create canvas object
 		if (obj.type === 'image') {
 			createdObj = this.addImage(newOption);
+
 		} else if (obj.type === 'group') {
 			createdObj = this.addGroup(newOption);
 		} else {
@@ -845,6 +846,7 @@ class Handler implements HandlerOptions {
 			filters: this.imageHandler.createFilters(filters),
 		});
 		this.setImage(createdObj, src || file);
+		
 		return createdObj;
 	};
 
