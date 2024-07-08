@@ -8,7 +8,7 @@ export default {
 		const currentPath = window.location.pathname;
 		const isAdminBadgePath = currentPath.includes('admin-badge-designer');
 		const isBadgeAttribute = data.name === 'badgeAttribute';
-		const isNameDisabled = isAdminBadgePath && isBadgeAttribute;
+		const isNameDisabled = (data.name=="attribute");
 		return (
 			<React.Fragment>
 				<Row>

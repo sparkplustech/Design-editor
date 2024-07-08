@@ -8,9 +8,10 @@ import UrlModal from '../../../components/common/UrlModal';
 export default {
 	render(canvasRef, form, data) {
 		const { getFieldDecorator } = form;
-		if (!data) {
+		if (!data || data.name=="attribute") {
 			return null;
 		}
+
 		const imageLoadType = data.imageLoadType || 'file';
 		return (
 			<React.Fragment>
