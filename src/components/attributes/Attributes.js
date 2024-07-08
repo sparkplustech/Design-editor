@@ -93,12 +93,12 @@ class Attributes extends Component {
 					>
 						Credential Name
 					</p>
-					<p
+					{/* <p
 						className="sub-attribute"
 						onClick={e => this.handlers.onAddItem(this.getItem('[CredentialILicenseId]'), true)}
 					>
 						Credential License ID
-					</p>
+					</p> */}
 					<p
 						className="sub-attribute"
 						onClick={e => this.handlers.onAddItem(this.getItem('[IssueDate]'), true)}
@@ -111,9 +111,9 @@ class Attributes extends Component {
 					>
 						Expiry Date
 					</p>
-					<p className="sub-attribute" onClick={e => this.handlers.onAddItem(this.getItem('[Grade]'), true)}>
+					{/* <p className="sub-attribute" onClick={e => this.handlers.onAddItem(this.getItem('[Grade]'), true)}>
 						Grade
-					</p>
+					</p> */}
 					<p className="sub-attribute" onClick={e => this.handlers.onAddItem(this.getItem('[Url]'), true)}>
 						URL
 					</p>
@@ -127,24 +127,24 @@ class Attributes extends Component {
 					>
 						Recipient
 					</h4>
-					<p
+					{/* <p
 						className="sub-attribute"
 						onClick={e => this.handlers.onAddItem(this.getItem('[RecipientId]'), true)}
 					>
 						Recipient ID
-					</p>
+					</p> */}
 					<p
 						className="sub-attribute"
 						onClick={e => this.handlers.onAddItem(this.getItem('[RecipientName]'), true)}
 					>
 						Recipient Name
 					</p>
-					<p
+					{/* <p
 						className="sub-attribute"
 						onClick={e => this.handlers.onAddItem(this.getItem('[RecipientEmail]'), true)}
 					>
 						Recipient Email
-					</p>
+					</p> */}
 				</Col>
 			</Row>
 		);
