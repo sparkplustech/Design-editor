@@ -1071,7 +1071,7 @@ class ImageMapEditor extends Component {
 				JSON.stringify(exportDatas, null, '\t'),
 			)}`;
 			anchorEl.download = `${this.canvasRef.handler.workarea.name || 'sample'}.json`;
-			document.body.appendChild(anchorEl); // required for firefox
+			document.body.appendChild(anchorEl);
 			anchorEl.click();
 			anchorEl.remove();
 			this.showLoading(false);
@@ -1457,7 +1457,11 @@ class ImageMapEditor extends Component {
 			<Modal
 				title="Preview"
 				visible={this.state.previewVisible}
-				footer={null}
+				footer={[
+					<Button key="close" className='saveBtn' onClick={this.handleCancelPreview}>
+					  Close
+					</Button>,
+				  ]}
 				onCancel={this.handleCancelPreview}
 			>
 				<img alt="Preview" className='previewPop-Img' src={this.state.previewImage} />
