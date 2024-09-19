@@ -17,7 +17,7 @@ if (designCode && designCode.startsWith('DCL')) {
 } else if (designCode && designCode.startsWith('LDC')) {
   apiBaseUrl = 'https://leafapi.thesolo.network/api';
 } else if (designCode && designCode.startsWith('GSI')) {
-  apiBaseUrl = 'https://gsiapi.thesolo.network/api';
+  apiBaseUrl = 'https://astateqaapi.thesolo.network/api';
 }
 
 if (decryptedRU == 'localhost') {
