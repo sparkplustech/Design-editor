@@ -119,6 +119,7 @@ video {
 	}
 	.ant-layout {
 		background: #ebebeb;
+		position: relative;
 	}
 }
 
@@ -292,4 +293,18 @@ video {
 }
 .rde-editor-configurations {
 	width: 320px;
+	min-width: 260px
+}
+
+@media screen and (max-width: 1550px) {
+	.rde-content-layout .ant-layout{
+		overflow: hidden !important;
+	}
+	.rde-editor-configurations {
+        position: absolute;
+        top: 40px;
+		height: 95%;
+		overflow: auto;
+    }
+
 }
