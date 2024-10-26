@@ -151,12 +151,28 @@
 .saveBtn{
 	border-radius: 8px;
 	background: #ff885e;
-	color: #FFFFFF;
+	color: #FFFFFF !important;
+	height: 32px;
+    line-height: 27px;
 
 	&:hover {
 		background: #ff6c36;;
-		color: #FFFFFF;
+		color: #FFFFFF !important;
 		border-color: transparent;
+	}
+
+	&:focus {
+		color: #FFFFFF !important;
+	}
+}
+
+.ant-btn.saveBtn.ant-btn-default{
+	background: #ff885e;
+	height: 32px;
+	
+
+	span{
+		color: #FFFFFF !important;
 	}
 }
 
