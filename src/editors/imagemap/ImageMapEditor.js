@@ -293,8 +293,21 @@ class ImageMapEditor extends Component {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
 			this.canvasHandlers.onChangeWokarea('src', '', '');
 		}
-
-		const dataURL = this.canvasRef.canvas.toDataURL('image/png');
+		let option = { name: 'New Image', format: 'png', quality: 1 };
+		let { left, top, width, height, scaleX, scaleY } = this.canvasRef.handler.workarea;
+		width = Math.ceil(width * scaleX);
+		height = Math.ceil(height * scaleY);
+		// cachedVT is used to reset the viewportTransform after the image is saved.
+		// reset the viewportTransform to default (no zoom)
+		this.canvasRef.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
+		const dataURL = this.canvasRef.canvas.toDataURL({
+			...option,
+			left,
+			top,
+			width,
+			height,
+			enableRetinaScaling: true,
+		});
 
 		if (isBadgePath) {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
@@ -414,7 +427,7 @@ class ImageMapEditor extends Component {
 		});
 	};
 
-	editTemplate = editType => {
+	editTemplate = async editType => {
 		const designCode = this.state.designCode;
 		const isAdminPath = this.state.isAdminPath;
 		const isCertificatePath = this.state.isCertificatePath;
@@ -434,7 +447,19 @@ class ImageMapEditor extends Component {
 			this.canvasHandlers.onChangeWokarea('src', '', '');
 		}
 
-		const dataURL = this.canvasRef.canvas.toDataURL('image/png');
+		let option = { name: 'New Image', format: 'png', quality: 1 };
+		let { left, top, width, height, scaleX, scaleY } = this.canvasRef.handler.workarea;
+		width = Math.ceil(width * scaleX);
+		height = Math.ceil(height * scaleY);
+		this.canvasRef.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
+		const dataURL = this.canvasRef.canvas.toDataURL({
+			...option,
+			left,
+			top,
+			width,
+			height,
+			enableRetinaScaling: true,
+		});
 
 		if (isBadgePath) {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
@@ -1183,10 +1208,22 @@ class ImageMapEditor extends Component {
 	};
 
 	handlePreview = () => {
-		const dataURL = this.canvasRef.canvas.toDataURL('image/png');
+		let option = { name: 'New Image', format: 'png', quality: 1 };
+		let { left, top, width, height, scaleX, scaleY } = this.canvasRef.handler.workarea;
+		width = Math.ceil(width * scaleX);
+		height = Math.ceil(height * scaleY);
+		this.canvasRef.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
+		const dataUrl = this.canvasRef.canvas.toDataURL({
+			...option,
+			left,
+			top,
+			width,
+			height,
+			enableRetinaScaling: true,
+		});
 		this.setState({
 			previewVisible: true,
-			previewImage: dataURL,
+			previewImage: dataUrl,
 		});
 	};
 
@@ -1406,15 +1443,15 @@ class ImageMapEditor extends Component {
 									transaction: true,
 								}}
 								canvasOption={{
-									selectionColor: 'rgba(8, 151, 156, 0.3)',
+									selectionColor: 'rgba(8, 151, 156, 1)',
 								}}
 								style={{
 									marginTop: '30px',
-									left: '50%',
-									transform: 'translate(-50%, 0)',
-									position: 'relative',
+									//left: '50%',
+									//transform: 'translate(-50%, 0)',
+									//position: 'relative',
 									marginBottom: '70px',
-									...canvasStyle,
+									//...canvasStyle,
 								}}
 
 								// style={{width:'800px',height:'618px', top:'50%',left:'50%',transform:'translate(-50%,-50%'}}
@@ -1458,13 +1495,13 @@ class ImageMapEditor extends Component {
 				title="Preview"
 				visible={this.state.previewVisible}
 				footer={[
-					<Button key="close" className='saveBtn' onClick={this.handleCancelPreview}>
-					  Close
+					<Button key="close" className="saveBtn" onClick={this.handleCancelPreview}>
+						Close
 					</Button>,
-				  ]}
+				]}
 				onCancel={this.handleCancelPreview}
 			>
-				<img alt="Preview" className='previewPop-Img' src={this.state.previewImage} />
+				<img alt="Preview" className="previewPop-Img" src={this.state.previewImage} />
 			</Modal>
 		);
 		return <Content title={title} content={content} loading={loading} previewModal={previewModal} className="" />;
