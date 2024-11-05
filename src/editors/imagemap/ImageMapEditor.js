@@ -478,6 +478,13 @@ class ImageMapEditor extends Component {
 
 			// remove bg
 			objects.shift();
+			objects.forEach(obj => {
+				if (obj.id === 'workarea') {
+					return;
+				}
+				obj.left -= left;
+				obj.top -= top;
+			});
 
 			if (isCertificatePath) {
 				if (pageSize === 'a4landscape') {
