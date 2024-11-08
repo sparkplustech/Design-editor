@@ -1,26 +1,4 @@
 {
-	"Marker": [
-		{
-			"name": "Icon",
-			"description": "",
-			"type": "marker",
-			"icon": {
-				"prefix": "fas",
-				"name": "map-marker-alt"
-			},
-			"option": {
-				"type": "i-text",
-				"text": "\uf3c5",
-				"fontFamily": "Font Awesome 5 Free",
-				"fontWeight": 900,
-				"fontSize": 60,
-				"width": 30,
-				"height": 30,
-				"editable": false,
-				"name": "New icon"
-			}
-		}
-	],
 	"TEXT": [
 		{
 			"name": "Text",

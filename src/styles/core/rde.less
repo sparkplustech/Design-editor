@@ -293,18 +293,46 @@ video {
 }
 .rde-editor-configurations {
 	width: 320px;
-	min-width: 260px
+	// min-width: 260px
+}
+
+.rde-editor-configurations.minimize {
+	width: 0px;
 }
 
 @media screen and (max-width: 1550px) {
-	.rde-content-layout .ant-layout{
+	.rde-content-layout .ant-layout {
 		overflow: hidden !important;
 	}
 	.rde-editor-configurations {
-        position: absolute;
-        top: 40px;
+		position: absolute;
+		top: 40px;
 		height: 95%;
 		overflow: auto;
-    }
+	}
+}
 
+@media screen and (max-width: 1350px) {
+.rde-editor .rde-editor-header-toolbar .rde-action-btn.toolbar-btn-cls {
+	padding: 0px;
+	height: 32px;
+	width: 32px;
+
+	.ant-btn{
+		padding: 0px;
+		height: 32px;
+	width: 32px;
+	}
+		span {
+			display: none;
+		}
+
+		.fa-undo-alt {
+			margin-right: 0px !important;
+		}
+
+		.fa-redo-alt {
+			margin-left: 0px !important;
+		}
+	}
 }

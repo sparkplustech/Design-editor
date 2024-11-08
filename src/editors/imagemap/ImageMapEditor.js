@@ -113,6 +113,7 @@ class ImageMapEditor extends Component {
 		isAdminBadgePath: false,
 		previewVisible: false,
 		previewImage: '',
+		toolbarClass: 'minimize',
 	};
 
 	componentDidMount() {
@@ -1182,6 +1183,10 @@ class ImageMapEditor extends Component {
 		this.setState({ selectedPageSize: value });
 	};
 
+	handleToolbarClassUpdate = (className) => {
+		this.setState({ toolbarClass: className });
+	};
+
 	handleCanvasChange = value => {
 		this.setState({ editing: value });
 	};
@@ -1267,6 +1272,7 @@ class ImageMapEditor extends Component {
 			isEdit,
 			previewVisible,
 			previewImage,
+			toolbarClass,
 		} = this.state;
 		const {
 			onAdd,
@@ -1412,12 +1418,13 @@ class ImageMapEditor extends Component {
 				/>
 				<div style={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
 					<div className="rde-editor-header-toolbar">
-						<ImageMapHeaderToolbar
+					<ImageMapHeaderToolbar
 							canvasRef={this.canvasRef}
 							selectedItem={selectedItem}
 							onSelect={onSelect}
 							onPageSizeChange={this.handlePageSizeChange}
 							selectedPageSize={selectedPageSize}
+							onClassNameUpdate={this.handleToolbarClassUpdate}
 						/>
 					</div>
 					<div className="rde-editor-canvas-container" style={{ overflow: 'scroll', minWidth: '200px' }}>
@@ -1487,6 +1494,7 @@ class ImageMapEditor extends Component {
 					animations={animations}
 					styles={styles}
 					dataSources={dataSources}
+					toolbarClass={toolbarClass}
 				/>
 				<ImageMapPreview
 					preview={preview}

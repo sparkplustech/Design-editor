@@ -22,6 +22,7 @@ class ImageMapConfigurations extends Component {
 		animations: PropTypes.array,
 		styles: PropTypes.array,
 		dataSources: PropTypes.array,
+		toolbarClass: PropTypes.string,
 	};
 
 	state = {
@@ -52,19 +53,20 @@ class ImageMapConfigurations extends Component {
 			onChangeAnimations,
 			onChangeStyles,
 			onChangeDataSources,
+			toolbarClass,
 		} = this.props;
 
-		if(!selectedItem){
-			return null;
-		}
+		// if(!selectedItem){
+		// 	return null;
+		// }
 		
 		const { collapse, activeKey } = this.state;
 		const { onChangeTab, onCollapse } = this.handlers;
-		const className = classnames('rde-editor-configurations', {
-			minimize: collapse,
-		});
+		// const className = classnames('rde-editor-configurations', {
+		// 	minimize: collapse,
+		// });
 		return (
-			<div className={className}>
+			<div className={`rde-editor-configurations ${toolbarClass}`}>
 				{/* <CommonButton
 					className="rde-action-btn"
 					shape="circle"

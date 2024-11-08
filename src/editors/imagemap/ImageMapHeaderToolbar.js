@@ -15,6 +15,39 @@ class ImageMapHeaderToolbar extends Component {
 		selectedItem: PropTypes.object,
 		onPageSizeChange: PropTypes.func,
 		selectedPageSize: PropTypes.any,
+		onClassNameUpdate: PropTypes.func,
+	};
+
+	constructor(props) {
+		super(props);
+		this.state = {
+			collapse: true, 
+		};
+	};
+
+	componentDidUpdate(prevProps) {
+		if (prevProps.selectedItem !== this.props.selectedItem) {
+			const shouldCollapse = this.props.selectedItem !== null;
+			this.setState(
+				{ collapse: shouldCollapse },
+				() => {
+					const className = this.state.collapse ? '' : 'minimize';
+					this.props.onClassNameUpdate(className);
+				}
+			);
+		}
+	}
+
+	handlers = {
+		onCollapse: () => {
+			this.setState(
+				(prevState) => ({ collapse: !prevState.collapse }),
+				() => {
+					const className = this.state.collapse ? '' : 'minimize';
+					this.props.onClassNameUpdate(className);
+				}
+			);
+		},
 	};
 
 	render() {
@@ -22,8 +55,12 @@ class ImageMapHeaderToolbar extends Component {
 		const isCropping = canvasRef ? canvasRef.handler?.interactionMode === 'crop' : false;
 
 		const currentPath = window.location.pathname;
-		const isAdminPath = currentPath.includes("admin");
-		const isCertificatePath = currentPath.includes("certificate-designer");
+		const isAdminPath = currentPath.includes('admin');
+		const isCertificatePath = currentPath.includes('certificate-designer');
+
+		const { collapse } = this.state;
+		const { onCollapse } = this.handlers;
+		
 
 		return (
 			<Flex className="rde-editor-header-toolbar-container" flex="1">
@@ -190,7 +227,7 @@ class ImageMapHeaderToolbar extends Component {
 					)}
 
 					<CommonButton
-						className="rde-action-btn"
+						className="rde-action-btn toolbar-btn-cls"
 						disabled={isCropping || (canvasRef && !canvasRef.handler?.transactionHandler.undos.length)}
 						onClick={() => canvasRef.handler?.transactionHandler.undo()}
 					>
@@ -198,17 +235,26 @@ class ImageMapHeaderToolbar extends Component {
 						Undo
 					</CommonButton>
 					<CommonButton
-						className="rde-action-btn"
+						className="rde-action-btn toolbar-btn-cls"
 						disabled={isCropping || (canvasRef && !canvasRef.handler?.transactionHandler.redos.length)}
 						onClick={() => canvasRef.handler?.transactionHandler.redo()}
 					>
 						Redo
 						<Icon name="redo-alt" style={{ marginLeft: 8 }} />
 					</CommonButton>
+					{selectedItem && (
+						<CommonButton
+							className="rde-action-btn"
+							shape="circle"
+							icon={!collapse ? 'angle-double-left' : 'angle-double-right'}
+							onClick={onCollapse}
+						/>
+					)}
 				</Flex.Item>
 			</Flex>
 		);
 	}
 }
+
 
 export default ImageMapHeaderToolbar;
