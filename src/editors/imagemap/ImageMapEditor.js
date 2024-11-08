@@ -1457,7 +1457,7 @@ class ImageMapEditor extends Component {
 									transaction: true,
 								}}
 								canvasOption={{
-									selectionColor: 'rgba(8, 151, 156, 1)',
+									selectionColor: 'rgba(255, 136, 94, 0.3)',
 								}}
 								style={{
 									marginTop: '30px',
