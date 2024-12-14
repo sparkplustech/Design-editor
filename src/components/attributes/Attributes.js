@@ -139,6 +139,18 @@ class Attributes extends Component {
 					>
 						Expiry Date
 					</p>
+					<p
+						className="sub-attribute"
+						onClick={e => this.handlers.onAddItem(this.getItem('[startDate]'), true)}
+					>
+						Start Date
+					</p>
+					<p
+						className="sub-attribute"
+						onClick={e => this.handlers.onAddItem(this.getItem('[endDate]'), true)}
+					>
+						End Date
+					</p>
 					{/* <p className="sub-attribute" onClick={e => this.handlers.onAddItem(this.getItem('[Grade]'), true)}>
 						Grade
 					</p> */}
