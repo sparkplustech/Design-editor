@@ -11,7 +11,7 @@
 			"option": {
 				"type": "textbox",
 				"text": "",
-				"width": 60,
+				"width": 600,
 				"height": 30,
 				"fontSize": 32,
 				"name": "New text"
