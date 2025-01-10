@@ -21,15 +21,15 @@ class ImageMapHeaderToolbar extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			collapse: true, 
+			collapse: false, 
 		};
 	};
 
 	componentDidUpdate(prevProps) {
-		if (prevProps.selectedItem !== this.props.selectedItem) {
-			const shouldCollapse = this.props.selectedItem !== null;
+		if (prevProps.selectedItem !== this.props.selectedItem && this.props.selectedItem === null) {
+			// const shouldCollapse = this.props.selectedItem !== null;
 			this.setState(
-				{ collapse: shouldCollapse },
+				{ collapse: false },
 				() => {
 					const className = this.state.collapse ? '' : 'minimize';
 					this.props.onClassNameUpdate(className);
