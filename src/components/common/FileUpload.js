@@ -13,7 +13,7 @@ class FileUpload extends Component {
 
 	static defaultProps = {
 		limit: 5,
-		accept: 'image/*', // Default to accepting all image types
+		accept: 'image/*',
 	};
 
 	state = {
@@ -26,24 +26,20 @@ class FileUpload extends Component {
 		});
 	}
 
-	// Normalize MIME types for comparison
 	normalizeMimeType = (type) => {
 		if (type === 'image/svg') {
-			return 'image/svg+xml'; // Normalize shorthand for SVG
+			return 'image/svg+xml';
 		}
 		return type;
 	};
 
-	// Helper function to extract readable file types
 	getReadableFileTypes = () => {
 		const { accept } = this.props;
 
-		// If accept is 'image/*', return null (no need to show specific file types)
 		if (accept === 'image/*') {
 			return null;
 		}
 
-		// Otherwise, create a list of readable file types from the accept string
 		const extensions = accept
 			.split(',')
 			.map((type) => type.replace('.', '').toUpperCase()); // Removing dot and converting to uppercase
@@ -51,13 +47,10 @@ class FileUpload extends Component {
 		return extensions.join(', ');
 	};
 
-	// Modified validateFile function to handle MIME types and extensions
 	validateFile = (file) => {
 		const { accept, limit } = this.props;
 
-		// Check if 'accept' is 'image/*', which means accept all image types
 		if (accept === 'image/*') {
-			// If it's 'image/*', we can skip file type validation for images
 			const isUnderLimit = file.size / 1024 / 1024 < limit;
 			if (!isUnderLimit) {
 				message.error(`File size exceeds limit of ${limit}MB.`);
@@ -66,15 +59,12 @@ class FileUpload extends Component {
 			return true;
 		}
 
-		// Normalize allowed types
 		const allowedTypes = accept.split(',').map(this.normalizeMimeType);
 
-		// Check MIME type and file extension
 		const isValidType = allowedTypes.some((type) => {
 			if (type.startsWith('image/')) {
 				return file.type === this.normalizeMimeType(type);
 			} else {
-				// For file extensions (e.g., .png, .svg), check the file's extension
 				return file.name.toLowerCase().endsWith(type.toLowerCase());
 			}
 		});
@@ -87,7 +77,6 @@ class FileUpload extends Component {
 			return false;
 		}
 
-		// File size validation
 		const isUnderLimit = file.size / 1024 / 1024 < limit;
 		if (!isUnderLimit) {
 			message.error(`File size exceeds limit of ${limit}MB.`);
