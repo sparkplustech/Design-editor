@@ -35,7 +35,7 @@ export default {
 								},
 							],
 							initialValue: data.file,
-						})(<FileUpload accept="image/*" limit={100} />)}
+						})(<FileUpload accept=".png" limit={100} />)}
 					</Form.Item>
 				) : (
 					<Form.Item>
