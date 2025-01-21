@@ -114,6 +114,7 @@ class ImageMapEditor extends Component {
 		previewVisible: false,
 		previewImage: '',
 		toolbarClass: 'minimize',
+		skip: 0,
 	};
 
 	componentDidMount() {
@@ -164,6 +165,7 @@ class ImageMapEditor extends Component {
 		const badgeId = queryParams.get('bid');
 		const certId = queryParams.get('ctid');
 		const isDesignTemplate = queryParams.get('dt') === 'true';
+		const skip = queryParams.get('sk');
 
 		this.setState({
 			editId: id,
@@ -173,6 +175,7 @@ class ImageMapEditor extends Component {
 			badgeId: badgeId,
 			certId: certId,
 			isDesignTemplate: isDesignTemplate,
+			skip: skip,
 		});
 
 		const handleFetch = (accessToken, isBadgePath, id) => {
@@ -442,6 +445,7 @@ class ImageMapEditor extends Component {
 		const pageSize = this.state.selectedPageSize;
 		const isDesignTemplate = this.state.isDesignTemplate;
 		const isAdminBadgePath = this.state.isAdminBadgePath;
+		const skip = this.state.skip;
 
 		if (isBadgePath) {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
@@ -544,6 +548,7 @@ class ImageMapEditor extends Component {
 				.then(response => {
 					if (response.ok) {
 						let successMessage = '';
+
 						if (editType === 'autoSave') {
 							successMessage = `${isCertificatePath ? 'Certificate' : 'Badge'} template autosaved!`;
 						} else {
@@ -559,7 +564,12 @@ class ImageMapEditor extends Component {
 						this.setState({
 							successMessage,
 							successMessageVisible: true,
+							skip: 0,
 						});
+
+						const url = new URL(window.location.href);
+						url.searchParams.set('sk', 0);
+						window.history.pushState({}, '', url);
 
 						if (this.clearSuccessMessageTimer) {
 							clearTimeout(this.clearSuccessMessageTimer);
@@ -596,7 +606,17 @@ class ImageMapEditor extends Component {
 				.then(data => {
 					if (editType === 'click') {
 						if (isAdminPath) {
-							window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credentials-templates`;
+							if (isCertificatePath) {
+								window.location.href = `${
+									CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL
+								}/template-manager?type=certificate&pg=${
+									pageSize === 'a4landscape' ? 'ls' : 'pt'
+								}&sk=${0}`;
+							} else if (isBadgePath) {
+								window.location.href = `${
+									CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL
+								}/template-manager?type=badge&sk=${0}`;
+							}
 						} else if (isDesignTemplate) {
 							if (isCertificatePath) {
 								window.location.href = `${
@@ -1183,7 +1203,7 @@ class ImageMapEditor extends Component {
 		this.setState({ selectedPageSize: value });
 	};
 
-	handleToolbarClassUpdate = (className) => {
+	handleToolbarClassUpdate = className => {
 		this.setState({ toolbarClass: className });
 	};
 
@@ -1196,13 +1216,22 @@ class ImageMapEditor extends Component {
 	};
 
 	handleBackButton = () => {
+		console.log('check state', this.state);
 		if (this.state.isAdminPath) {
-			window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/credentials-templates`;
+			if (this.state.isCertificatePath) {
+				window.location.href = `${
+					CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL
+				}/template-manager?type=certificate&pg=${
+					this.state.selectedPageSize === 'a4landscape' ? 'ls' : 'pt'
+				}&sk=${this.state.skip}`;
+			} else if (this.state.isBadgePath) {
+				window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/template-manager?type=badge&sk=${this.state.skip}`;
+			}
 		} else if (this.state.isDesignTemplate) {
 			if (this.state.isCertificatePath) {
 				window.location.href = `${
 					CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL
-				}/template-designs?type=certificate&pg=${this.state.pageSize === 'a4landscape' ? 'ls' : 'pt'}`;
+				}/template-designs?type=certificate&pg=${this.state.selectedPageSize === 'a4landscape' ? 'ls' : 'pt'}`;
 			} else if (this.state.isBadgePath) {
 				window.location.href = `${CONSTANTS.API_CONSTANT.REACT_APP_BASE_URL}/template-designs?type=badge`;
 			}
@@ -1418,7 +1447,7 @@ class ImageMapEditor extends Component {
 				/>
 				<div style={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
 					<div className="rde-editor-header-toolbar">
-					<ImageMapHeaderToolbar
+						<ImageMapHeaderToolbar
 							canvasRef={this.canvasRef}
 							selectedItem={selectedItem}
 							onSelect={onSelect}
