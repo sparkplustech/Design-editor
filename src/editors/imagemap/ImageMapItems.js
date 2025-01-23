@@ -438,6 +438,7 @@ class ImageMapItems extends Component {
 								<ProfileOutlined style={{ fontSize: '32px' }} /> <span>Templates</span>{' '}
 							</Flex>
 						) : (
+							<>
 							<Flex
 								flexDirection="column"
 								className={`${
@@ -447,9 +448,6 @@ class ImageMapItems extends Component {
 							>
 								<PictureOutlined style={{ fontSize: '32px' }} /> <span>Backgrounds</span>{' '}
 							</Flex>
-						)}
-
-						{isAdminBadgePath && (
 							<Flex
 								flexDirection="column"
 								className={`${
@@ -461,6 +459,9 @@ class ImageMapItems extends Component {
 							>
 								<ProfileOutlined style={{ fontSize: '32px' }} /> <span>Templates</span>{' '}
 							</Flex>
+							</>
+							
+							
 						)}
 
 						<Flex
