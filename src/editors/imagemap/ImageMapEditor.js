@@ -217,7 +217,7 @@ class ImageMapEditor extends Component {
 						}
 						this.setState({
 							loading: false,
-							inputData: data?.name,
+							inputData: (data?.name === null ||data?.name === "null") ? "" : data?.name,
 							isInputEmpty: false,
 							selectedPageSize: data?.pageSize,
 						});
@@ -472,7 +472,7 @@ class ImageMapEditor extends Component {
 		}
 		const blobPromise = fetch(dataURL).then(res => res.blob());
 		blobPromise.then(blob => {
-			const name = this.state.inputData;
+			const name = (this.state.inputData === null ||this.state.inputData === "null") ? "" : this.state.inputData;
 			const pageSize = this.state.selectedPageSize;
 			const objects = this.canvasRef.handler.exportJSON().filter(obj => {
 				if (!obj.id) {
@@ -637,6 +637,9 @@ class ImageMapEditor extends Component {
 							}
 						}
 					}
+					this.setState({
+						inputData: data.name,
+					});
 					return data;
 				})
 				.catch(error => {
