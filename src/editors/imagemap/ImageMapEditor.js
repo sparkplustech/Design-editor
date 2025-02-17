@@ -217,7 +217,7 @@ class ImageMapEditor extends Component {
 						}
 						this.setState({
 							loading: false,
-							inputData: (data?.name === null ||data?.name === "null") ? "" : data?.name,
+							inputData: data?.name === null || data?.name === 'null' ? '' : data?.name,
 							isInputEmpty: false,
 							selectedPageSize: data?.pageSize,
 						});
@@ -472,7 +472,7 @@ class ImageMapEditor extends Component {
 		}
 		const blobPromise = fetch(dataURL).then(res => res.blob());
 		blobPromise.then(blob => {
-			const name = (this.state.inputData === null ||this.state.inputData === "null") ? "" : this.state.inputData;
+			const name = this.state.inputData === null || this.state.inputData === 'null' ? '' : this.state.inputData;
 			const pageSize = this.state.selectedPageSize;
 			const objects = this.canvasRef.handler.exportJSON().filter(obj => {
 				if (!obj.id) {
@@ -1203,7 +1203,37 @@ class ImageMapEditor extends Component {
 	};
 
 	handlePageSizeChange = value => {
+		const isCertificatePath = this.state.isCertificatePath;
+		// console.log("check is certificate", isCertificatePath);
 		this.setState({ selectedPageSize: value });
+
+
+
+		if (isCertificatePath) {
+
+			const objects = this.canvasRef.handler.exportJSON().filter(obj => {
+				if (!obj.id) {
+					return false;
+				}
+				return true;
+			});
+	
+			objects.shift();
+
+			if (value === 'a4landscape') {
+				objects.unshift(CONSTANTS.JSON_CONSTANT.LANDSCAPE_CERTIFICATE);
+			} else {
+				objects.unshift(CONSTANTS.JSON_CONSTANT.PORTRAIT_CERTIFICATE);
+			}
+
+			this.canvasRef.handler.clear();
+
+		if (objects && Array.isArray(objects)) {
+			this.canvasRef.handler.importJSON(objects);
+		} else {
+			console.error('Invalid objects data format:', objects);
+		}
+		}
 	};
 
 	handleToolbarClassUpdate = className => {
