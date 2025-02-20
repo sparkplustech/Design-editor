@@ -12,46 +12,51 @@ class Attributes extends Component {
 	getItem(name) {
 		const currentPath = window.location.pathname;
 		const isAdminBadgePath = currentPath.includes('admin-badge-designer');
-	
-		let item={}
-		if(name=="[IssuerLogo]")
-			{
-				item = {	
-					type: 'image',
-					option: {
-					type: 'image',
-					src: "../../../images/sample/issuerlogo.png",
-					width:200,
-					height:60,
-					name:'attribute'
-				}
-			}
-			}
 
-			else
-			{
-		item = {
-			name: 'Text',
-			description: '',
-			type: 'textbox',
-			editable: false,
-			icon: {
-				prefix: 'fas',
-				name: 'font',
-			},
-			option: {
+		let item = {};
+		if (name == '[IssuerLogo]') {
+			item = {
+				type: 'image',
+				option: {
+					type: 'image',
+					src: '../../../images/sample/issuerlogo.png',
+					width: 200,
+					height: 60,
+					name: 'attribute',
+				},
+			};
+		}else if (name == '[QRCode]') {
+			item = {
+				type: 'image',
+				option: {
+					type: 'image',
+					src: '../../../images/sample/qr.svg',
+					// width: 100,
+					// height: 100,
+					name: 'attribute-qr',
+				},
+			};
+		} else {
+			item = {
+				name: 'Text',
+				description: '',
 				type: 'textbox',
-				text: name,
-				width: 400,
-				height: 30,
-				fontSize: 20,
-				name: 'attribute',
-				textAlign: 'center',
-			},
-		};
-
-
-	}
+				editable: false,
+				icon: {
+					prefix: 'fas',
+					name: 'font',
+				},
+				option: {
+					type: 'textbox',
+					text: name,
+					width: 400,
+					height: 30,
+					fontSize: 20,
+					name: 'attribute',
+					textAlign: 'center',
+				},
+			};
+		}
 		return item;
 	}
 	handlers = {
@@ -159,6 +164,9 @@ class Attributes extends Component {
 					</p>
 					<p className="sub-attribute" onClick={e => this.handlers.onAddItem(this.getItem('[Uuid]'), true)}>
 						UUID
+					</p>
+					<p className="sub-attribute" onClick={e => this.handlers.onAddItem(this.getItem('[QRCode]'), true)}>
+						QR Code
 					</p>
 					<Divider />
 					<h4
