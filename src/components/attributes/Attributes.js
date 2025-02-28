@@ -165,6 +165,9 @@ class Attributes extends Component {
 					<p className="sub-attribute" onClick={e => this.handlers.onAddItem(this.getItem('[Uuid]'), true)}>
 						UUID
 					</p>
+					<p className="sub-attribute" onClick={e => this.handlers.onAddItem(this.getItem('[Level]'), true)}>
+						Level
+					</p>
 					<p className="sub-attribute" onClick={e => this.handlers.onAddItem(this.getItem('[QRCode]'), true)}>
 						QR Code
 					</p>
