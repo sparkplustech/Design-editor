@@ -205,12 +205,14 @@ class ImageMapEditor extends Component {
 						if (data?.templateCode !== '') {
 							const objects = data?.templateCode?.objects;
 							const pageSize = data?.pageSize;
-							this.canvasRef.handler.clear();
+							this.canvasRef.handler.clear(true);
 							if (this.state.isBadgePath) {
 								objects.unshift(CONSTANTS.JSON_CONSTANT.BADGE);
 							}
 							if (objects && Array.isArray(objects)) {
-								this.canvasRef.handler.importJSON(objects);
+								setTimeout(() => {
+									this.canvasRef.handler.importJSON(objects);
+								}, 50);
 							} else {
 								console.error('Invalid objects data format:', objects);
 							}
@@ -1226,7 +1228,7 @@ class ImageMapEditor extends Component {
 				objects.unshift(CONSTANTS.JSON_CONSTANT.PORTRAIT_CERTIFICATE);
 			}
 
-			this.canvasRef.handler.clear();
+			this.canvasRef.handler.clear(true);
 
 		if (objects && Array.isArray(objects)) {
 			this.canvasRef.handler.importJSON(objects);

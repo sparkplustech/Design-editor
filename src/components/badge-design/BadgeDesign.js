@@ -48,11 +48,13 @@ const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange }) => {
 			.then(data => {
 				try {
 					const objects = data?.templateCode?.objects;
-					canvasRef.handler.clear();
+					canvasRef.handler.clear(true);
 					objects.unshift(CONSTANTS.JSON_CONSTANT.BADGE);
 					if (objects && Array.isArray(objects)) {
-						canvasRef.handler.importJSON(objects);
-						onCanvasChange(true);
+						setTimeout(() => {
+							canvasRef.handler.importJSON(objects);
+							onCanvasChange(true);
+						}, 50);
 					} else {
 						console.error('Invalid objects data format:', objects);
 					}

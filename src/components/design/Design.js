@@ -73,11 +73,13 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 					const objects = data?.templateCode?.objects;
 					const pageSize = tempdata?.pageSize;
 					onPageSizeChange(pageSize);
-					canvasRef.handler.clear();
+					canvasRef.handler.clear(true);
 					
 					if (objects && Array.isArray(objects)) {
-						canvasRef.handler.importJSON(objects);
-						onCanvasChange(true);
+						setTimeout(() => {
+							canvasRef.handler.importJSON(objects);
+							onCanvasChange(true);
+						}, 50);
 					} else {
 						console.error('Invalid objects data format:', objects);
 					}
@@ -87,7 +89,10 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 
 				mainLoader(false);
 			})
-			.catch(error => console.error('Error fetching templates:', error));
+			.catch(error => {
+				console.error('Error fetching templates:', error);
+				mainLoader(false);
+			});
 	}
 
 	if (loading) {

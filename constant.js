@@ -20,6 +20,8 @@ if (designCode && designCode.startsWith('DCL')) {
   apiBaseUrl = 'https://astateqaapi.thesolo.network/api';
 } else if (designCode && designCode.startsWith('DCD')) {
   apiBaseUrl = 'https://devapi.thesolo.network/api';
+} else if (designCode && designCode.startsWith('LTE')) {
+  apiBaseUrl = 'https://learn2earnapi.thesolo.network/api';
 }
 
 if (decryptedRU == 'localhost') {
