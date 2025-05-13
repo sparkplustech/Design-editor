@@ -14,6 +14,7 @@ class Icon extends Component {
         innerSize: PropTypes.number,
         prefix: PropTypes.string,
         onClick: PropTypes.func,
+        type: PropTypes.oneOf(['fas', 'material'])
     };
 
     static defaultProps = {
@@ -26,27 +27,34 @@ class Icon extends Component {
         innerClassName: '',
         innerSize: 1,
         prefix: 'fas',
+        type: 'fas',
     };
 
-    getIconHtml = (prefix, name, className, size, color) => {
-        const iconClassName = `${prefix} fa-${name} ${className}`;
-        const iconStyle = Object.assign({}, this.props.style, {
+    getIconHtml = (prefix, name, className, size, color, type = 'fas') => {
+        const style = Object.assign({}, this.props.style, {
             fontSize: `${size}em`,
             color,
         });
-        return (<i className={iconClassName} style={iconStyle} onClick={this.props.onClick} />);
-    }
+    
+        if (type === 'material') {
+            const materialClass = className || 'material-icons';
+            return <span className={materialClass} style={style} onClick={this.props.onClick}>{name}</span>;
+        } else {
+            const iconClassName = `${prefix} fa-${name} ${className}`;
+            return <i className={iconClassName} style={style} onClick={this.props.onClick} />;
+        }
+    };
 
     render() {
-        const { color, size, className, innerIcon, innerColor, innerSize, innerClassName, prefix } = this.props;
+        const { color, size, className, innerIcon, innerColor, innerSize, innerClassName, prefix, type } = this.props;
         let { name } = this.props;
         if (name.startsWith('icon-')) {
             name = name.substr('icon-'.length);
         }
-        const iconHtml = this.getIconHtml(prefix, name, className, size, color);
+        const iconHtml = this.getIconHtml(prefix, name, className, size, color, type);
         let innerIconHtml = null;
         if (innerIcon) {
-            innerIconHtml = this.getIconHtml(innerIcon, innerClassName, innerSize, innerColor);
+            innerIconHtml = this.getIconHtml(innerIcon, innerClassName, innerSize, innerColor, type);
         } else {
             return iconHtml;
         }

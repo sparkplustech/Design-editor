@@ -442,15 +442,6 @@ class ImageMapItems extends Component {
 							<Flex
 								flexDirection="column"
 								className={`${
-									activeSection === 'template' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
-								}`}
-								onClick={() => this.handlers.onSectionChange('template')}
-							>
-								<PictureOutlined style={{ fontSize: '32px' }} /> <span>Backgrounds</span>{' '}
-							</Flex>
-							<Flex
-								flexDirection="column"
-								className={`${
 									activeSection === 'badge-template'
 										? 'leftbarmenu leftbarmenu-active'
 										: 'leftbarmenu'
@@ -458,6 +449,15 @@ class ImageMapItems extends Component {
 								onClick={() => this.handlers.onSectionChange('badge-template')}
 							>
 								<ProfileOutlined style={{ fontSize: '32px' }} /> <span>Templates</span>{' '}
+							</Flex>
+							<Flex
+								flexDirection="column"
+								className={`${
+									activeSection === 'template' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
+								}`}
+								onClick={() => this.handlers.onSectionChange('template')}
+							>
+								<span className="material-icons-outlined" style={{ fontSize: '34px' }}>workspace_premium</span> <span>Shapes</span>{' '}
 							</Flex>
 							</>
 							

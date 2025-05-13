@@ -22,6 +22,7 @@ class CommonButton extends Component {
 		disabled: PropTypes.bool,
 		loading: PropTypes.bool,
 		type: PropTypes.string,
+		iconType: PropTypes.oneOf(['fas', 'material']),
 	};
 
 	static defaultProps = {
@@ -29,6 +30,7 @@ class CommonButton extends Component {
 		visible: true,
 		disabled: false,
 		loading: false,
+		iconType: 'fas',
 	};
 
 	render() {
@@ -55,12 +57,14 @@ class CommonButton extends Component {
 										style={this.props.iconStyle}
 										className={this.props.iconClassName}
 										animation={this.props.iconAnimation}
+										type={this.props.iconType}
 									/>
 								) : (
 									<Icon
 										name={this.props.icon}
 										style={this.props.iconStyle}
 										className={this.props.iconClassName}
+										type={this.props.iconType}
 									/>
 								)
 							) : null}
@@ -88,12 +92,14 @@ class CommonButton extends Component {
 									style={this.props.iconStyle}
 									className={this.props.iconClassName}
 									animation={this.props.iconAnimation}
+									type={this.props.iconType}
 								/>
 							) : (
 								<Icon
 									name={this.props.icon}
 									style={this.props.iconStyle}
 									className={this.props.iconClassName}
+									type={this.props.iconType}
 								/>
 							)
 						) : null}

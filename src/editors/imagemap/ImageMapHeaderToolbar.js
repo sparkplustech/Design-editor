@@ -111,35 +111,43 @@ class ImageMapHeaderToolbar extends Component {
 				</Flex.Item>
 				<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
 					<CommonButton
-						className="rde-action-btn"
+						className="rde-action-btn align-action-btn"
 						shape="circle"
 						disabled={isCropping}
 						onClick={() => canvasRef.handler?.alignmentHandler.left()}
-						icon="align-left"
+						icon="align_horizontal_left"
+						iconType="material"
+                        iconClassName="material-icons-round"
 						tooltipTitle={i18n.t('action.align-left')}
 					/>
 					<CommonButton
-						className="rde-action-btn"
+						className="rde-action-btn align-action-btn"
 						shape="circle"
 						disabled={isCropping}
 						onClick={() => canvasRef.handler?.alignmentHandler.center()}
-						icon="align-center"
+						icon="align_horizontal_center"
+						iconType="material"
+                        iconClassName="material-icons-round"
 						tooltipTitle={i18n.t('action.align-center')}
 					/>
 					<CommonButton
-						className="rde-action-btn"
+						className="rde-action-btn align-action-btn"
 						shape="circle"
 						disabled={isCropping}
 						onClick={() => canvasRef.handler?.alignmentHandler.middle()}
-						icon="align-center"
+						icon="align_vertical_center"
+						iconType="material"
+                        iconClassName="material-icons-round"
 						tooltipTitle={i18n.t('action.align-middle')}
 					/>
 					<CommonButton
-						className="rde-action-btn"
+						className="rde-action-btn align-action-btn"
 						shape="circle"
 						disabled={isCropping}
 						onClick={() => canvasRef.handler?.alignmentHandler.right()}
-						icon="align-right"
+						icon="align_horizontal_right"
+						iconType="material"
+                        iconClassName="material-icons-round"
 						tooltipTitle={i18n.t('action.align-right')}
 					/>
 				</Flex.Item>
