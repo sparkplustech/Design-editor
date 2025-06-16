@@ -1,4 +1,4 @@
-import { Icon, Upload, message } from 'antd';
+import {Icon, Upload, message } from 'antd';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
@@ -9,11 +9,15 @@ class FileUpload extends Component {
 		onChange: PropTypes.func,
 		limit: PropTypes.number,
 		accept: PropTypes.string,
+		type: PropTypes.oneOf(['badge', 'certificate']),
+		orientation: PropTypes.oneOf(['portrait', 'landscape']), // Only for certificate
+		value: PropTypes.any,
 	};
 
 	static defaultProps = {
-		limit: 5,
 		accept: 'image/*',
+		type: 'badge',
+		orientation: 'landscape',
 	};
 
 	state = {
@@ -26,23 +30,33 @@ class FileUpload extends Component {
 		});
 	}
 
-	normalizeMimeType = (type) => {
-		if (type === 'image/svg') {
-			return 'image/svg+xml';
+	getCanvasSize = () => {
+		const { type, orientation } = this.props;
+
+		if (type === 'badge') {
+			return { width: 490, height: 490 };
 		}
+		if (type === 'certificate') {
+			if (orientation === 'portrait') {
+				return { width: 608, height: 790 };
+			}
+			return { width: 790, height: 608 };
+		}
+		return { width: 500, height: 500 };
+	};
+
+	normalizeMimeType = (type) => {
+		if (type === 'image/svg') return 'image/svg+xml';
 		return type;
 	};
 
 	getReadableFileTypes = () => {
 		const { accept } = this.props;
-
-		if (accept === 'image/*') {
-			return null;
-		}
+		if (accept === 'image/*') return null;
 
 		const extensions = accept
 			.split(',')
-			.map((type) => type.replace('.', '').toUpperCase()); // Removing dot and converting to uppercase
+			.map((type) => type.replace('.', '').toUpperCase());
 
 		return extensions.join(', ');
 	};
@@ -71,9 +85,7 @@ class FileUpload extends Component {
 
 		if (!isValidType) {
 			const readableTypes = this.getReadableFileTypes();
-			message.error(
-				`Invalid file type. Only ${readableTypes} are allowed.`,
-			);
+			message.error(`Invalid file type. Only ${readableTypes} are allowed.`);
 			return false;
 		}
 
@@ -86,29 +98,66 @@ class FileUpload extends Component {
 		return true;
 	};
 
+	resizeImageToFitCanvas = (file, maxWidth, maxHeight) => {
+	return new Promise((resolve) => {
+		const reader = new FileReader();
+		reader.onload = (e) => {
+			const img = new Image();
+			img.onload = () => {
+				const { width, height } = img;
+
+				// If the image fits within canvas, no need to resize
+				if (width <= maxWidth && height <= maxHeight) {
+					file.uid = file.uid || `${Date.now()}-${Math.random()}`;
+					resolve(file);
+					return;
+				}
+
+				const ratio = Math.min(maxWidth / width, maxHeight / height);
+				const newWidth = width * ratio;
+				const newHeight = height * ratio;
+
+				const canvas = document.createElement('canvas');
+				canvas.width = newWidth;
+				canvas.height = newHeight;
+				const ctx = canvas.getContext('2d');
+				ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+				canvas.toBlob((blob) => {
+					const resizedFile = new File([blob], file.name, {
+						type: file.type,
+						lastModified: Date.now(),
+					});
+					resizedFile.uid = file.uid || `${Date.now()}-${Math.random()}`;
+					resolve(resizedFile);
+				}, file.type);
+			};
+			img.src = e.target.result;
+		};
+		reader.readAsDataURL(file);
+	});
+};
+
+
+
 	render() {
 		const { accept, limit, onChange } = this.props;
 		const { fileList } = this.state;
-
 		const readableTypes = this.getReadableFileTypes();
+		const { width, height } = this.getCanvasSize();
 
 		const props = {
 			accept,
 			name: 'file',
 			multiple: false,
-			beforeUpload: (file) => {
+			beforeUpload: async (file) => {
 				const isValid = this.validateFile(file);
+				if (!isValid) return false;
 
-				if (!isValid) {
-					return false;
-				}
+				const resizedFile = await this.resizeImageToFitCanvas(file, width, height);
 
-				this.setState({
-					fileList: [file],
-				});
-				if (onChange) {
-					onChange(file);
-				}
+				this.setState({ fileList: [resizedFile] });
+				if (onChange) onChange(resizedFile);
 
 				return false;
 			},

@@ -24,6 +24,8 @@ if (designCode && designCode.startsWith('DCL')) {
   apiBaseUrl = 'https://learn2earnapi.thesolo.network/api';
 } else if (designCode && designCode.startsWith('VPS')) {
   apiBaseUrl = 'https://vialtopartnersapi.thesolo.network/api';
+} else if (designCode && designCode.startsWith('LTS')) {
+  apiBaseUrl = 'https://learn2earnapi.thesolo.network/api/';
 }
 
 if (decryptedRU == 'localhost') {

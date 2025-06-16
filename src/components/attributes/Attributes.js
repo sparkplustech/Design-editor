@@ -95,6 +95,13 @@ class Attributes extends Component {
 					>
 						Issuer Logo
 					</p>
+					<p
+						className="sub-attribute"
+						draggable
+						onClick={e => this.handlers.onAddItem(this.getItem('[IssuerWebsite]'), true)}
+					>
+						Issuer Website
+					</p>
 					<Divider />
 					{/* <h4 className="main-attribute">Group</h4>
 

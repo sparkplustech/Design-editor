@@ -8,11 +8,17 @@ import UrlModal from '../../../components/common/UrlModal';
 export default {
 	render(canvasRef, form, data) {
 		const { getFieldDecorator } = form;
-		if (!data || data.name=="attribute") {
+		if (!data || data.name == 'attribute') {
 			return null;
 		}
 
 		const imageLoadType = data.imageLoadType || 'file';
+
+		const currentPath = window.location.pathname;
+
+		const isCertificatePath = currentPath.includes('certificate-designer');
+		const isBadgePath = currentPath.includes('badge-designer');
+		const canvasType = isCertificatePath ? 'certificate' : isBadgePath ? 'badge' : 'badge';
 		return (
 			<React.Fragment>
 				<Form.Item label={i18n.t('imagemap.image.image-load-type')} colon={false}>
@@ -35,7 +41,7 @@ export default {
 								},
 							],
 							initialValue: data.file,
-						})(<FileUpload accept=".png" limit={100} />)}
+						})(<FileUpload accept=".png" type={canvasType} orientation="portrait" limit={100} />)}
 					</Form.Item>
 				) : (
 					<Form.Item>
