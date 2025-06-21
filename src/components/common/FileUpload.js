@@ -1,4 +1,4 @@
-import {Icon, Upload, message } from 'antd';
+import { Icon, Upload, message } from 'antd';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
@@ -10,11 +10,12 @@ class FileUpload extends Component {
 		limit: PropTypes.number,
 		accept: PropTypes.string,
 		type: PropTypes.oneOf(['badge', 'certificate']),
-		orientation: PropTypes.oneOf(['portrait', 'landscape']), // Only for certificate
+		orientation: PropTypes.oneOf(['portrait', 'landscape']),
 		value: PropTypes.any,
 	};
 
 	static defaultProps = {
+		limit: 5,
 		accept: 'image/*',
 		type: 'badge',
 		orientation: 'landscape',
@@ -106,7 +107,6 @@ class FileUpload extends Component {
 			img.onload = () => {
 				const { width, height } = img;
 
-				// If the image fits within canvas, no need to resize
 				if (width <= maxWidth && height <= maxHeight) {
 					file.uid = file.uid || `${Date.now()}-${Math.random()}`;
 					resolve(file);

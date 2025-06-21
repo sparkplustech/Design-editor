@@ -25,7 +25,9 @@ if (designCode && designCode.startsWith('DCL')) {
 } else if (designCode && designCode.startsWith('VPS')) {
   apiBaseUrl = 'https://vialtopartnersapi.thesolo.network/api';
 } else if (designCode && designCode.startsWith('LTS')) {
-  apiBaseUrl = 'https://learn2earnapi.thesolo.network/api/';
+  apiBaseUrl = 'https://learn2earnapi.thesolo.network/api';
+} else if (designCode && designCode.startsWith('BTS')) {
+  apiBaseUrl = 'https://brilliancytechapi.thesolo.network/api';
 }
 
 if (decryptedRU == 'localhost') {
