@@ -28,7 +28,7 @@ if (designCode && designCode.startsWith('DCL')) {
   apiBaseUrl = 'https://learn2earnapi.thesolo.network/api';
 } else if (designCode && designCode.startsWith('BTS')) {
   apiBaseUrl = 'https://brilliancytechapi.thesolo.network/api';
-} else if (designCode && designCode.startsWith('TESTGSI')) {
+} else if (designCode && designCode.startsWith('TEST')) {
   apiBaseUrl = 'https://astatedevapi.thesolo.network/api';
 }
 
