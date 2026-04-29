@@ -44,6 +44,10 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - Stopped mutating server-returned canvas object arrays before validation.
 - Isolated custom HTML/CSS/JS element rendering and Ace previews inside sandboxed iframes instead of injecting into the app document.
 - Removed raw HTML insertion from tooltips and context menus; React rendering now handles those surfaces directly.
+- Added Fabric-safe SVG sanitization for pasted SVGs, SVG files, saved SVG payloads, and component SVG fetches before Fabric parsing.
+- Added route smoke checks for all designer routes via `npm run smoke:routes`.
+- Centralized editor route/query parsing so the main editor, header toolbar, properties, API helper, and resource panels share the same session interpretation.
+- Tightened explicit save validation so Save & Close requires a non-empty design name and persists trimmed names.
 - Replaced deprecated `uuidv4` wrapper imports with `uuid` v4 imports and removed the unused `uuidv4` dependency.
 - Removed stale commented console logging in touched editor/resource files.
 - Gated audit output from source control via `.gitignore`.
@@ -53,20 +57,20 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - `npm run lint`
 - `npm run build`
 - Babel parsing for edited React/JS files
-- Browser smoke for `/certificate-designer` on local dev server with no runtime console errors
+- Browser smoke for `/certificate-designer` and `/badge-designer` on local dev server with no runtime console errors, aside from expected API 400s for fake smoke design codes
+- `npm run smoke:routes`
 - `npm audit --omit=dev --audit-level=high`
 
 The production app entrypoint is now about 298 KiB, down from about 5.56 MiB before this optimization pass. Build still reports large asset warnings for deferred Fabric/AntD/editor chunks and bundled font SVG assets. Those warnings are real remaining performance work, not build failures.
 
-Audit now completes and reports 23 remaining production advisories. The high/critical paths are tied to Fabric 4's old `jsdom/request` chain and AntD 3's old editor dependencies. `npm audit fix --omit=dev --package-lock-only --package-lock=true` could not resolve them without forced breaking upgrades, so these are tracked as planned major-upgrade work rather than hidden.
+Audit now reports 22 remaining production advisories. The high/critical paths are tied to Fabric 4's old `jsdom/request` chain, AntD 3's old editor dependencies, ECharts 4's zrender chain, and canvas/node-pre-gyp tar. `npm audit fix --omit=dev --package-lock-only --package-lock=true` could not resolve them without forced breaking upgrades, so these are tracked as planned major-upgrade work rather than hidden.
 
 ## Still Open
 
 - Full TypeScript coverage for the Fabric canvas code. The current codebase has many legacy declaration gaps when all canvas sources are included.
 - Dependency security upgrade plan for Fabric 4, AntD 3, Webpack 4, old request/jsdom chains, and related transitive advisories.
-- Fabric-safe SVG sanitization for production.
-- Signed editor session contract instead of route/query inference.
+- Signed server-issued editor session contract instead of client-only route/query inference.
 - Server-side Fabric render worker for deterministic PDF/PNG outputs.
 - Variable registry, proof validation, text overflow checks, QR validation, and bulk generation queue.
 - Modern editor shell redesign: contextual inspector, rulers/guides/safe area, save status, proof/export workflow.
-- Route smoke tests and visual regression tests.
+- Visual regression tests.

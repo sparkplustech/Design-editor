@@ -5,10 +5,7 @@ import i18n from 'i18next';
 export default {
 	render(canvasRef, form, data) {
 		const { getFieldDecorator } = form;
-		const currentPath = window.location.pathname;
-		// const isAdminBadgePath = currentPath.includes('admin-badge-designer');
-		// const isBadgeAttribute = data.name === 'badgeAttribute';
-		const isNameDisabled = (data.name=="attribute");
+		const isNameDisabled = data.name === 'attribute';
 		return (
 			<React.Fragment>
 				<Row>

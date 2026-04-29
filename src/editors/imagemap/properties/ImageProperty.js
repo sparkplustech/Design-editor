@@ -4,6 +4,7 @@ import React from 'react';
 
 import FileUpload from '../../../components/common/FileUpload';
 import UrlModal from '../../../components/common/UrlModal';
+import { parseEditorSession } from '../../../utils/editorSession';
 
 export default {
 	render(canvasRef, form, data) {
@@ -14,10 +15,7 @@ export default {
 
 		const imageLoadType = data.imageLoadType || 'file';
 
-		const currentPath = window.location.pathname;
-
-		const isCertificatePath = currentPath.includes('certificate-designer');
-		const isBadgePath = currentPath.includes('badge-designer');
+		const { isCertificatePath, isBadgePath } = parseEditorSession();
 		const canvasType = isCertificatePath ? 'certificate' : isBadgePath ? 'badge' : 'badge';
 		return (
 			<React.Fragment>

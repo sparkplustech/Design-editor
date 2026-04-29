@@ -1,5 +1,6 @@
 import { fabric } from 'fabric';
 import { FabricGroup, FabricObject, FabricObjectOption, toObject } from '../utils';
+import { resolveSvgText } from '../../utils/svgSanitizer';
 
 export type SvgObject = (FabricGroup | FabricObject) & {
 	loadSvg(option: SvgOption): Promise<SvgObject>;
@@ -63,16 +64,14 @@ const Svg = fabric.util.createClass(fabric.Group, {
 	},
 	loadSvg(option: SvgOption) {
 		const { svg, loadType, fill, stroke } = option;
-		return new Promise<SvgObject>(resolve => {
-			if (loadType === 'svg') {
-				fabric.loadSVGFromString(svg, (objects, options) => {
-					resolve(this.addSvgElements(objects, { ...options, fill, stroke }, svg));
-				});
-			} else {
-				fabric.loadSVGFromURL(svg, (objects, options) => {
-					resolve(this.addSvgElements(objects, { ...options, fill, stroke }, svg));
-				});
-			}
+		return new Promise<SvgObject>((resolve, reject) => {
+			resolveSvgText(svg, loadType)
+				.then((safeSvg: string) => {
+					fabric.loadSVGFromString(safeSvg, (objects, options) => {
+						resolve(this.addSvgElements(objects, { ...options, fill, stroke }, safeSvg));
+					});
+				})
+				.catch(reject);
 		});
 	},
 	setFill(value: any) {

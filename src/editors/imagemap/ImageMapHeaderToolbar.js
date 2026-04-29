@@ -6,6 +6,7 @@ import { CommonButton } from '../../components/common';
 import { Flex } from '../../components/flex';
 import Icon from '../../components/icon/Icon';
 import ImageMapList from './ImageMapList';
+import { parseEditorSession } from '../../utils/editorSession';
 
 const { Option } = Select;
 
@@ -54,9 +55,7 @@ class ImageMapHeaderToolbar extends Component {
 		const { canvasRef, selectedItem, onPageSizeChange, selectedPageSize } = this.props;
 		const isCropping = canvasRef ? canvasRef.handler?.interactionMode === 'crop' : false;
 
-		const currentPath = window.location.pathname;
-		const isAdminPath = currentPath.includes('admin');
-		const isCertificatePath = currentPath.includes('certificate-designer');
+		const { isCertificatePath } = parseEditorSession();
 
 		const { collapse } = this.state;
 		const { onCollapse } = this.handlers;

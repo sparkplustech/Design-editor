@@ -18,6 +18,7 @@ import ImageMapTitle from './ImageMapTitle';
 import CONSTANTS from '../../../constant';
 import { Flex } from '../../components/flex';
 import { authHeaders, fetchDesignerJson, getCanvasObjects, loadDesignerSession } from '../../utils/designerApi';
+import { parseEditorSession } from '../../utils/editorSession';
 
 const propertiesToInclude = [
 	'id',
@@ -120,6 +121,25 @@ class ImageMapEditor extends Component {
 
 	getExportMultiplier = () => 2;
 
+	normalizeDesignName = value => {
+		if (value === null || value === undefined || value === 'null') {
+			return '';
+		}
+
+		return `${value}`.trim();
+	};
+
+	validateDesignName = () => {
+		if (!this.normalizeDesignName(this.state.inputData)) {
+			const errorMessage = 'Enter a design name before saving.';
+			this.setState({ errorMessage, successMessage: '' });
+			message.warning(errorMessage);
+			return false;
+		}
+
+		return true;
+	};
+
 	getCanvasImageDataUrl = option => {
 		const cachedViewportTransform = this.canvasRef.canvas.viewportTransform;
 		let { left, top, width, height, scaleX, scaleY } = this.canvasRef.handler.workarea;
@@ -172,15 +192,24 @@ class ImageMapEditor extends Component {
 			selectedItem: null,
 		});
 
-		const queryParams = new URLSearchParams(window.location.search);
-		const designCode = queryParams.get('designCode');
-		//for badge
+		const editorSession = parseEditorSession();
+		const {
+			queryParams,
+			designCode,
+			currentPath,
+			isAdminPath,
+			isCertificatePath,
+			isBadgePath,
+			isAdminBadgePath,
+			isEdit,
+			id,
+			credId,
+			badgeId,
+			certId,
+			isDesignTemplate,
+			skip,
+		} = editorSession;
 
-		const currentPath = window.location.pathname;
-		const isAdminPath = currentPath.includes('admin');
-		const isCertificatePath = currentPath.includes('certificate-designer');
-		const isBadgePath = currentPath.includes('badge-designer');
-		const isAdminBadgePath = currentPath.includes('admin-badge-designer');
 		if (isBadgePath) {
 			this.canvasHandlers.onChangeWokarea('width', '', { width: 600, height: 600 });
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
@@ -195,16 +224,6 @@ class ImageMapEditor extends Component {
 			designCode: designCode,
 			isAdminBadgePath: isAdminBadgePath,
 		});
-
-		//edit
-
-		const isEdit = queryParams.get('edit') === 'true';
-		const id = queryParams.get('id');
-		const credId = queryParams.get('cid');
-		const badgeId = queryParams.get('bid');
-		const certId = queryParams.get('ctid');
-		const isDesignTemplate = queryParams.get('dt') === 'true';
-		const skip = queryParams.get('sk');
 
 		this.setState({
 			editId: id,
@@ -237,7 +256,7 @@ class ImageMapEditor extends Component {
 					queryParams.delete('edit');
 					const newUrl = `${window.location.pathname}?designCode=${designCode}`;
 					window.history.replaceState({}, '', newUrl);
-					this.setState({ loading: false, inputData: '', isInputEmpty: false, editId: '' });
+					this.setState({ loading: false, inputData: '', isInputEmpty: true, editId: '' });
 					return;
 				}
 
@@ -251,10 +270,12 @@ class ImageMapEditor extends Component {
 					}, 50);
 				}
 
+				const loadedName = this.normalizeDesignName(data?.name);
+
 				this.setState({
 					loading: false,
-					inputData: data?.name === null || data?.name === 'null' ? '' : data?.name,
-					isInputEmpty: false,
+					inputData: loadedName,
+					isInputEmpty: loadedName === '',
 					selectedPageSize: data?.pageSize,
 				});
 			} catch (error) {
@@ -317,16 +338,10 @@ class ImageMapEditor extends Component {
 	}
 
 	createTemplate = async data => {
-		const queryParams = new URLSearchParams(window.location.search);
-		const designCode = queryParams.get('designCode');
-		const currentPath = window.location.pathname;
-		const isAdminPath = currentPath.includes('admin');
-		const isCertificatePath = currentPath.includes('certificate-designer');
-		const isBadgePath = currentPath.includes('badge-designer');
-		const isAdminBadgePath = currentPath.includes('admin-badge-designer');
+		const { designCode, isAdminPath, isCertificatePath, isBadgePath, isAdminBadgePath } = this.state;
 		const accessToken = data.accessToken;
 		const pageSize = this.state.selectedPageSize;
-		const name = this.state.inputData === null || this.state.inputData === 'null' ? '' : this.state.inputData || '';
+		const name = this.normalizeDesignName(this.state.inputData);
 		if (isCertificatePath) {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '#FFFFFF', '');
 			this.canvasHandlers.onChangeWokarea('src', '', '');
@@ -408,12 +423,14 @@ class ImageMapEditor extends Component {
 				});
 
 				const successMessage = `${isCertificatePath ? 'Certificate template' : 'Badge template'} created!`;
+				const savedName = this.normalizeDesignName(isAdminPath ? responseData.TemplateName : responseData.name);
 				this.setState({
 					successMessage,
 					successMessageVisible: true,
 					createTemplateCalled: true,
 					autoSaveId: responseData.id,
-					inputData: isAdminPath ? responseData.TemplateName : responseData.name,
+					inputData: savedName,
+					isInputEmpty: savedName === '',
 				});
 
 				this.clearSuccessMessageTimer = setTimeout(() => {
@@ -436,6 +453,9 @@ class ImageMapEditor extends Component {
 
 	editTemplate = async editType => {
 		if (this.saveInFlight) {
+			return;
+		}
+		if (editType === 'click' && !this.validateDesignName()) {
 			return;
 		}
 		this.saveInFlight = true;
@@ -469,7 +489,7 @@ class ImageMapEditor extends Component {
 			this.canvasHandlers.onChangeWokarea('src', './images/sample/transparentBg.png', '');
 		}
 		const blob = this.dataUrlToBlob(dataURL);
-			const name = this.state.inputData === null || this.state.inputData === 'null' ? '' : this.state.inputData;
+			const name = this.normalizeDesignName(this.state.inputData);
 			const objects = this.canvasRef.handler.exportJSON().filter(obj => {
 				if (!obj.id) {
 					return false;
@@ -551,11 +571,13 @@ class ImageMapEditor extends Component {
 					} ${isEdit ? 'successfully!' : 'created!'}`;
 					message.success(successMessage);
 				}
+				const updatedName = this.normalizeDesignName(data.name);
 				this.setState({
 					successMessage,
 					successMessageVisible: true,
 					skip: 0,
-					inputData: data.name,
+					inputData: updatedName,
+					isInputEmpty: updatedName === '',
 				});
 
 				const url = new URL(window.location.href);
@@ -1176,8 +1198,12 @@ class ImageMapEditor extends Component {
 
 	onChangeInput = e => {
 		const inputData = e.target.value;
-		const isInputEmpty = inputData.trim() === '';
-		this.setState({ inputData, isInputEmpty });
+		const isInputEmpty = this.normalizeDesignName(inputData) === '';
+		this.setState({
+			inputData,
+			isInputEmpty,
+			errorMessage: isInputEmpty ? this.state.errorMessage : '',
+		});
 	};
 
 	handlePageSizeChange = value => {
@@ -1363,7 +1389,7 @@ class ImageMapEditor extends Component {
 					name="Save & Close"
 					className="saveBtn"
 					onClick={onSaveImageAndJson}
-					disabled={isSaving}
+					disabled={isSaving || isInputEmpty}
 				/>
 				{isAdminPath && (
 					<div>

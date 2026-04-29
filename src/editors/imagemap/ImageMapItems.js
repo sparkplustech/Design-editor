@@ -24,6 +24,8 @@ import Attributes from '../../components/attributes/Attributes';
 import { SVGModal } from '../../components/common';
 import { v4 as uuid } from 'uuid';
 import { FlowSettings } from '../flow';
+import { fetchSvgText, sanitizeSvgText } from '../../utils/svgSanitizer';
+import { parseEditorSession } from '../../utils/editorSession';
 
 notification.config({
 	top: 80,
@@ -48,19 +50,18 @@ class ImageMapItems extends Component {
 		svgModalVisible: false,
 		activeSection: 'design',
 		item: null,
-		currentPath: '',
+		editorSession: parseEditorSession(),
 	};
 
 	componentDidMount() {
 		const { canvasRef } = this.props;
 		this.waitForCanvasRender(canvasRef);
-		const currentPath = window.location.pathname;
-		this.setState({ currentPath: currentPath });
+		const editorSession = parseEditorSession();
 
-		const isAdminPath = currentPath.includes('admin');
+		this.setState({ editorSession });
 
-		if(isAdminPath){
-			this.setState({activeSection: 'template'});
+		if (editorSession.isAdminPath) {
+			this.setState({ activeSection: 'template' });
 		}
 	}
 
@@ -126,7 +127,7 @@ class ImageMapItems extends Component {
 
 	/* eslint-disable react/sort-comp, react/prop-types */
 	handlers = {
-		onAddItem: (item, centered) => {
+		onAddItem: async (item, centered) => {
 			const { canvasRef } = this.props;
 			if (canvasRef.handler.interactionMode === 'polygon') {
 				message.info('Already drawing');
@@ -139,34 +140,35 @@ class ImageMapItems extends Component {
 				return;
 			}
 			if (item.option.superType === 'svg' && item.type === 'component') {
-				fetch(item.svgUrl)
-					.then(response => response.text())
-					.then(svgData => {
-						// Convert SVG data to data URI
-						const dataURI = 'data:image/svg+xml;base64,' + btoa(svgData);
-
-						const { canvasRef } = this.props;
-						canvasRef.handler.add(
-							{
-								loadType: 'file',
-								svg: dataURI,
-								type: 'svg',
-								superType: 'svg',
-								id: uuid(),
-								name: 'New SVG',
-							},
-							centered,
-						);
-
-						return;
-					});
+				try {
+					const svg = await fetchSvgText(item.svgUrl);
+					canvasRef.handler.add(
+						{
+							loadType: 'svg',
+							svg,
+							type: 'svg',
+							superType: 'svg',
+							id: uuid(),
+							name: 'New SVG',
+						},
+						centered,
+					);
+				} catch (error) {
+					message.error(error.message || 'Unable to load SVG.');
+				}
+				return;
 			}
 			canvasRef.handler.add(option, centered);
 		},
 		onAddSVG: (option, centered) => {
 			const { canvasRef } = this.props;
-			canvasRef.handler.add({ ...option, type: 'svg', superType: 'svg', id: uuid(), name: 'New SVG' }, centered);
-			this.handlers.onSVGModalVisible();
+			try {
+				const svg = sanitizeSvgText(option.svg);
+				canvasRef.handler.add({ ...option, loadType: 'svg', svg, type: 'svg', superType: 'svg', id: uuid(), name: 'New SVG' }, centered);
+				this.handlers.onSVGModalVisible();
+			} catch (error) {
+				message.error(error.message || 'Unable to add SVG.');
+			}
 		},
 		onDrawingItem: item => {
 			const { canvasRef } = this.props;
@@ -389,15 +391,13 @@ class ImageMapItems extends Component {
 			svgModalVisible,
 			svgOption,
 			activeSection,
-			currentPath,
+			editorSession,
 		} = this.state;
 		const className = classnames('rde-editor-items', {
 			minimize: collapse,
 		});
 
-		const isAdminPath = currentPath.includes('admin');
-		const isCertificatePath = currentPath.includes('certificate-designer');
-		const isAdminBadgePath = currentPath.includes('admin-badge-designer');
+		const { isAdminPath, isCertificatePath, isAdminBadgePath } = editorSession;
 
 		return (
 			<div className={className}>

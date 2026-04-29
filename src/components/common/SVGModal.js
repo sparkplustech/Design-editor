@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Modal, Form, Radio } from 'antd';
+import { Modal, Form, Radio, message } from 'antd';
 import i18n from 'i18next';
 
 import { InputHtml } from '.';
 import FileUpload from './FileUpload';
+import { readSvgFile, sanitizeSvgText } from '../../utils/svgSanitizer';
 
 class SVGModal extends Component {
 	static propTypes = {
@@ -35,18 +36,15 @@ class SVGModal extends Component {
 
 	handleOk = () => {
 		const { form, onOk } = this.props;
-		form.validateFields((err, values) => {
+		form.validateFields(async (err, values) => {
 			if (err) {
 				return;
 			}
-			if (values.svg instanceof Blob) {
-				const reader = new FileReader();
-				reader.readAsDataURL(values.svg);
-				reader.onload = () => {
-					onOk({ ...values, svg: reader.result });
-				};
-			} else {
-				onOk(values);
+			try {
+				const svg = values.svg instanceof Blob ? await readSvgFile(values.svg) : sanitizeSvgText(values.svg);
+				onOk({ ...values, loadType: 'svg', svg });
+			} catch (error) {
+				message.error(error.message || 'Unable to add SVG.');
 			}
 		});
 	};

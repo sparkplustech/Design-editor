@@ -19,6 +19,7 @@
 		"deploy": "npm run build:lib && npm publish",
 		"lint": "npm run tsc",
 		"clean": "node scripts/clean",
+		"smoke:routes": "node scripts/smoke-routes.js",
 		"tsc": "node node_modules/typescript/lib/tsc.js",
 		"typedoc": "typedoc"
 	},

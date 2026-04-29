@@ -1,12 +1,12 @@
 import CONSTANTS from '../../constant';
+import { parseEditorSession } from './editorSession';
 
 const API_BASE_URL = CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL;
 
 export function getDesignCode() {
-	const queryParams = new URLSearchParams(window.location.search);
-	const designCode = queryParams.get('designCode');
+	const { designCode, hasValidDesignCode } = parseEditorSession();
 
-	if (!designCode) {
+	if (!designCode || !hasValidDesignCode) {
 		throw new Error('Missing design code.');
 	}
 
