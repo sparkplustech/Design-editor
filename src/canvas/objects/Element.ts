@@ -1,5 +1,6 @@
 import { fabric } from 'fabric';
 import { FabricElement, toObject } from '../utils';
+import { buildSandboxedHtml, emptyElement } from '../../utils/sandboxedHtml';
 
 export interface Code {
 	html: string;
@@ -40,9 +41,9 @@ const Element = fabric.util.createClass(fabric.Rect, {
 			code,
 		});
 		const { css, js, html } = code;
-		this.styleEl.innerHTML = css;
-		this.scriptEl.innerHTML = js;
-		this.element.innerHTML = html;
+		if (this.iframeEl) {
+			this.iframeEl.srcdoc = buildSandboxedHtml(html, css, js);
+		}
 	},
 	toObject(propertiesToInclude: string[]) {
 		return toObject(this, propertiesToInclude, {
@@ -72,21 +73,19 @@ const Element = fabric.util.createClass(fabric.Rect, {
                         pointer-events: ${editable ? 'none' : 'auto'};`,
 			}) as HTMLDivElement;
 			const { html, css, js } = code;
-			this.styleEl = document.createElement('style');
-			this.styleEl.id = `${id}_style`;
-			this.styleEl.type = 'text/css';
-			this.styleEl.innerHTML = css;
-			document.head.appendChild(this.styleEl);
-
-			this.scriptEl = document.createElement('script');
-			this.scriptEl.id = `${id}_script`;
-			this.scriptEl.type = 'text/javascript';
-			this.scriptEl.innerHTML = js;
-			document.head.appendChild(this.scriptEl);
-
 			const container = document.getElementById(this.container);
 			container.appendChild(this.element);
-			this.element.innerHTML = html;
+
+			this.iframeEl = document.createElement('iframe');
+			this.iframeEl.title = 'Embedded element';
+			this.iframeEl.setAttribute('sandbox', 'allow-scripts');
+			this.iframeEl.setAttribute('frameborder', '0');
+			this.iframeEl.style.width = '100%';
+			this.iframeEl.style.height = '100%';
+			this.iframeEl.style.border = '0';
+			this.iframeEl.srcdoc = buildSandboxedHtml(html, css, js);
+			emptyElement(this.element);
+			this.element.appendChild(this.iframeEl);
 		}
 	},
 });

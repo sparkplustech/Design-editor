@@ -38,6 +38,13 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - Lazy-loaded heavy non-default editors so the initial app chunk stays small while preserving all editor routes.
 - Added lazy thumbnail loading for resource browsers.
 - Tightened the chart script sandbox denylist and reject unsafe chart scripts with a user-facing error.
+- Added a shared designer API helper that validates session tokens, HTTP status, JSON responses, and canvas object payloads.
+- Moved certificate/template/badge resource panels onto guarded async loading with unmount protection and session-expired feedback.
+- Moved the main designer startup load and save/update flows onto the guarded API helper.
+- Stopped mutating server-returned canvas object arrays before validation.
+- Isolated custom HTML/CSS/JS element rendering and Ace previews inside sandboxed iframes instead of injecting into the app document.
+- Removed raw HTML insertion from tooltips and context menus; React rendering now handles those surfaces directly.
+- Replaced deprecated `uuidv4` wrapper imports with `uuid` v4 imports and removed the unused `uuidv4` dependency.
 - Removed stale commented console logging in touched editor/resource files.
 - Gated audit output from source control via `.gitignore`.
 
@@ -46,6 +53,7 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - `npm run lint`
 - `npm run build`
 - Babel parsing for edited React/JS files
+- Browser smoke for `/certificate-designer` on local dev server with no runtime console errors
 - `npm audit --omit=dev --audit-level=high`
 
 The production app entrypoint is now about 298 KiB, down from about 5.56 MiB before this optimization pass. Build still reports large asset warnings for deferred Fabric/AntD/editor chunks and bundled font SVG assets. Those warnings are real remaining performance work, not build failures.
@@ -56,7 +64,7 @@ Audit now completes and reports 23 remaining production advisories. The high/cri
 
 - Full TypeScript coverage for the Fabric canvas code. The current codebase has many legacy declaration gaps when all canvas sources are included.
 - Dependency security upgrade plan for Fabric 4, AntD 3, Webpack 4, old request/jsdom chains, and related transitive advisories.
-- Fabric-safe SVG/HTML sanitization for production.
+- Fabric-safe SVG sanitization for production.
 - Signed editor session contract instead of route/query inference.
 - Server-side Fabric render worker for deterministic PDF/PNG outputs.
 - Variable registry, proof validation, text overflow checks, QR validation, and bulk generation queue.

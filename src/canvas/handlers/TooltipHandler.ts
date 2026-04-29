@@ -2,6 +2,7 @@ import debounce from 'lodash/debounce';
 import ReactDOM from 'react-dom';
 import { FabricObject } from '../utils';
 import Handler from './Handler';
+import { emptyElement } from '../../utils/sandboxedHtml';
 
 
 class TooltipHandler {
@@ -46,9 +47,7 @@ class TooltipHandler {
 	 */
 	public show = debounce(async (target?: FabricObject) => {
 		if (target.tooltip && target.tooltip.enabled) {
-			while (this.tooltipEl.hasChildNodes()) {
-				this.tooltipEl.removeChild(this.tooltipEl.firstChild);
-			}
+			emptyElement(this.tooltipEl);
 			const tooltip = document.createElement('div');
 			tooltip.className = 'rde-tooltip-right';
 			let element = target.name as any;
@@ -59,7 +58,6 @@ class TooltipHandler {
 					return;
 				}
 			}
-			tooltip.innerHTML = element;
 			this.tooltipEl.appendChild(tooltip);
 			ReactDOM.render(element, tooltip);
 			this.tooltipEl.classList.remove('tooltip-hidden');

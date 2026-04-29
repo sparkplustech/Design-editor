@@ -5,7 +5,7 @@ import Descriptors from '../workflow/Descriptors.json';
 import { getNode } from '../workflow/configuration/NodeConfiguration';
 import { NODE_COLORS } from '../../canvas/objects/Node';
 import Icon from '../../components/icon/Icon';
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 
 interface IProps {
 	canvas: Canvas;

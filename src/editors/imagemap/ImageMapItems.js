@@ -22,7 +22,7 @@ import BadgeBackground from '../../components/badge-background/BadgeBackground';
 import BadgeDesign from '../../components/badge-design/BadgeDesign';
 import Attributes from '../../components/attributes/Attributes';
 import { SVGModal } from '../../components/common';
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 import { FlowSettings } from '../flow';
 
 notification.config({
@@ -36,7 +36,7 @@ class ImageMapItems extends Component {
 		descriptors: PropTypes.object,
 		onPageSizeChange: PropTypes.any,
 		onCanvasChange: PropTypes.any,
-		mainLoader: PropTypes.bool,
+		mainLoader: PropTypes.func,
 	};
 
 	state = {

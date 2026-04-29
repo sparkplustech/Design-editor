@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Row, Col, Divider, Empty, Input, message } from 'antd';
 import PropTypes from 'prop-types';
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 
 const attributeGroups = [
 	{

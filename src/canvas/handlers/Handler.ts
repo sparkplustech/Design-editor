@@ -1,6 +1,6 @@
 import { fabric } from 'fabric';
 import { union } from 'lodash';
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 import warning from 'warning';
 import {
 	AlignmentHandler,

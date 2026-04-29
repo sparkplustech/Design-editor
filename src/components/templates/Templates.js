@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Spin, Input, message } from 'antd';
 import './TemplatesStyle.less';
-import CONSTANTS from '../../../constant';
+import { authHeaders, fetchDesignerJson, getCanvasObjects, loadDesignerSession } from '../../utils/designerApi';
 
 const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => {
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -10,48 +10,45 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 		a4LandscapeTemplates: [],
 	});
 	const [loading, setLoading] = useState(true);
-	const [userData, setUserData] = useState([]);
+	const [userData, setUserData] = useState(null);
 	const [query, setQuery] = useState('');
 
 	useEffect(() => {
-		const queryParams = new URLSearchParams(window.location.search);
-		const designCode = queryParams.get('designCode');
+		let isMounted = true;
 
-		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
-			headers: {},
-		})
-			.then(response => response.json())
-			.then(data => {
-				setUserData(data);
+		const loadTemplates = async () => {
+			try {
+				const session = await loadDesignerSession();
+				const data = await fetchDesignerJson('/templates/getAllCertificateTemplates', {
+					headers: authHeaders(session.accessToken),
+				});
 
-				fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getAllCertificateTemplates`, {
-					headers: {
-						Authorization: `Bearer ${data.accessToken}`,
-					},
-				})
-					.then(response => response.json())
-					.then(data => {
-						const portraitTemplates =
-							data?.templates?.filter(template => template.pageSize === 'a4portrait') || [];
-						const landscapeTemplates =
-							data?.templates?.filter(template => template.pageSize === 'a4landscape') || [];
+				if (!isMounted) return;
 
-						setTemplatesData({
-							a4PortraitTemplates: portraitTemplates,
-							a4LandscapeTemplates: landscapeTemplates,
-						});
+				const templates = Array.isArray(data?.templates) ? data.templates : [];
+				const portraitTemplates = templates.filter(template => template.pageSize === 'a4portrait');
+				const landscapeTemplates = templates.filter(template => template.pageSize === 'a4landscape');
 
-						setLoading(false);
-					})
-					.catch(() => {
-						message.error('Unable to load certificate templates.');
-						setLoading(false);
-					});
-			})
-			.catch(() => {
-				message.error('Unable to start designer session.');
-				setLoading(false);
-			});
+				setUserData(session);
+				setTemplatesData({
+					a4PortraitTemplates: portraitTemplates,
+					a4LandscapeTemplates: landscapeTemplates,
+				});
+			} catch (error) {
+				if (!isMounted) return;
+				message.error('Unable to load certificate templates.');
+			} finally {
+				if (isMounted) {
+					setLoading(false);
+				}
+			}
+		};
+
+		loadTemplates();
+
+		return () => {
+			isMounted = false;
+		};
 	}, []);
 
 	const handleSeeAllClick = templateType => {
@@ -66,39 +63,37 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 		setSelectedTemplate(null);
 	};
 
-	function handleTemplateClick(tempdata) {
+	async function handleTemplateClick(tempdata) {
+		if (!userData?.accessToken) {
+			message.error('Designer session expired. Refresh and try again.');
+			return;
+		}
+
 		mainLoader(true);
-		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getCertificateTemplate/${tempdata?.id}`, {
-			headers: {
-				Authorization: `Bearer ${userData.accessToken}`,
-			},
-		})
-			.then(response => response.json())
-			.then(data => {
-				try {
-					const objects = data?.templateCode?.objects;
-					const pageSize = tempdata?.pageSize;
-					onPageSizeChange(pageSize);
-					canvasRef.handler.clear(true);
 
-					if (objects && Array.isArray(objects)) {
-						setTimeout(() => {
-							canvasRef.handler.importJSON(objects);
-							onCanvasChange(true);
-						}, 50);
-					} else {
-						message.error('Certificate template data is invalid.');
-					}
-				} catch (error) {
-					message.error('Unable to load selected certificate template.');
-				}
+		try {
+			const data = await fetchDesignerJson(`/templates/getCertificateTemplate/${tempdata?.id}`, {
+				headers: authHeaders(userData.accessToken),
+			});
+			const objects = getCanvasObjects(data?.templateCode);
+			const pageSize = tempdata?.pageSize;
 
-				mainLoader(false);
-			})
-			.catch(() => {
-				message.error('Unable to load selected certificate template.');
-				mainLoader(false);
-		});
+			if (!pageSize) {
+				throw new Error('Template page size is missing.');
+			}
+
+			onPageSizeChange(pageSize);
+			canvasRef.handler.clear(true);
+
+			setTimeout(() => {
+				canvasRef.handler.importJSON(objects);
+				onCanvasChange(true);
+			}, 50);
+		} catch (error) {
+			message.error('Unable to load selected certificate template.');
+		} finally {
+			mainLoader(false);
+		}
 	}
 
 	const filterTemplates = templates =>
@@ -112,7 +107,6 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 
 	const visibleLandscapeTemplates = filterTemplates(templatesData.a4LandscapeTemplates);
 	const visiblePortraitTemplates = filterTemplates(templatesData.a4PortraitTemplates);
-	
 
 	if (loading) {
 		return <Spin size="large" className="loader-class" />;
@@ -128,7 +122,7 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 				style={{ marginBottom: 12 }}
 			/>
 
-			{!selectedTemplate && visibleLandscapeTemplates && visibleLandscapeTemplates.length > 0 && (
+			{!selectedTemplate && visibleLandscapeTemplates.length > 0 && (
 				<div className="template-design">
 					<Row className="template-row">
 						<Col span={18}>
@@ -143,7 +137,7 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 
 					<Row>
 						{visibleLandscapeTemplates.slice(0, 2).map((item, imgIndex) => (
-							<Col key={imgIndex} span={12}>
+							<Col key={item.id || imgIndex} span={12}>
 								<button
 									type="button"
 									className="template-card certificate-img1"
@@ -163,7 +157,7 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 				</div>
 			)}
 
-			{!selectedTemplate && visiblePortraitTemplates && visiblePortraitTemplates.length > 0 && (
+			{!selectedTemplate && visiblePortraitTemplates.length > 0 && (
 				<div className="template-design">
 					<Row className="template-row">
 						<Col span={18}>
@@ -178,7 +172,7 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 
 					<Row>
 						{visiblePortraitTemplates.slice(0, 2).map((item, imgIndex) => (
-							<Col key={imgIndex} span={12}>
+							<Col key={item.id || imgIndex} span={12}>
 								<button
 									type="button"
 									className="template-card certificate-img2"
@@ -206,7 +200,7 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 				</Row>
 			)}
 
-			{selectedTemplate && (
+			{selectedTemplate && selectedTemplate.length > 0 && (
 				<div className="template-design-all">
 					<Row className="template-row">
 						<Col span={8}>
@@ -221,11 +215,13 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 
 					<Row>
 						{selectedTemplate.map((item, imgIndex) => (
-							<Col key={imgIndex} span={12}>
+							<Col key={item.id || imgIndex} span={12}>
 								<button
 									type="button"
 									onClick={() => handleTemplateClick(item)}
-									aria-label={`Load ${item.pageSize === 'a4portrait' ? 'portrait' : 'landscape'} template ${imgIndex + 1}`}
+									aria-label={`Load ${item.pageSize === 'a4portrait' ? 'portrait' : 'landscape'} template ${
+										imgIndex + 1
+									}`}
 									className={`template-card ${item.pageSize === 'a4portrait' ? 'certificate-img2' : 'certificate-img1'}`}
 								>
 									<img

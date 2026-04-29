@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { buildSandboxedHtml, emptyElement } from '../../utils/sandboxedHtml';
 
 class AcePreview extends Component {
 	static propTypes = {
@@ -29,22 +30,14 @@ class AcePreview extends Component {
 	}
 
 	iframeRender = (html, css, js) => {
-		while (this.container.hasChildNodes()) {
-			this.container.removeChild(this.container.firstChild);
-		}
+		emptyElement(this.container);
 		const iframe = document.createElement('iframe');
+		iframe.title = 'Code preview';
 		iframe.width = '100%';
 		iframe.height = '200px';
+		iframe.setAttribute('sandbox', 'allow-scripts');
+		iframe.srcdoc = buildSandboxedHtml(html, css, js);
 		this.container.appendChild(iframe);
-		const style = document.createElement('style');
-		style.type = 'text/css';
-		style.innerHTML = css;
-		iframe.contentDocument.head.appendChild(style);
-		const script = document.createElement('script');
-		script.type = 'text/javascript';
-		script.innerHTML = js;
-		iframe.contentDocument.head.appendChild(script);
-		iframe.contentDocument.body.innerHTML = html;
 	};
 
 	render() {

@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom';
 import debounce from 'lodash/debounce';
 
 import { Handler } from '.';
+import { emptyElement } from '../../utils/sandboxedHtml';
 
 class ContextmenuHandler {
 	handler: Handler;
@@ -39,16 +40,13 @@ class ContextmenuHandler {
 	 */
 	public show = debounce(async (e, target) => {
 		const { onContext } = this.handler;
-		while (this.contextmenuEl.hasChildNodes()) {
-			this.contextmenuEl.removeChild(this.contextmenuEl.firstChild);
-		}
+		emptyElement(this.contextmenuEl);
 		const contextmenu = document.createElement('div');
 		contextmenu.className = 'rde-contextmenu-right';
 		const element = await onContext(this.contextmenuEl, e, target);
 		if (!element) {
 			return;
 		}
-		contextmenu.innerHTML = element;
 		this.contextmenuEl.appendChild(contextmenu);
 		ReactDOM.render(element, contextmenu);
 		this.contextmenuEl.classList.remove('contextmenu-hidden');

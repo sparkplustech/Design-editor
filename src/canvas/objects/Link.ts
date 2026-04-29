@@ -1,5 +1,5 @@
 import { fabric } from 'fabric';
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 import { FabricObject } from '../utils';
 import { NodeObject, OUT_PORT_TYPE } from './Node';
 import { PortObject } from './Port';

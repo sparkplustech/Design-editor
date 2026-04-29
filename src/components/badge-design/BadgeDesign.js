@@ -2,79 +2,70 @@ import React, { useState, useEffect } from 'react';
 import { Row, Col, Spin, Input, message } from 'antd';
 import '../badge-background/BadgeBackgroundStyle.less';
 import CONSTANTS from '../../../constant';
+import { authHeaders, fetchDesignerJson, getCanvasObjects, loadDesignerSession } from '../../utils/designerApi';
 
 const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange }) => {
 	const [templatesData, setTemplatesData] = useState([]);
 	const [loading, setLoading] = useState(true);
-	const [designCode, setDesignCode] = useState("");
-	const [userData, setUserData] = useState("");
+	const [userData, setUserData] = useState(null);
 	const [query, setQuery] = useState('');
 
 	useEffect(() => {
-		const queryParams = new URLSearchParams(window.location.search);
-        const designCode = queryParams.get('designCode');
-		setDesignCode(designCode);
+		let isMounted = true;
 
-		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
-			headers: {},
-		})
-			.then(response => response.json())
-			.then(data => {
-				setUserData(data);
+		const loadBadgeDesigns = async () => {
+			try {
+				const session = await loadDesignerSession();
+				const data = await fetchDesignerJson('/templates/getalluserbadgeTemplates', {
+					headers: authHeaders(session.accessToken),
+				});
 
-				fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getalluserbadgeTemplates`, {
-					headers: {
-						Authorization: `Bearer ${data.accessToken}`,
-					},
-				})
-					.then(response => response.json())
-					.then(data => {
-						setTemplatesData(data);
-						setLoading(false);
-					})
-					.catch(() => {
-						message.error('Unable to load badge templates.');
-						setLoading(false);
-					});
-			})
-			.catch(() => {
-				message.error('Unable to start badge designer session.');
-				setLoading(false);
-			});
+				if (!isMounted) return;
 
+				setUserData(session);
+				setTemplatesData(data || {});
+			} catch (error) {
+				if (!isMounted) return;
+				message.error('Unable to load badge designs.');
+			} finally {
+				if (isMounted) {
+					setLoading(false);
+				}
+			}
+		};
+
+		loadBadgeDesigns();
+
+		return () => {
+			isMounted = false;
+		};
 	}, []);
 
-	function handleTemplateClick(tempdata) {
-		mainLoader(true);
-		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getuserBadgeTemplate/${tempdata?.id}`, {
-			headers: {
-				Authorization: `Bearer ${userData.accessToken}`,
-			},
-		})
-			.then(response => response.json())
-			.then(data => {
-				try {
-					const objects = data?.templateCode?.objects;
-					canvasRef.handler.clear(true);
-					objects.unshift(CONSTANTS.JSON_CONSTANT.BADGE);
-					if (objects && Array.isArray(objects)) {
-						setTimeout(() => {
-							canvasRef.handler.importJSON(objects);
-							onCanvasChange(true);
-						}, 50);
-					} else {
-						message.error('Badge template data is invalid.');
-					}
-				} catch (error) {
-					message.error('Unable to load selected badge template.');
-				}
+	async function handleTemplateClick(tempdata) {
+		if (!userData?.accessToken) {
+			message.error('Designer session expired. Refresh and try again.');
+			return;
+		}
 
-				mainLoader(false);
-			})
-			.catch(() => {
-				message.error('Unable to load selected badge template.');
-				mainLoader(false);
+		mainLoader(true);
+
+		try {
+			const data = await fetchDesignerJson(`/templates/getuserBadgeTemplate/${tempdata?.id}`, {
+				headers: authHeaders(userData.accessToken),
 			});
+			const objects = getCanvasObjects(data?.templateCode);
+			const importObjects = [CONSTANTS.JSON_CONSTANT.BADGE, ...objects];
+
+			canvasRef.handler.clear(true);
+			setTimeout(() => {
+				canvasRef.handler.importJSON(importObjects);
+				onCanvasChange(true);
+			}, 50);
+		} catch (error) {
+			message.error('Unable to load selected badge template.');
+		} finally {
+			mainLoader(false);
+		}
 	}
 
 	const visibleTemplates = (templatesData?.badges || []).filter(template => {
@@ -82,9 +73,9 @@ const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange }) => {
 		if (!term) return true;
 		return `${template.name || ''} ${template.TemplateName || ''}`.toLowerCase().includes(term);
 	});
-	  
-	  if (loading) {
-		return <Spin size="large" className='loader-class'/>;
+
+	if (loading) {
+		return <Spin size="large" className="loader-class" />;
 	}
 
 	return (
@@ -98,7 +89,7 @@ const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange }) => {
 			/>
 
 			{visibleTemplates.length > 0 ? (
-				<div  className="template-design">
+				<div className="template-design">
 					<Row className="template-row">
 						<Col span={24}>
 							<h3>Template Designs</h3>
@@ -107,7 +98,7 @@ const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange }) => {
 
 					<Row>
 						{visibleTemplates.map((item, imgIndex) => (
-							<Col key={imgIndex} span={12}>
+							<Col key={item.id || imgIndex} span={12}>
 								<div className="certificate-img1">
 									<button
 										type="button"
@@ -127,12 +118,12 @@ const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange }) => {
 						))}
 					</Row>
 				</div>
-			): (
+			) : (
 				<Row className="template-row">
-						<Col span={24}>
-							<h3>{query ? 'No badge designs match your search.' : 'No designs available.'}</h3>
-						</Col>
-					</Row>
+					<Col span={24}>
+						<h3>{query ? 'No badge designs match your search.' : 'No designs available.'}</h3>
+					</Col>
+				</Row>
 			)}
 		</div>
 	);

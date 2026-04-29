@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Spin, Input, message } from 'antd';
 import './DesignStyle.less';
-import CONSTANTS from '../../../constant';
+import { authHeaders, fetchDesignerJson, getCanvasObjects, loadDesignerSession } from '../../utils/designerApi';
 
 const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => {
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -10,48 +10,45 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 		a4LandscapeTemplates: [],
 	});
 	const [loading, setLoading] = useState(true);
-	const [designCode, setDesignCode] = useState("");
-	const [userData, setUserData] = useState([]);
+	const [userData, setUserData] = useState(null);
 	const [query, setQuery] = useState('');
 
 	useEffect(() => {
-		const queryParams = new URLSearchParams(window.location.search);
-        const designCode = queryParams.get('designCode');
-		setDesignCode(designCode);
+		let isMounted = true;
 
-		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getusertoken/${designCode}`, {
-			headers: {},
-		})
-			.then(response => response.json())
-			.then(data => {
-				setUserData(data);
-				fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getallusercertificateTemplates`, {
-					headers: {
-						Authorization: `Bearer ${data.accessToken}`,
-					},
-				})
-					.then(response => response.json())
-					.then(data => {
-						const portraitTemplates = data?.certificates?.filter(template => template.pageSize === 'a4portrait') || [];
-						const landscapeTemplates =
-							data?.certificates?.filter(template => template.pageSize === 'a4landscape') || [];
-		
-						setTemplatesData({
-							a4PortraitTemplates: portraitTemplates,
-							a4LandscapeTemplates: landscapeTemplates,
-						});
-		
-						setLoading(false);
-					})
-					.catch(() => {
-						message.error('Unable to load saved designs.');
-						setLoading(false);
-					});
-			})
-			.catch(() => {
-				message.error('Unable to start designer session.');
-				setLoading(false);
-			});
+		const loadDesigns = async () => {
+			try {
+				const session = await loadDesignerSession();
+				const data = await fetchDesignerJson('/templates/getallusercertificateTemplates', {
+					headers: authHeaders(session.accessToken),
+				});
+
+				if (!isMounted) return;
+
+				const certificates = Array.isArray(data?.certificates) ? data.certificates : [];
+				const portraitTemplates = certificates.filter(template => template.pageSize === 'a4portrait');
+				const landscapeTemplates = certificates.filter(template => template.pageSize === 'a4landscape');
+
+				setUserData(session);
+				setTemplatesData({
+					a4PortraitTemplates: portraitTemplates,
+					a4LandscapeTemplates: landscapeTemplates,
+				});
+			} catch (error) {
+				if (!isMounted) return;
+				message.error('Unable to load saved designs.');
+			} finally {
+				if (isMounted) {
+					setLoading(false);
+				}
+			}
+		};
+
+		loadDesigns();
+
+		return () => {
+			isMounted = false;
+		};
 	}, []);
 
 	const handleSeeAllClick = templateType => {
@@ -66,39 +63,37 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 		setSelectedTemplate(null);
 	};
 
-	function handleTemplateClick(tempdata) {
-		mainLoader(true);
-		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getuserCertificateTemplate/${tempdata?.id}`, {
-			headers: {
-				Authorization: `Bearer ${userData.accessToken}`,
-			},
-		})
-			.then(response => response.json())
-			.then(data => {
-				try {
-					const objects = data?.templateCode?.objects;
-					const pageSize = tempdata?.pageSize;
-					onPageSizeChange(pageSize);
-					canvasRef.handler.clear(true);
-					
-					if (objects && Array.isArray(objects)) {
-						setTimeout(() => {
-							canvasRef.handler.importJSON(objects);
-							onCanvasChange(true);
-						}, 50);
-					} else {
-						message.error('Saved design data is invalid.');
-					}
-				} catch (error) {
-					message.error('Unable to load selected design.');
-				}
+	async function handleTemplateClick(tempdata) {
+		if (!userData?.accessToken) {
+			message.error('Designer session expired. Refresh and try again.');
+			return;
+		}
 
-				mainLoader(false);
-			})
-			.catch(() => {
-				message.error('Unable to load selected design.');
-				mainLoader(false);
+		mainLoader(true);
+
+		try {
+			const data = await fetchDesignerJson(`/templates/getuserCertificateTemplate/${tempdata?.id}`, {
+				headers: authHeaders(userData.accessToken),
 			});
+			const objects = getCanvasObjects(data?.templateCode);
+			const pageSize = tempdata?.pageSize;
+
+			if (!pageSize) {
+				throw new Error('Saved design page size is missing.');
+			}
+
+			onPageSizeChange(pageSize);
+			canvasRef.handler.clear(true);
+
+			setTimeout(() => {
+				canvasRef.handler.importJSON(objects);
+				onCanvasChange(true);
+			}, 50);
+		} catch (error) {
+			message.error('Unable to load selected design.');
+		} finally {
+			mainLoader(false);
+		}
 	}
 
 	const filterTemplates = templates =>
@@ -127,7 +122,7 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 				style={{ marginBottom: 12 }}
 			/>
 
-			{!selectedTemplate && visibleLandscapeTemplates && visibleLandscapeTemplates.length > 0 && (
+			{!selectedTemplate && visibleLandscapeTemplates.length > 0 && (
 				<div className="template-design">
 					<Row className="template-row">
 						<Col span={18}>
@@ -142,7 +137,7 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 
 					<Row>
 						{visibleLandscapeTemplates.slice(0, 2).map((item, imgIndex) => (
-							<Col key={imgIndex} span={12}>
+							<Col key={item.id || imgIndex} span={12}>
 								<button
 									type="button"
 									className="template-card certificate-img1"
@@ -162,7 +157,7 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 				</div>
 			)}
 
-			{!selectedTemplate && visiblePortraitTemplates && visiblePortraitTemplates.length > 0 &&  (
+			{!selectedTemplate && visiblePortraitTemplates.length > 0 && (
 				<div className="template-design">
 					<Row className="template-row">
 						<Col span={18}>
@@ -177,7 +172,7 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 
 					<Row>
 						{visiblePortraitTemplates.slice(0, 2).map((item, imgIndex) => (
-							<Col key={imgIndex} span={12}>
+							<Col key={item.id || imgIndex} span={12}>
 								<button
 									type="button"
 									className="template-card certificate-img2"
@@ -197,15 +192,15 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 				</div>
 			)}
 
-			{visiblePortraitTemplates.length === 0 && visibleLandscapeTemplates.length === 0 &&(
+			{visiblePortraitTemplates.length === 0 && visibleLandscapeTemplates.length === 0 && (
 				<Row className="template-row">
-				<Col span={24}>
-					<h3>{query ? 'No designs match your search.' : 'No designs available.'}</h3>
-				</Col>
-			</Row>
+					<Col span={24}>
+						<h3>{query ? 'No designs match your search.' : 'No designs available.'}</h3>
+					</Col>
+				</Row>
 			)}
 
-			{selectedTemplate && (
+			{selectedTemplate && selectedTemplate.length > 0 && (
 				<div className="template-design-all">
 					<Row className="template-row">
 						<Col span={8}>
@@ -220,11 +215,13 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 
 					<Row>
 						{selectedTemplate.map((item, imgIndex) => (
-							<Col key={imgIndex} span={12}>
+							<Col key={item.id || imgIndex} span={12}>
 								<button
 									type="button"
 									onClick={() => handleTemplateClick(item)}
-									aria-label={`Load ${item.pageSize === 'a4portrait' ? 'portrait' : 'landscape'} design ${imgIndex + 1}`}
+									aria-label={`Load ${item.pageSize === 'a4portrait' ? 'portrait' : 'landscape'} design ${
+										imgIndex + 1
+									}`}
 									className={`template-card ${item.pageSize === 'a4portrait' ? 'certificate-img2' : 'certificate-img1'}`}
 								>
 									<img
