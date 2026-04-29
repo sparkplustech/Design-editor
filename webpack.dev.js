@@ -12,7 +12,6 @@ module.exports = merge(baseConfig, {
 	devtool: 'inline-source-map',
 	entry: {
 		app: [
-			'core-js/stable',
 			'react-hot-loader/patch',
 			`webpack-dev-server/client?http://${host}:${devPort}`,
 			'webpack/hot/only-dev-server',
@@ -54,6 +53,9 @@ module.exports = merge(baseConfig, {
 		new HtmlWebpackPlugin({
 			filename: 'index.html',
 			title: 'SOLO Designer',
+			meta: {
+				viewport: 'width=device-width, initial-scale=1.0',
+			},
 		}),
 		new Dotenv({
 			API_URL: `.env.${process.env.API_URL}`,

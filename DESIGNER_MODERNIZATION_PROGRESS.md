@@ -16,6 +16,9 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - Updated the locked Webpack 4 line to `4.47.0` and lodash to `4.17.21`.
 - Removed the unused Workbox production service worker plugin and switched the app to unregister old service workers.
 - Removed inactive Google Analytics/Ads script loading and the dormant ad slot from the legacy title bar.
+- Removed the unused `react-helmet` runtime dependency and moved static metadata into Webpack HTML generation.
+- Removed the forced full AntD/Fabric/Lodash production vendor entry, stopped loading all of `core-js/stable`, and kept lazy editor vendor code out of the initial vendor chunk.
+- Removed AntD `LocaleProvider` from the root because it pulled Moment into first load while the designer does not use AntD date/time controls.
 - Fixed the create-save crash caused by undefined `name`.
 - Fixed the user badge detail endpoint double slash.
 - Restored the TypeScript lint command from a no-input failure.
@@ -43,8 +46,11 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - `npm run lint`
 - `npm run build`
 - Babel parsing for edited React/JS files
+- `npm audit --omit=dev --audit-level=high`
 
-Build still reports large bundle warnings for Fabric/AntD/editor chunks and bundled font SVG assets. Those warnings are real remaining performance work, not build failures. `npm audit --omit=dev --audit-level=high` timed out against the npm audit service during this pass, so dependency advisories still need a successful audit run in CI or a stable network session.
+The production app entrypoint is now about 298 KiB, down from about 5.56 MiB before this optimization pass. Build still reports large asset warnings for deferred Fabric/AntD/editor chunks and bundled font SVG assets. Those warnings are real remaining performance work, not build failures.
+
+Audit now completes and reports 23 remaining production advisories. The high/critical paths are tied to Fabric 4's old `jsdom/request` chain and AntD 3's old editor dependencies. `npm audit fix --omit=dev --package-lock-only --package-lock=true` could not resolve them without forced breaking upgrades, so these are tracked as planned major-upgrade work rather than hidden.
 
 ## Still Open
 

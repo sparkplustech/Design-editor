@@ -23,6 +23,7 @@ const plugins = [
 		filename: 'index.html',
 		title: 'SOLO Designer',
 		meta: {
+			viewport: 'width=device-width, initial-scale=1.0',
 			description: `React Design Editor has started to developed direct manipulation of editable design tools like Powerpoint, We've developed it with react.js, ant.design, fabric.js`,
 		},
 	}),
@@ -36,8 +37,7 @@ if (process.env.ANALYZE_BUNDLE === 'true') {
 module.exports = merge(baseConfig, {
 	mode: 'production',
 	entry: {
-		vendor: ['react', 'react-dom', 'lodash', 'fabric', 'antd'],
-		app: ['core-js/stable', path.resolve(__dirname, 'src/index.tsx')],
+		app: [path.resolve(__dirname, 'src/index.tsx')],
 	},
 	output: {
 		path: path.resolve(__dirname, 'docs'),
@@ -52,7 +52,7 @@ module.exports = merge(baseConfig, {
 					name: 'node_vendors', // part of the bundle name and
 					// can be used in chunks array of HtmlWebpackPlugin
 					test: /[\\/]node_modules[\\/]/,
-					chunks: 'all',
+					chunks: 'initial',
 				},
 				common: {
 					test: /[\\/]src[\\/]components[\\/]/,
