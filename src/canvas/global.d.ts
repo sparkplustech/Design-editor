@@ -46,7 +46,6 @@ declare module 'fabric/fabric-impl' {
 declare global {
 	interface Window {
 		gifler: any;
-		adsbygoogle: any;
 	}
 }
 

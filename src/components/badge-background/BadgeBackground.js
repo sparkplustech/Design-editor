@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Spin, message } from 'antd';
+import { Row, Col, Spin, Input, message } from 'antd';
 import './BadgeBackgroundStyle.less';
 import CONSTANTS from '../../../constant';
 
@@ -8,6 +8,7 @@ const BadgeBackground = ({ canvasRef, mainLoader, onCanvasChange, badgeType }) =
 	const [loading, setLoading] = useState(true);
 	const [userData, setUserData] = useState([]);
 	const [designCode, setDesignCode] = useState("");
+	const [query, setQuery] = useState('');
 
 	useEffect(() => {
 
@@ -80,16 +81,28 @@ const BadgeBackground = ({ canvasRef, mainLoader, onCanvasChange, badgeType }) =
 				mainLoader(false);
 			});
 	}
+
+	const visibleTemplates = templatesData.filter(template => {
+		const term = query.trim().toLowerCase();
+		if (!term) return true;
+		return `${template.name || ''} ${template.TemplateName || ''} ${template.type || ''}`.toLowerCase().includes(term);
+	});
 	  
 	  if (loading) {
 		return <Spin size="large" className='loader-class'/>;
 	}
 
-	// console.log("badge list", templatesData);
-
 	return (
 		<div className="BadgeSection">
-			{templatesData && templatesData.length > 0 && (
+			<Input.Search
+				allowClear
+				placeholder={`Search ${badgeType === "template" ? "templates" : "shapes"}`}
+				value={query}
+				onChange={event => setQuery(event.target.value)}
+				style={{ marginBottom: 12 }}
+			/>
+
+			{visibleTemplates && visibleTemplates.length > 0 && (
 				<div  className="template-design">
 					<Row className="template-row">
 						<Col span={24}>
@@ -98,16 +111,23 @@ const BadgeBackground = ({ canvasRef, mainLoader, onCanvasChange, badgeType }) =
 					</Row>
 
 					<Row>
-						{templatesData?.map((item, imgIndex) => (
+						{visibleTemplates.map((item, imgIndex) => (
 							<Col key={imgIndex} span={12}>
 								<div className={`${badgeType === "template"? "certificate-img1":"shape-img"}`}>
 									<div className='shape-images'>
-									<img
-										src={item.imageLink}
-										onClick={() => handleTemplateClick(item)}
-										className="template-img"
-										alt={`Template Badge Image ${imgIndex + 1}`}
-									/>
+										<button
+											type="button"
+											className="template-card"
+											onClick={() => handleTemplateClick(item)}
+											aria-label={`Load badge ${badgeType === "template" ? "template" : "shape"} ${imgIndex + 1}`}
+										>
+											<img
+												src={item.imageLink}
+												className="template-img"
+												loading="lazy"
+												alt={`Template Badge Image ${imgIndex + 1}`}
+											/>
+										</button>
 									</div>
 								</div>
 							</Col>
@@ -115,10 +135,10 @@ const BadgeBackground = ({ canvasRef, mainLoader, onCanvasChange, badgeType }) =
 					</Row>
 				</div>
 			)}
-			{templatesData.length === 0 && (
+			{visibleTemplates.length === 0 && (
 				<Row className="template-row">
 					<Col span={24}>
-						<h3>No {badgeType === "template"? "templates":"shapes"} available.</h3>
+						<h3>{query ? 'No badge assets match your search.' : `No ${badgeType === "template"? "templates":"shapes"} available.`}</h3>
 					</Col>
 				</Row>
 			)}

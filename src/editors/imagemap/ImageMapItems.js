@@ -399,7 +399,6 @@ class ImageMapItems extends Component {
 		const isCertificatePath = currentPath.includes('certificate-designer');
 		const isAdminBadgePath = currentPath.includes('admin-badge-designer');
 
-		// console.log('is admin', isAdminPath);
 		return (
 			<div className={className}>
 				<Flex flex="1" flexDirection="row" style={{ height: '100%' }}>

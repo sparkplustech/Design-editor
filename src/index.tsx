@@ -5,7 +5,7 @@ import { LocaleProvider } from 'antd';
 import koKR from 'antd/lib/locale-provider/ko_KR';
 import enUS from 'antd/lib/locale-provider/en_US';
 import App from './App';
-import { register } from './serviceWorker';
+import { unregister } from './serviceWorker';
 import i18next from 'i18next';
 import { i18nClient } from './i18n';
 
@@ -36,7 +36,7 @@ i18nClient();
 
 render(App);
 
-register();
+unregister();
 
 if (module.hot) {
 	module.hot.accept('./App', () => {

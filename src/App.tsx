@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import Title from './components/layout/Title';
 import FlowContainer from './containers/FlowContainer';
-import { FiberEditor, HexGridEditor, WorkflowEditor } from './editors';
 
 import loadable from '@loadable/component';
 const ImageMapEditor = loadable(() => import('./editors/imagemap'));
 const FlowEditor = loadable(() => import('./editors/flow'));
+const FiberEditor = loadable(() => import('./editors/fiber'));
+const HexGridEditor = loadable(() => import('./editors/hexgrid'));
+const WorkflowEditor = loadable(() => import('./editors/workflow'));
 
 type EditorType = 'imagemap' | 'workflow' | 'flow' | 'hexgrid' | 'fiber';
 
@@ -52,20 +53,7 @@ class App extends Component<any, IState> {
 						<meta name="description" content=" " />
 						<link rel="manifest" href="./manifest.json" />
 						<link rel="shortcut icon" href="./favicon.ico" />
-						<link rel="stylesheet" href="https://fonts.googleapis.com/earlyaccess/notosanskr.css" />
-						<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
-						<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
 						<title>Designer | SOLO ECOSYSTEM</title>
-						<script async={true} src="https://www.googletagmanager.com/gtag/js?id=G-EH7WWSK514" />
-						<script>
-							{`
-                        window.dataLayer = window.dataLayer || [];
-                        function gtag(){dataLayer.push(arguments);}
-                        gtag('js', new Date());
-                        gtag('config', 'G-EH7WWSK514');
-                        `}
-						</script>
-						<script async={true} src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" />
 					</Helmet>
 					{/* <div className="rde-title">
 						<Title onChangeEditor={this.handleChangeEditor} currentEditor={activeEditor} />

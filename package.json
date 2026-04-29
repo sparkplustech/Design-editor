@@ -58,7 +58,7 @@
 		"honeycomb-grid": "^3.1.7",
 		"i18next": "^19.0.0",
 		"i18next-browser-languagedetector": "^2.2.4",
-		"lodash": "^4.17.10",
+		"lodash": "^4.17.21",
 		"mediaelement": "^4.2.9",
 		"prop-types": "^15.6.2",
 		"react": "^16.14.0",
@@ -134,11 +134,10 @@
 		"typedoc": "^0.17.4",
 		"typescript": "^3.9.10",
 		"url-loader": "^4.1.0",
-		"webpack": "^4.46.0",
+		"webpack": "^4.47.0",
 		"webpack-bundle-analyzer": "^4.10.2",
 		"webpack-cli": "^4.9.1",
 		"webpack-dev-server": "^3.11.3",
-		"webpack-merge": "^4.2.2",
-		"workbox-webpack-plugin": "^5.1.2"
+		"webpack-merge": "^4.2.2"
 	}
 }

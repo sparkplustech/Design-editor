@@ -1,21 +1,50 @@
 import React, { Component } from 'react';
-import { Row, Col, Divider, message } from 'antd';
+import { Row, Col, Divider, Empty, Input, message } from 'antd';
 import PropTypes from 'prop-types';
 import { uuid } from 'uuidv4';
 
+const attributeGroups = [
+	{
+		title: 'Issuer',
+		items: [
+			{ label: 'Issuer Name', token: '[IssuerName]' },
+			{ label: 'Issuer Logo', token: '[IssuerLogo]' },
+			{ label: 'Issuer Website', token: '[IssuerWebsite]' },
+		],
+	},
+	{
+		title: 'Credential',
+		items: [
+			{ label: 'Credential ID', token: '[CredentialId]' },
+			{ label: 'Credential Name', token: '[CredentialName]' },
+			{ label: 'Issue Date', token: '[IssueDate]' },
+			{ label: 'Expiry Date', token: '[ExpiryDate]' },
+			{ label: 'Start Date', token: '[startDate]' },
+			{ label: 'End Date', token: '[endDate]' },
+			{ label: 'URL', token: '[Url]' },
+			{ label: 'UUID', token: '[Uuid]' },
+			{ label: 'Level', token: '[Level]' },
+			{ label: 'QR Code', token: '[QRCode]' },
+		],
+	},
+	{
+		title: 'Recipient',
+		items: [{ label: 'Recipient Name', token: '[RecipientName]' }],
+	},
+];
+
 class Attributes extends Component {
-	item = '';
 	static propTypes = {
 		canvasRef: PropTypes.any,
 	};
 
-	getItem(name) {
-		const currentPath = window.location.pathname;
-		const isAdminBadgePath = currentPath.includes('admin-badge-designer');
+	state = {
+		query: '',
+	};
 
-		let item = {};
-		if (name == '[IssuerLogo]') {
-			item = {
+	getItem(name) {
+		if (name === '[IssuerLogo]') {
+			return {
 				type: 'image',
 				option: {
 					type: 'image',
@@ -25,40 +54,60 @@ class Attributes extends Component {
 					name: 'attribute',
 				},
 			};
-		}else if (name == '[QRCode]') {
-			item = {
+		}
+
+		if (name === '[QRCode]') {
+			return {
 				type: 'image',
 				option: {
 					type: 'image',
 					src: '../../../images/sample/qr.svg',
-					// width: 100,
-					// height: 100,
 					name: 'attribute-qr',
 				},
 			};
-		} else {
-			item = {
-				name: 'Text',
-				description: '',
-				type: 'textbox',
-				editable: false,
-				icon: {
-					prefix: 'fas',
-					name: 'font',
-				},
-				option: {
-					type: 'textbox',
-					text: name,
-					width: 400,
-					height: 30,
-					fontSize: 20,
-					name: 'attribute',
-					textAlign: 'center',
-				},
-			};
 		}
-		return item;
+
+		return {
+			name: 'Text',
+			description: '',
+			type: 'textbox',
+			editable: false,
+			icon: {
+				prefix: 'fas',
+				name: 'font',
+			},
+			option: {
+				type: 'textbox',
+				text: name,
+				width: 400,
+				height: 30,
+				fontSize: 20,
+				name: 'attribute',
+				textAlign: 'center',
+			},
+		};
 	}
+
+	getVisibleGroups = () => {
+		const query = this.state.query.trim().toLowerCase();
+
+		if (!query) {
+			return attributeGroups;
+		}
+
+		return attributeGroups
+			.map(group => ({
+				...group,
+				items: group.items.filter(
+					item =>
+						item.label.toLowerCase().includes(query) ||
+						item.token.toLowerCase().includes(query) ||
+						group.title.toLowerCase().includes(query),
+				),
+			}))
+			.filter(group => group.items.length > 0);
+	};
+
 	handlers = {
 		onAddItem: (item, centered) => {
 			const { canvasRef } = this.props;
@@ -76,133 +125,44 @@ class Attributes extends Component {
 		},
 	};
 
+	renderAttributeButton = item => (
+		<button
+			key={item.token}
+			type="button"
+			className="sub-attribute"
+			draggable
+			aria-label={`Add ${item.label} variable`}
+			title={item.token}
+			onClick={() => this.handlers.onAddItem(this.getItem(item.token), true)}
+		>
+			<span>{item.label}</span>
+			<small>{item.token}</small>
+		</button>
+	);
+
 	render() {
+		const visibleGroups = this.getVisibleGroups();
+
 		return (
 			<Row className="panel-space">
 				<Col>
-					<h4 className="main-attribute">Issuer</h4>
-					<p
-						className="sub-attribute"
-						draggable
-						onClick={e => this.handlers.onAddItem(this.getItem('[IssuerName]'), true)}
-					>
-						Issuer Name
-					</p>
-					<p
-						className="sub-attribute"
-						draggable
-						onClick={e => this.handlers.onAddItem(this.getItem('[IssuerLogo]'), true)}
-					>
-						Issuer Logo
-					</p>
-					<p
-						className="sub-attribute"
-						draggable
-						onClick={e => this.handlers.onAddItem(this.getItem('[IssuerWebsite]'), true)}
-					>
-						Issuer Website
-					</p>
-					<Divider />
-					{/* <h4 className="main-attribute">Group</h4>
+					<Input.Search
+						allowClear
+						placeholder="Search variables"
+						value={this.state.query}
+						onChange={event => this.setState({ query: event.target.value })}
+						style={{ marginBottom: 12 }}
+					/>
 
-					<p
-						className="sub-attribute"
-						draggable
-						onClick={e => this.handlers.onAddItem(this.getItem('[CourseName]'), true)}
-					>
-						Course Name
-					</p>
-					<p
-						className="sub-attribute"
-						draggable
-						onClick={e => this.handlers.onAddItem(this.getItem('[CourseDescription]'), true)}
-					>
-						Course Description
-					</p>
-					<Divider /> */}
-					<h4 className="main-attribute"> Credential</h4>
-					<p
-						className="sub-attribute"
-						onClick={e => this.handlers.onAddItem(this.getItem('[CredentialId]'), true)}
-					>
-						Credential ID
-					</p>
-					<p
-						className="sub-attribute"
-						onClick={e => this.handlers.onAddItem(this.getItem('[CredentialName]'), true)}
-					>
-						Credential Name
-					</p>
-					{/* <p
-						className="sub-attribute"
-						onClick={e => this.handlers.onAddItem(this.getItem('[CredentialILicenseId]'), true)}
-					>
-						Credential License ID
-					</p> */}
-					<p
-						className="sub-attribute"
-						onClick={e => this.handlers.onAddItem(this.getItem('[IssueDate]'), true)}
-					>
-						Issue Date
-					</p>
-					<p
-						className="sub-attribute"
-						onClick={e => this.handlers.onAddItem(this.getItem('[ExpiryDate]'), true)}
-					>
-						Expiry Date
-					</p>
-					<p
-						className="sub-attribute"
-						onClick={e => this.handlers.onAddItem(this.getItem('[startDate]'), true)}
-					>
-						Start Date
-					</p>
-					<p
-						className="sub-attribute"
-						onClick={e => this.handlers.onAddItem(this.getItem('[endDate]'), true)}
-					>
-						End Date
-					</p>
-					{/* <p className="sub-attribute" onClick={e => this.handlers.onAddItem(this.getItem('[Grade]'), true)}>
-						Grade
-					</p> */}
-					<p className="sub-attribute" onClick={e => this.handlers.onAddItem(this.getItem('[Url]'), true)}>
-						URL
-					</p>
-					<p className="sub-attribute" onClick={e => this.handlers.onAddItem(this.getItem('[Uuid]'), true)}>
-						UUID
-					</p>
-					<p className="sub-attribute" onClick={e => this.handlers.onAddItem(this.getItem('[Level]'), true)}>
-						Level
-					</p>
-					<p className="sub-attribute" onClick={e => this.handlers.onAddItem(this.getItem('[QRCode]'), true)}>
-						QR Code
-					</p>
-					<Divider />
-					<h4
-						className="main-attribute"
-						onClick={e => this.handlers.onAddItem(this.getItem('[Recipient]'), true)}
-					>
-						Recipient
-					</h4>
-					{/* <p
-						className="sub-attribute"
-						onClick={e => this.handlers.onAddItem(this.getItem('[RecipientId]'), true)}
-					>
-						Recipient ID
-					</p> */}
-					<p
-						className="sub-attribute"
-						onClick={e => this.handlers.onAddItem(this.getItem('[RecipientName]'), true)}
-					>
-						Recipient Name
-					</p>
-					{/* <p
-						className="sub-attribute"
-						onClick={e => this.handlers.onAddItem(this.getItem('[RecipientEmail]'), true)}
-					>
-						Recipient Email
-					</p> */}
+					{visibleGroups.length === 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No variables found" />}
+
+					{visibleGroups.map((group, index) => (
+						<div key={group.title}>
+							{index > 0 && <Divider />}
+							<h4 className="main-attribute">{group.title}</h4>
+							<div className="attribute-list">{group.items.map(this.renderAttributeButton)}</div>
+						</div>
+					))}
 				</Col>
 			</Row>
 		);

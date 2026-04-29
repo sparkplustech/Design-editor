@@ -12,6 +12,10 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 
 - Created `designer-modern` from `solod` without touching `main`.
 - Added deterministic `package-lock.json`.
+- Kept Fabric at `4.6.0` as the active canvas/editor foundation.
+- Updated the locked Webpack 4 line to `4.47.0` and lodash to `4.17.21`.
+- Removed the unused Workbox production service worker plugin and switched the app to unregister old service workers.
+- Removed inactive Google Analytics/Ads script loading and the dormant ad slot from the legacy title bar.
 - Fixed the create-save crash caused by undefined `name`.
 - Fixed the user badge detail endpoint double slash.
 - Restored the TypeScript lint command from a no-input failure.
@@ -26,6 +30,12 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - Replaced several console-only template/design/badge loading failures with user-facing AntD messages.
 - Fixed the one-item portrait design list visibility issue.
 - Fixed the invalid `20x` canvas padding unit.
+- Added searchable resource panels for certificate templates, saved designs, badge templates, badge shapes, and variables.
+- Replaced clickable thumbnails/labels with keyboard-focusable buttons and visible focus states.
+- Lazy-loaded heavy non-default editors so the initial app chunk stays small while preserving all editor routes.
+- Added lazy thumbnail loading for resource browsers.
+- Tightened the chart script sandbox denylist and reject unsafe chart scripts with a user-facing error.
+- Removed stale commented console logging in touched editor/resource files.
 - Gated audit output from source control via `.gitignore`.
 
 ## Verified
@@ -34,7 +44,7 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - `npm run build`
 - Babel parsing for edited React/JS files
 
-Build still reports large bundle warnings for Fabric/AntD/editor chunks. Those warnings are real remaining performance work, not build failures.
+Build still reports large bundle warnings for Fabric/AntD/editor chunks and bundled font SVG assets. Those warnings are real remaining performance work, not build failures. `npm audit --omit=dev --audit-level=high` timed out against the npm audit service during this pass, so dependency advisories still need a successful audit run in CI or a stable network session.
 
 ## Still Open
 
@@ -44,5 +54,5 @@ Build still reports large bundle warnings for Fabric/AntD/editor chunks. Those w
 - Signed editor session contract instead of route/query inference.
 - Server-side Fabric render worker for deterministic PDF/PNG outputs.
 - Variable registry, proof validation, text overflow checks, QR validation, and bulk generation queue.
-- Modern editor shell redesign: searchable left resource browser, contextual inspector, rulers/guides/safe area, save status, proof/export workflow.
+- Modern editor shell redesign: contextual inspector, rulers/guides/safe area, save status, proof/export workflow.
 - Route smoke tests and visual regression tests.

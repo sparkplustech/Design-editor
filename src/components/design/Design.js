@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Spin, message } from 'antd';
+import { Row, Col, Spin, Input, message } from 'antd';
 import './DesignStyle.less';
 import CONSTANTS from '../../../constant';
 
@@ -12,6 +12,7 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 	const [loading, setLoading] = useState(true);
 	const [designCode, setDesignCode] = useState("");
 	const [userData, setUserData] = useState([]);
+	const [query, setQuery] = useState('');
 
 	useEffect(() => {
 		const queryParams = new URLSearchParams(window.location.search);
@@ -36,7 +37,6 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 							data?.certificates?.filter(template => template.pageSize === 'a4landscape') || [];
 		
 						setTemplatesData({
-							...templatesData,
 							a4PortraitTemplates: portraitTemplates,
 							a4LandscapeTemplates: landscapeTemplates,
 						});
@@ -56,9 +56,9 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 
 	const handleSeeAllClick = templateType => {
 		if (templateType === 'a4LandscapeTemplates') {
-			setSelectedTemplate(templatesData.a4LandscapeTemplates);
+			setSelectedTemplate(visibleLandscapeTemplates);
 		} else if (templateType === 'a4PortraitTemplates') {
-			setSelectedTemplate(templatesData.a4PortraitTemplates);
+			setSelectedTemplate(visiblePortraitTemplates);
 		}
 	};
 
@@ -101,72 +101,106 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 			});
 	}
 
+	const filterTemplates = templates =>
+		templates.filter(template => {
+			const term = query.trim().toLowerCase();
+			if (!term) return true;
+			return `${template.name || ''} ${template.TemplateName || ''} ${template.pageSize || ''}`
+				.toLowerCase()
+				.includes(term);
+		});
+
+	const visibleLandscapeTemplates = filterTemplates(templatesData.a4LandscapeTemplates);
+	const visiblePortraitTemplates = filterTemplates(templatesData.a4PortraitTemplates);
+
 	if (loading) {
 		return <Spin size="large" className="loader-class" />;
 	}
 
 	return (
 		<div className="TemplatesSection">
-			{!selectedTemplate && templatesData.a4LandscapeTemplates && templatesData.a4LandscapeTemplates.length > 0 && (
+			<Input.Search
+				allowClear
+				placeholder="Search designs"
+				value={query}
+				onChange={event => setQuery(event.target.value)}
+				style={{ marginBottom: 12 }}
+			/>
+
+			{!selectedTemplate && visibleLandscapeTemplates && visibleLandscapeTemplates.length > 0 && (
 				<div className="template-design">
 					<Row className="template-row">
 						<Col span={18}>
 							<h3>A4 Landscape</h3>
 						</Col>
 						<Col span={6}>
-							<span onClick={() => handleSeeAllClick('a4LandscapeTemplates')}>See All</span>
+							<button type="button" className="panel-link" onClick={() => handleSeeAllClick('a4LandscapeTemplates')}>
+								See All
+							</button>
 						</Col>
 					</Row>
 
 					<Row>
-						{templatesData.a4LandscapeTemplates?.slice(0, 2).map((item, imgIndex) => (
+						{visibleLandscapeTemplates.slice(0, 2).map((item, imgIndex) => (
 							<Col key={imgIndex} span={12}>
-								<div className="certificate-img1">
+								<button
+									type="button"
+									className="template-card certificate-img1"
+									onClick={() => handleTemplateClick(item)}
+									aria-label={`Load landscape design ${imgIndex + 1}`}
+								>
 									<img
 										src={item.imageLink}
-										onClick={() => handleTemplateClick(item)}
 										className="template-img"
-										alt={`Template Landscape} Image ${imgIndex + 1}`}
+										loading="lazy"
+										alt={`Landscape design ${imgIndex + 1}`}
 									/>
-								</div>
+								</button>
 							</Col>
 						))}
 					</Row>
 				</div>
 			)}
 
-			{!selectedTemplate && templatesData.a4PortraitTemplates && templatesData.a4PortraitTemplates.length > 0 &&  (
+			{!selectedTemplate && visiblePortraitTemplates && visiblePortraitTemplates.length > 0 &&  (
 				<div className="template-design">
 					<Row className="template-row">
 						<Col span={18}>
 							<h3>A4 Portrait</h3>
 						</Col>
 						<Col span={6}>
-							<span onClick={() => handleSeeAllClick('a4PortraitTemplates')}>See All</span>
+							<button type="button" className="panel-link" onClick={() => handleSeeAllClick('a4PortraitTemplates')}>
+								See All
+							</button>
 						</Col>
 					</Row>
 
 					<Row>
-						{templatesData.a4PortraitTemplates?.slice(0, 2).map((item, imgIndex) => (
+						{visiblePortraitTemplates.slice(0, 2).map((item, imgIndex) => (
 							<Col key={imgIndex} span={12}>
-								<div className="certificate-img2">
+								<button
+									type="button"
+									className="template-card certificate-img2"
+									onClick={() => handleTemplateClick(item)}
+									aria-label={`Load portrait design ${imgIndex + 1}`}
+								>
 									<img
 										src={item.imageLink}
-										onClick={() => handleTemplateClick(item)}
 										className="template-img"
-										alt={`Template Portrait} Image ${imgIndex + 1}`}
+										loading="lazy"
+										alt={`Portrait design ${imgIndex + 1}`}
 									/>
-								</div>
+								</button>
 							</Col>
 						))}
 					</Row>
 				</div>
 			)}
 
-			{(templatesData.a4PortraitTemplates.length === 0 && templatesData.a4LandscapeTemplates.length === 0) &&(
+			{visiblePortraitTemplates.length === 0 && visibleLandscapeTemplates.length === 0 &&(
 				<Row className="template-row">
 				<Col span={24}>
-					<h3>No designs available.</h3>
+					<h3>{query ? 'No designs match your search.' : 'No designs available.'}</h3>
 				</Col>
 			</Row>
 			)}
@@ -175,7 +209,9 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 				<div className="template-design-all">
 					<Row className="template-row">
 						<Col span={8}>
-							<span onClick={handleBackClick}>All Templates</span>
+							<button type="button" className="panel-link panel-link-left" onClick={handleBackClick}>
+								All Designs
+							</button>
 						</Col>
 						<Col span={16}>
 							<h3>{selectedTemplate[0].pageSize === 'a4portrait' ? 'A4 Portrait' : 'A4 Landscape'}</h3>
@@ -185,15 +221,19 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 					<Row>
 						{selectedTemplate.map((item, imgIndex) => (
 							<Col key={imgIndex} span={12}>
-								<div
-									className={item.pageSize === 'a4portrait' ? 'certificate-img2' : 'certificate-img1'}
+								<button
+									type="button"
+									onClick={() => handleTemplateClick(item)}
+									aria-label={`Load ${item.pageSize === 'a4portrait' ? 'portrait' : 'landscape'} design ${imgIndex + 1}`}
+									className={`template-card ${item.pageSize === 'a4portrait' ? 'certificate-img2' : 'certificate-img1'}`}
 								>
 									<img
 										src={item.imageLink}
-										onClick={() => handleTemplateClick(item)}
 										className="template-img"
+										loading="lazy"
+										alt={`Design Image ${imgIndex + 1}`}
 									/>
-								</div>
+								</button>
 							</Col>
 						))}
 					</Row>

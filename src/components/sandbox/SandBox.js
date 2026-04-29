@@ -4,6 +4,7 @@ import NoExistWordException from '../exception/NoExistWordException';
 const excludeWords = [
 	'window',
 	'Window',
+	'globalThis',
 	'alert',
 	'console',
 	'this',
@@ -11,7 +12,16 @@ const excludeWords = [
 	'new',
 	'function',
 	'Function',
+	'constructor',
+	'prototype',
 	'document',
+	'fetch',
+	'XMLHttpRequest',
+	'localStorage',
+	'sessionStorage',
+	'import',
+	'setTimeout',
+	'setInterval',
 ];
 
 const includeWords = ['return'];
@@ -32,7 +42,7 @@ class SandBox {
 	// eslint-disable-next-line class-methods-use-this
 	verify(code) {
 		const newCode = code.toString();
-		if (this.excludeWords.some(word => code.includes(word))) {
+		if (this.excludeWords.some(word => new RegExp(`(^|[^\\w$])${word}([^\\w$]|$)`).test(newCode))) {
 			throw new UnsafetyWordException();
 		}
 		if (!this.includeWords.some(word => code.includes(word))) {
@@ -47,11 +57,7 @@ class SandBox {
 		try {
 			return this.verify(code);
 		} catch (error) {
-			if (error.toString) {
-				console.error(error.toString());
-			} else {
-				console.error(error.message);
-			}
+			return null;
 		}
 	}
 }

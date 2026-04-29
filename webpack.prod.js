@@ -3,7 +3,6 @@ const path = require('path');
 const merge = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const WorkboxPlugin = require('workbox-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
@@ -28,11 +27,6 @@ const plugins = [
 		},
 	}),
 
-	new WorkboxPlugin.GenerateSW({
-		skipWaiting: true,
-		clientsClaim: true,
-		swDest: 'sw.js',
-	}),
 ];
 
 if (process.env.ANALYZE_BUNDLE === 'true') {

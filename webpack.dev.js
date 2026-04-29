@@ -3,10 +3,9 @@ const merge = require('webpack-merge');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const baseConfig = require('./webpack.common.js');
-const dotenv = require('dotenv');
 const Dotenv = require('dotenv-webpack');
-const devPort = 4000;
-const host = 'localhost';
+const devPort = Number(process.env.PORT || 4000);
+const host = process.env.HOST || 'localhost';
 
 module.exports = merge(baseConfig, {
 	mode: 'development',

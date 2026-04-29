@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Spin, message } from 'antd';
+import { Row, Col, Spin, Input, message } from 'antd';
 import '../badge-background/BadgeBackgroundStyle.less';
 import CONSTANTS from '../../../constant';
 
@@ -8,6 +8,7 @@ const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange }) => {
 	const [loading, setLoading] = useState(true);
 	const [designCode, setDesignCode] = useState("");
 	const [userData, setUserData] = useState("");
+	const [query, setQuery] = useState('');
 
 	useEffect(() => {
 		const queryParams = new URLSearchParams(window.location.search);
@@ -75,6 +76,12 @@ const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange }) => {
 				mainLoader(false);
 			});
 	}
+
+	const visibleTemplates = (templatesData?.badges || []).filter(template => {
+		const term = query.trim().toLowerCase();
+		if (!term) return true;
+		return `${template.name || ''} ${template.TemplateName || ''}`.toLowerCase().includes(term);
+	});
 	  
 	  if (loading) {
 		return <Spin size="large" className='loader-class'/>;
@@ -82,7 +89,15 @@ const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange }) => {
 
 	return (
 		<div className="BadgeSection">
-			{templatesData && templatesData.count  > 0 ? (
+			<Input.Search
+				allowClear
+				placeholder="Search badge designs"
+				value={query}
+				onChange={event => setQuery(event.target.value)}
+				style={{ marginBottom: 12 }}
+			/>
+
+			{visibleTemplates.length > 0 ? (
 				<div  className="template-design">
 					<Row className="template-row">
 						<Col span={24}>
@@ -91,15 +106,22 @@ const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange }) => {
 					</Row>
 
 					<Row>
-						{templatesData?.badges?.map((item, imgIndex) => (
+						{visibleTemplates.map((item, imgIndex) => (
 							<Col key={imgIndex} span={12}>
 								<div className="certificate-img1">
-									<img
-										src={item.imageLink}
+									<button
+										type="button"
+										className="template-card"
 										onClick={() => handleTemplateClick(item)}
-										className="template-img"
-										alt={`Template Badge Image ${imgIndex + 1}`}
-									/>
+										aria-label={`Load badge design ${imgIndex + 1}`}
+									>
+										<img
+											src={item.imageLink}
+											className="template-img"
+											loading="lazy"
+											alt={`Template Badge Image ${imgIndex + 1}`}
+										/>
+									</button>
 								</div>
 							</Col>
 						))}
@@ -108,7 +130,7 @@ const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange }) => {
 			): (
 				<Row className="template-row">
 						<Col span={24}>
-							<h3>No designs available.</h3>
+							<h3>{query ? 'No badge designs match your search.' : 'No designs available.'}</h3>
 						</Col>
 					</Row>
 			)}

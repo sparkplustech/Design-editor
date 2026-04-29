@@ -272,7 +272,6 @@ class ImageMapEditor extends Component {
 			.then(response => response.json())
 			.then(data => {
 				this.setState({ userData: data });
-				// console.log("check data", data);
 				if (data.designId !== null) {
 					this.setState({ loading: true, createTemplateCalled: true, isEdit: true, editId: data.designId });
 					const isBadgePath = data.type === 'badge';
@@ -440,7 +439,6 @@ class ImageMapEditor extends Component {
 					}
 				})
 				.then(data => {
-					// console.log("check create data", data);
 					this.setState({
 						autoSaveId: data.id,
 						inputData: isAdminPath ? data.TemplateName : data.name,
@@ -541,7 +539,6 @@ class ImageMapEditor extends Component {
 			} else {
 				formData.append('jsonCode', templateCode);
 			}
-			// console.log("template code", templateCode );
 			let endpoint;
 
 			if (isAdminPath) {
@@ -889,6 +886,10 @@ class ImageMapEditor extends Component {
 				try {
 					const sandbox = new SandBox();
 					const compiled = sandbox.compile(changedValue);
+					if (!compiled) {
+						message.error('Chart script contains unsupported or unsafe code.');
+						return;
+					}
 					const { animations, styles } = this.state;
 					const chartOption = compiled(3, animations, styles, selectedItem.userProperty);
 					selectedItem.setChartOptionStr(changedValue);
@@ -1227,7 +1228,6 @@ class ImageMapEditor extends Component {
 
 	handlePageSizeChange = value => {
 		const isCertificatePath = this.state.isCertificatePath;
-		// console.log("check is certificate", isCertificatePath);
 		this.setState({ selectedPageSize: value });
 
 
