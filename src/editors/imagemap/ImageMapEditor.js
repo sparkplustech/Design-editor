@@ -117,6 +117,44 @@ class ImageMapEditor extends Component {
 		skip: 0,
 	};
 
+	getExportMultiplier = () => 2;
+
+	getCanvasImageDataUrl = option => {
+		const cachedViewportTransform = this.canvasRef.canvas.viewportTransform;
+		let { left, top, width, height, scaleX, scaleY } = this.canvasRef.handler.workarea;
+		width = Math.ceil(width * scaleX);
+		height = Math.ceil(height * scaleY);
+		this.canvasRef.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
+
+		try {
+			return this.canvasRef.canvas.toDataURL({
+				...option,
+				left,
+				top,
+				width,
+				height,
+				multiplier: this.getExportMultiplier(),
+				enableRetinaScaling: true,
+			});
+		} finally {
+			this.canvasRef.canvas.viewportTransform = cachedViewportTransform;
+		}
+	};
+
+	dataUrlToBlob = dataURL => {
+		const [metadata, data] = dataURL.split(',');
+		const mimeMatch = metadata.match(/data:(.*);base64/);
+		const mimeType = mimeMatch ? mimeMatch[1] : 'image/png';
+		const binary = window.atob(data);
+		const bytes = new Uint8Array(binary.length);
+
+		for (let index = 0; index < binary.length; index += 1) {
+			bytes[index] = binary.charCodeAt(index);
+		}
+
+		return new Blob([bytes], { type: mimeType });
+	};
+
 	componentDidMount() {
 		this.showLoading(true);
 		import('./Descriptors.json').then(descriptors => {
@@ -292,6 +330,7 @@ class ImageMapEditor extends Component {
 		const isAdminBadgePath = currentPath.includes('admin-badge-designer');
 		const accessToken = data.accessToken;
 		const pageSize = this.state.selectedPageSize;
+		const name = this.state.inputData === null || this.state.inputData === 'null' ? '' : this.state.inputData || '';
 		if (isCertificatePath) {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '#FFFFFF', '');
 			this.canvasHandlers.onChangeWokarea('src', '', '');
@@ -300,29 +339,14 @@ class ImageMapEditor extends Component {
 			this.canvasHandlers.onChangeWokarea('src', '', '');
 		}
 		let option = { name: 'New Image', format: 'png', quality: 1 };
-		let { left, top, width, height, scaleX, scaleY } = this.canvasRef.handler.workarea;
-		width = Math.ceil(width * scaleX);
-		height = Math.ceil(height * scaleY);
-		// cachedVT is used to reset the viewportTransform after the image is saved.
-		// reset the viewportTransform to default (no zoom)
-		this.canvasRef.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
-		const dataURL = this.canvasRef.canvas.toDataURL({
-			...option,
-			left,
-			top,
-			width,
-			height,
-			enableRetinaScaling: true,
-		});
+		const dataURL = this.getCanvasImageDataUrl(option);
 
 		if (isBadgePath) {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
 			this.canvasHandlers.onChangeWokarea('src', './images/sample/transparentBg.png', '');
 		}
 
-		const blobPromise = fetch(dataURL).then(res => res.blob());
-		blobPromise.then(blob => {
-			const pageSize = this.state.selectedPageSize;
+		const blob = this.dataUrlToBlob(dataURL);
 			const objects = this.canvasRef.handler.exportJSON().filter(obj => {
 				if (!obj.id) {
 					return false;
@@ -430,10 +454,14 @@ class ImageMapEditor extends Component {
 				.finally(() => {
 					this.setState({ loading: false });
 				});
-		});
 	};
 
 	editTemplate = async editType => {
+		if (this.saveInFlight) {
+			return;
+		}
+		this.saveInFlight = true;
+
 		const designCode = this.state.designCode;
 		const isAdminPath = this.state.isAdminPath;
 		const isCertificatePath = this.state.isCertificatePath;
@@ -455,27 +483,15 @@ class ImageMapEditor extends Component {
 		}
 
 		let option = { name: 'New Image', format: 'png', quality: 1 };
-		let { left, top, width, height, scaleX, scaleY } = this.canvasRef.handler.workarea;
-		width = Math.ceil(width * scaleX);
-		height = Math.ceil(height * scaleY);
-		this.canvasRef.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
-		const dataURL = this.canvasRef.canvas.toDataURL({
-			...option,
-			left,
-			top,
-			width,
-			height,
-			enableRetinaScaling: true,
-		});
+		const { left, top } = this.canvasRef.handler.workarea;
+		const dataURL = this.getCanvasImageDataUrl(option);
 
 		if (isBadgePath) {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
 			this.canvasHandlers.onChangeWokarea('src', './images/sample/transparentBg.png', '');
 		}
-		const blobPromise = fetch(dataURL).then(res => res.blob());
-		blobPromise.then(blob => {
+		const blob = this.dataUrlToBlob(dataURL);
 			const name = this.state.inputData === null || this.state.inputData === 'null' ? '' : this.state.inputData;
-			const pageSize = this.state.selectedPageSize;
 			const objects = this.canvasRef.handler.exportJSON().filter(obj => {
 				if (!obj.id) {
 					return false;
@@ -647,8 +663,13 @@ class ImageMapEditor extends Component {
 				.catch(error => {
 					console.error('API Error:', error);
 					throw error;
+				})
+				.finally(() => {
+					this.saveInFlight = false;
+					if (editType === 'click') {
+						this.setState({ isSaving: false });
+					}
 				});
-		});
 	};
 
 	canvasHandlers = {
@@ -1251,7 +1272,6 @@ class ImageMapEditor extends Component {
 	};
 
 	handleBackButton = () => {
-		console.log('check state', this.state);
 		if (this.state.isAdminPath) {
 			if (this.state.isCertificatePath) {
 				window.location.href = `${
@@ -1285,18 +1305,7 @@ class ImageMapEditor extends Component {
 
 	handlePreview = () => {
 		let option = { name: 'New Image', format: 'png', quality: 1 };
-		let { left, top, width, height, scaleX, scaleY } = this.canvasRef.handler.workarea;
-		width = Math.ceil(width * scaleX);
-		height = Math.ceil(height * scaleY);
-		this.canvasRef.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
-		const dataUrl = this.canvasRef.canvas.toDataURL({
-			...option,
-			left,
-			top,
-			width,
-			height,
-			enableRetinaScaling: true,
-		});
+		const dataUrl = this.getCanvasImageDataUrl(option);
 		this.setState({
 			previewVisible: true,
 			previewImage: dataUrl,
@@ -1497,7 +1506,7 @@ class ImageMapEditor extends Component {
 								this.container = c;
 							}}
 							className="rde-editor-canvas"
-							style={{ paddingBottom: '20x', paddingTop: '20x' }}
+							style={{ paddingBottom: '20px', paddingTop: '20px' }}
 						>
 							<Canvas
 								ref={c => {

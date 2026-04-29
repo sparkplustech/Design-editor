@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Spin } from 'antd';
+import { Row, Col, Spin, message } from 'antd';
 import '../badge-background/BadgeBackgroundStyle.less';
 import CONSTANTS from '../../../constant';
 
@@ -31,15 +31,21 @@ const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange }) => {
 						setTemplatesData(data);
 						setLoading(false);
 					})
-					.catch(error => console.error('Error fetching templates:', error));
+					.catch(() => {
+						message.error('Unable to load badge templates.');
+						setLoading(false);
+					});
 			})
-			.catch(error => console.error('Error fetching usertoken:', error));
+			.catch(() => {
+				message.error('Unable to start badge designer session.');
+				setLoading(false);
+			});
 
 	}, []);
 
 	function handleTemplateClick(tempdata) {
 		mainLoader(true);
-		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getuserBadgeTemplate//${tempdata?.id}`, {
+		fetch(`${CONSTANTS.API_CONSTANT.REACT_APP_API_BASE_URL}/templates/getuserBadgeTemplate/${tempdata?.id}`, {
 			headers: {
 				Authorization: `Bearer ${userData.accessToken}`,
 			},
@@ -56,15 +62,18 @@ const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange }) => {
 							onCanvasChange(true);
 						}, 50);
 					} else {
-						console.error('Invalid objects data format:', objects);
+						message.error('Badge template data is invalid.');
 					}
 				} catch (error) {
-					console.error('Error:', error);
+					message.error('Unable to load selected badge template.');
 				}
 
 				mainLoader(false);
 			})
-			.catch(error => console.error('Error fetching templates:', error));
+			.catch(() => {
+				message.error('Unable to load selected badge template.');
+				mainLoader(false);
+			});
 	}
 	  
 	  if (loading) {

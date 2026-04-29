@@ -13,7 +13,6 @@ const plugins = [
 	new webpack.LoaderOptionsPlugin({
 		minimize: true,
 	}),
-	new BundleAnalyzerPlugin(),
 
 	new CompressionPlugin({
 		algorithm: 'gzip',
@@ -35,6 +34,11 @@ const plugins = [
 		swDest: 'sw.js',
 	}),
 ];
+
+if (process.env.ANALYZE_BUNDLE === 'true') {
+	plugins.push(new BundleAnalyzerPlugin());
+}
+
 module.exports = merge(baseConfig, {
 	mode: 'production',
 	entry: {

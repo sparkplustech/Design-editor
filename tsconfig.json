@@ -18,8 +18,9 @@
 		"moduleResolution": "node",
 		"target": "esnext",
 		"outDir": "lib",
-		"lib": ["dom", "esnext"]
+		"lib": ["dom", "esnext"],
+		"types": []
 	},
-	"include": ["src/canvas/index.tsx", "src/canvas/global.d.ts"],
-	"exclude": ["node_modules", "dist", "lib","src"]
+	"include": ["src/canvas/global.d.ts"],
+	"exclude": ["node_modules", "dist", "lib"]
 }

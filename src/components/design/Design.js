@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Spin } from 'antd';
+import { Row, Col, Spin, message } from 'antd';
 import './DesignStyle.less';
 import CONSTANTS from '../../../constant';
 
@@ -43,9 +43,15 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 		
 						setLoading(false);
 					})
-					.catch(error => console.error('Error fetching templates:', error));
+					.catch(() => {
+						message.error('Unable to load saved designs.');
+						setLoading(false);
+					});
 			})
-			.catch(error => console.error('Error fetching usertoken:', error));
+			.catch(() => {
+				message.error('Unable to start designer session.');
+				setLoading(false);
+			});
 	}, []);
 
 	const handleSeeAllClick = templateType => {
@@ -81,16 +87,16 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 							onCanvasChange(true);
 						}, 50);
 					} else {
-						console.error('Invalid objects data format:', objects);
+						message.error('Saved design data is invalid.');
 					}
 				} catch (error) {
-					console.error('Error:', error);
+					message.error('Unable to load selected design.');
 				}
 
 				mainLoader(false);
 			})
-			.catch(error => {
-				console.error('Error fetching templates:', error);
+			.catch(() => {
+				message.error('Unable to load selected design.');
 				mainLoader(false);
 			});
 	}
@@ -129,7 +135,7 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 				</div>
 			)}
 
-			{!selectedTemplate && templatesData.a4PortraitTemplates && templatesData.a4PortraitTemplates.length > 1 &&  (
+			{!selectedTemplate && templatesData.a4PortraitTemplates && templatesData.a4PortraitTemplates.length > 0 &&  (
 				<div className="template-design">
 					<Row className="template-row">
 						<Col span={18}>

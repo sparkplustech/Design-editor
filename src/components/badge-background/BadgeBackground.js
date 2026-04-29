@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Spin } from 'antd';
+import { Row, Col, Spin, message } from 'antd';
 import './BadgeBackgroundStyle.less';
 import CONSTANTS from '../../../constant';
 
@@ -34,10 +34,16 @@ const BadgeBackground = ({ canvasRef, mainLoader, onCanvasChange, badgeType }) =
 						setTemplatesData(badgeType === "template"? templates : background );
 						setLoading(false);
 					})
-					.catch(error => console.error('Error fetching templates:', error));
+					.catch(() => {
+						message.error('Unable to load badge assets.');
+						setLoading(false);
+					});
 
 			})
-			.catch(error => console.error('Error fetching usertoken:', error));
+			.catch(() => {
+				message.error('Unable to start designer session.');
+				setLoading(false);
+			});
 	}, []);
 
 	function handleTemplateClick(tempdata) {
@@ -61,15 +67,18 @@ const BadgeBackground = ({ canvasRef, mainLoader, onCanvasChange, badgeType }) =
 							onCanvasChange(true);
 						}, 50);
 					} else {
-						console.error('Invalid objects data format:', objects);
+						message.error('Badge asset data is invalid.');
 					}
 				} catch (error) {
-					console.error('Error:', error);
+					message.error('Unable to load selected badge asset.');
 				}
 
 				mainLoader(false);
 			})
-			.catch(error => console.error('Error fetching templates:', error));
+			.catch(() => {
+				message.error('Unable to load selected badge asset.');
+				mainLoader(false);
+			});
 	}
 	  
 	  if (loading) {

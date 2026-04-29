@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Modal, Button, Input } from 'antd';
+import { Form, Modal, Button, Input, message } from 'antd';
 import i18n from 'i18next';
 
 import Icon from '../icon/Icon';
@@ -9,11 +9,19 @@ class UrlModal extends Component {
 	handlers = {
 		onOk: () => {
 			const { onChange } = this.props;
-			const { tempUrl } = this.state;
-			onChange(tempUrl);
+			const { tempUrl, url } = this.state;
+			const nextUrl = (tempUrl || url || '').trim();
+
+			if (!this.isSafeUrl(nextUrl)) {
+				message.error('Enter a valid http, https, data, or blob URL.');
+				return;
+			}
+
+			onChange(nextUrl);
 			this.setState({
 				visible: false,
-				url: tempUrl,
+				url: nextUrl,
+				tempUrl: '',
 			});
 		},
 		onCancel: () => {
@@ -47,6 +55,23 @@ class UrlModal extends Component {
 		url: this.props.value || '',
 		tempUrl: '',
 		visible: false,
+	};
+
+	isSafeUrl = value => {
+		if (!value) {
+			return false;
+		}
+
+		if (value.startsWith('data:image/') || value.startsWith('blob:')) {
+			return true;
+		}
+
+		try {
+			const parsedUrl = new URL(value);
+			return ['http:', 'https:'].includes(parsedUrl.protocol);
+		} catch (error) {
+			return false;
+		}
 	};
 
 	UNSAFE_componentWillReceiveProps(nextProps) {

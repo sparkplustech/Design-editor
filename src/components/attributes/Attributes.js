@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Divider } from 'antd';
+import { Row, Col, Divider, message } from 'antd';
 import PropTypes from 'prop-types';
 import { uuid } from 'uuidv4';
 

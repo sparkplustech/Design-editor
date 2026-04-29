@@ -19,7 +19,7 @@
 		"deploy": "npm run build:lib && npm publish",
 		"lint": "npm run tsc",
 		"clean": "node scripts/clean",
-		"tsc": "tsc",
+		"tsc": "node node_modules/typescript/lib/tsc.js",
 		"typedoc": "typedoc"
 	},
 	"repository": {
@@ -96,6 +96,7 @@
 		"@types/echarts": "^4.4.6",
 		"@types/fabric": "^4.5.7",
 		"@types/lodash": "^4.14.150",
+		"@types/node": "^14.18.63",
 		"@types/react": "^16.14.21",
 		"@types/react-dom": "^16.9.14",
 		"@types/react-helmet": "^5.0.15",

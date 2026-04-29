@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Spin } from 'antd';
+import { Row, Col, Spin, message } from 'antd';
 import './TemplatesStyle.less';
 import CONSTANTS from '../../../constant';
 
@@ -44,9 +44,15 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 
 						setLoading(false);
 					})
-					.catch(error => console.error('Error fetching templates:', error));
+					.catch(() => {
+						message.error('Unable to load certificate templates.');
+						setLoading(false);
+					});
 			})
-			.catch(error => console.error('Error fetching usertoken:', error));
+			.catch(() => {
+				message.error('Unable to start designer session.');
+				setLoading(false);
+			});
 	}, []);
 
 	const handleSeeAllClick = templateType => {
@@ -82,16 +88,16 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 							onCanvasChange(true);
 						}, 50);
 					} else {
-						console.error('Invalid objects data format:', objects);
+						message.error('Certificate template data is invalid.');
 					}
 				} catch (error) {
-					console.error('Error:', error);
+					message.error('Unable to load selected certificate template.');
 				}
 
 				mainLoader(false);
 			})
-			.catch(error => {
-				console.error('Error fetching templates:', error);
+			.catch(() => {
+				message.error('Unable to load selected certificate template.');
 				mainLoader(false);
 			});
 	}

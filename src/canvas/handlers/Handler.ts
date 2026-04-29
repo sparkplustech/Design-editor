@@ -618,6 +618,27 @@ class Handler implements HandlerOptions {
 	 * @param {(File | string)} [source]
 	 * @returns
 	 */
+	private fitUploadedImageToWorkarea = (obj: FabricImage) => {
+		if (!this.workarea || !obj.width || !obj.height) {
+			return;
+		}
+		const maxWidth = this.workarea.width * (this.workarea.scaleX || 1);
+		const maxHeight = this.workarea.height * (this.workarea.scaleY || 1);
+		const displayWidth = obj.width * (obj.scaleX || 1);
+		const displayHeight = obj.height * (obj.scaleY || 1);
+
+		if (displayWidth <= maxWidth && displayHeight <= maxHeight) {
+			return;
+		}
+
+		const scale = Math.min(maxWidth / obj.width, maxHeight / obj.height);
+		obj.set({
+			scaleX: scale,
+			scaleY: scale,
+		});
+		obj.setCoords();
+	};
+
 	public setImage = (obj: FabricImage, source?: File | string): Promise<FabricImage> => {
 		return new Promise(resolve => {
 			if (!source) {
@@ -635,9 +656,16 @@ class Handler implements HandlerOptions {
 					obj.set('file', source);
 					obj.set('src', null);
 					resolve(
-						obj.setSrc(reader.result as string, () => this.canvas.renderAll(), {
-							dirty: true,
-						}) as FabricImage,
+						obj.setSrc(
+							reader.result as string,
+							() => {
+								this.fitUploadedImageToWorkarea(obj);
+								this.canvas.renderAll();
+							},
+							{
+								dirty: true,
+							},
+						) as FabricImage,
 					);
 				};
 				reader.readAsDataURL(source);
@@ -1823,6 +1851,7 @@ class Handler implements HandlerOptions {
 			top,
 			width,
 			height,
+			multiplier: (option as any).multiplier || 2,
 			enableRetinaScaling: true,
 		});
 

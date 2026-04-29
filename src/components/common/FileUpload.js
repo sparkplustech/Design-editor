@@ -62,13 +62,12 @@ class FileUpload extends Component {
 		return extensions.join(', ');
 	};
 
-	validateFile = (file) => {
-		const { accept, limit } = this.props;
+	validateFileType = (file) => {
+		const { accept } = this.props;
 
 		if (accept === 'image/*') {
-			const isUnderLimit = file.size / 1024 / 1024 < limit;
-			if (!isUnderLimit) {
-				message.error(`File size exceeds limit of ${limit}MB.`);
+			if (!file.type.startsWith('image/')) {
+				message.error('Invalid file type. Only images are allowed.');
 				return false;
 			}
 			return true;
@@ -90,6 +89,11 @@ class FileUpload extends Component {
 			return false;
 		}
 
+		return true;
+	};
+
+	validateFileSize = (file) => {
+		const { limit } = this.props;
 		const isUnderLimit = file.size / 1024 / 1024 < limit;
 		if (!isUnderLimit) {
 			message.error(`File size exceeds limit of ${limit}MB.`);
@@ -99,65 +103,81 @@ class FileUpload extends Component {
 		return true;
 	};
 
-	resizeImageToFitCanvas = (file, maxWidth, maxHeight) => {
-	return new Promise((resolve) => {
-		const reader = new FileReader();
-		reader.onload = (e) => {
-			const img = new Image();
-			img.onload = () => {
-				const { width, height } = img;
+	optimizeImageForDesigner = (file) => {
+		const maxDimension = 2400;
+		const supportedRasterTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
-				if (width <= maxWidth && height <= maxHeight) {
-					file.uid = file.uid || `${Date.now()}-${Math.random()}`;
-					resolve(file);
-					return;
-				}
+		if (!supportedRasterTypes.includes(file.type)) {
+			return Promise.resolve(file);
+		}
 
-				const ratio = Math.min(maxWidth / width, maxHeight / height);
-				const newWidth = width * ratio;
-				const newHeight = height * ratio;
+		return new Promise((resolve) => {
+			const reader = new FileReader();
+			reader.onerror = () => resolve(file);
+			reader.onload = (e) => {
+				const img = new Image();
+				img.onerror = () => resolve(file);
+				img.onload = () => {
+					const largestSide = Math.max(img.width, img.height);
 
-				const canvas = document.createElement('canvas');
-				canvas.width = newWidth;
-				canvas.height = newHeight;
-				const ctx = canvas.getContext('2d');
-				ctx.drawImage(img, 0, 0, newWidth, newHeight);
+					if (largestSide <= maxDimension) {
+						resolve(file);
+						return;
+					}
 
-				canvas.toBlob((blob) => {
-					const resizedFile = new File([blob], file.name, {
-						type: file.type,
-						lastModified: Date.now(),
-					});
-					resizedFile.uid = file.uid || `${Date.now()}-${Math.random()}`;
-					resolve(resizedFile);
-				}, file.type);
+					const scale = maxDimension / largestSide;
+					const width = Math.round(img.width * scale);
+					const height = Math.round(img.height * scale);
+					const canvas = document.createElement('canvas');
+					canvas.width = width;
+					canvas.height = height;
+
+					const ctx = canvas.getContext('2d');
+					ctx.imageSmoothingEnabled = true;
+					ctx.imageSmoothingQuality = 'high';
+					ctx.drawImage(img, 0, 0, width, height);
+
+					const outputType = file.type === 'image/png' ? 'image/png' : file.type;
+					const outputQuality = outputType === 'image/png' ? undefined : 0.92;
+
+					canvas.toBlob((blob) => {
+						if (!blob) {
+							resolve(file);
+							return;
+						}
+
+						const optimizedFile = new File([blob], file.name, {
+							type: outputType,
+							lastModified: file.lastModified || Date.now(),
+						});
+						resolve(optimizedFile.size < file.size ? optimizedFile : file);
+					}, outputType, outputQuality);
+				};
+				img.src = e.target.result;
 			};
-			img.src = e.target.result;
-		};
-		reader.readAsDataURL(file);
-	});
-};
-
-
+			reader.readAsDataURL(file);
+		});
+	};
 
 	render() {
 		const { accept, limit, onChange } = this.props;
 		const { fileList } = this.state;
 		const readableTypes = this.getReadableFileTypes();
-		const { width, height } = this.getCanvasSize();
 
 		const props = {
 			accept,
 			name: 'file',
 			multiple: false,
 			beforeUpload: async (file) => {
-				const isValid = this.validateFile(file);
-				if (!isValid) return false;
+				if (!this.validateFileType(file)) return false;
+				if (!this.validateFileSize(file)) return false;
 
-				const resizedFile = await this.resizeImageToFitCanvas(file, width, height);
+				const optimizedFile = await this.optimizeImageForDesigner(file);
 
-				this.setState({ fileList: [resizedFile] });
-				if (onChange) onChange(resizedFile);
+				optimizedFile.uid = file.uid || `${Date.now()}-${Math.random()}`;
+
+				this.setState({ fileList: [optimizedFile] });
+				if (onChange) onChange(optimizedFile);
 
 				return false;
 			},
