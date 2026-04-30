@@ -2,7 +2,7 @@
 
 Date: 2026-04-30
 
-Branch: `designer-modern`
+Branch: `designer-editor`
 
 ## Dependency Upgrade Path
 

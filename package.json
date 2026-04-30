@@ -18,6 +18,8 @@
 		"ghpages": "npm run build && node scripts/ghpages",
 		"deploy": "npm run build:lib && npm publish",
 		"lint": "npm run tsc",
+		"audit:prod": "npm audit --omit=dev --audit-level=high",
+		"verify": "npm run lint && npm run smoke:routes && npm run build",
 		"clean": "node scripts/clean",
 		"smoke:routes": "node scripts/smoke-routes.js",
 		"tsc": "node node_modules/typescript/lib/tsc.js",
@@ -42,7 +44,6 @@
 	"homepage": "https://salgum1114.github.io/react-design-editor",
 	"peerDependencies": {
 		"animejs": "^3.0.0",
-		"fabric": "^4.6.0",
 		"react": "^16.14.0",
 		"react-dom": "^16.14.0"
 	},
@@ -53,8 +54,8 @@
 		"antd": "3.15.0",
 		"classnames": "^2.2.6",
 		"color": "^3.1.2",
-		"echarts": "^4.7.0",
-		"fabric": "^4.6.0",
+		"echarts": "^5.6.0",
+		"fabric": "^7.3.1",
 		"gifler": "^0.1.0",
 		"honeycomb-grid": "^3.1.7",
 		"i18next": "^19.0.0",
@@ -72,8 +73,15 @@
 		"react-router-dom": "^6.21.3",
 		"resize-observer-polyfill": "^1.5.1",
 		"store": "^2.0.12",
-		"uuid": "^7.0.3",
 		"warning": "^4.0.3"
+	},
+	"overrides": {
+		"form-data": "2.5.5",
+		"immutable": "3.8.3",
+		"node-fetch": "2.7.0",
+		"qs": "6.15.1",
+		"tar": "7.5.13",
+		"tough-cookie": "4.1.4"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.16.0",
@@ -98,7 +106,6 @@
 		"@types/node": "^14.18.63",
 		"@types/react": "^16.14.21",
 		"@types/react-dom": "^16.9.14",
-		"@types/uuid": "^7.0.2",
 		"@types/warning": "^3.0.0",
 		"@types/webpack-env": "^1.16.0",
 		"babel-eslint": "^10.1.0",
