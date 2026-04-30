@@ -153,8 +153,10 @@ class EditTable extends Component {
 					return (
 						<div>
 							<Button
+								aria-label={`Edit property ${record.key}`}
 								className="rde-action-btn"
 								shape="circle"
+								title={`Edit property ${record.key}`}
 								onClick={() => {
 									this.handleEdit(record.key);
 								}}
@@ -162,8 +164,10 @@ class EditTable extends Component {
 								<Icon name="edit" />
 							</Button>
 							<Button
+								aria-label={`Delete property ${record.key}`}
 								className="rde-action-btn"
 								shape="circle"
+								title={`Delete property ${record.key}`}
 								onClick={() => {
 									this.handleDelete(record.key);
 								}}
@@ -178,10 +182,22 @@ class EditTable extends Component {
 		return (
 			<Flex flexDirection="column">
 				<Flex justifyContent="flex-end">
-					<Button className="rde-action-btn" shape="circle" onClick={this.handleAdd}>
+					<Button
+						aria-label="Add property"
+						className="rde-action-btn"
+						shape="circle"
+						title="Add property"
+						onClick={this.handleAdd}
+					>
 						<Icon name="plus" />
 					</Button>
-					<Button className="rde-action-btn" shape="circle" onClick={this.handleClear}>
+					<Button
+						aria-label="Clear properties"
+						className="rde-action-btn"
+						shape="circle"
+						title="Clear properties"
+						onClick={this.handleClear}
+					>
 						<Icon name="times" />
 					</Button>
 				</Flex>

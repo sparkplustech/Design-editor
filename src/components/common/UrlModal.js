@@ -93,7 +93,7 @@ class UrlModal extends Component {
 		const label = (
 			<React.Fragment>
 				<span style={{ marginRight: 8 }}>{i18n.t('common.url')}</span>
-				<Button onClick={onClick} shape="circle" className="rde-action-btn">
+				<Button aria-label="Edit URL" className="rde-action-btn" shape="circle" title="Edit URL" onClick={onClick}>
 					<Icon name="edit" />
 				</Button>
 			</React.Fragment>

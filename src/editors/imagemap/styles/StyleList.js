@@ -18,8 +18,11 @@ class StyleList extends Component {
 				renderItem={(style, index) => {
 					const actions = [
 						<Button
+							aria-label={`Edit style ${style.title}`}
 							className="rde-action-btn"
+							key="edit"
 							shape="circle"
+							title={`Edit style ${style.title}`}
 							onClick={() => {
 								onEdit(style, index);
 							}}
@@ -27,8 +30,11 @@ class StyleList extends Component {
 							<Icon name="edit" />
 						</Button>,
 						<Button
+							aria-label={`Delete style ${style.title}`}
 							className="rde-action-btn"
+							key="delete"
 							shape="circle"
+							title={`Delete style ${style.title}`}
 							onClick={() => {
 								onDelete(index);
 							}}

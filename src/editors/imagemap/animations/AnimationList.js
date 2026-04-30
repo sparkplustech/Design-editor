@@ -19,8 +19,11 @@ class AnimationList extends Component {
 				renderItem={(animation, index) => {
 					const actions = [
 						<Button
+							aria-label={`Edit animation ${animation.title}`}
 							className="rde-action-btn"
+							key="edit"
 							shape="circle"
+							title={`Edit animation ${animation.title}`}
 							onClick={() => {
 								onEdit(animation, index);
 							}}
@@ -28,8 +31,11 @@ class AnimationList extends Component {
 							<Icon name="edit" />
 						</Button>,
 						<Button
+							aria-label={`Delete animation ${animation.title}`}
 							className="rde-action-btn"
+							key="delete"
 							shape="circle"
+							title={`Delete animation ${animation.title}`}
 							onClick={() => {
 								onDelete(index);
 							}}

@@ -69,6 +69,7 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - Added visible ruler overlays and a non-exported Fabric safe-area overlay that can be toggled from the editor aid controls.
 - Converted component palette tiles into semantic buttons while preserving click and drag-to-canvas behavior.
 - Added accessible inspector color swatches, text style toggles, text alignment buttons, and image filter toggles with keyboard focus states.
+- Added accessible names and titles for icon-only add, clear, edit, and delete controls in reusable editor panels.
 
 ## Verified
 
@@ -88,6 +89,7 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - Browser smoke for proof-passed modal state and clean preview/export framing without editor-only aids.
 - Browser smoke for mobile asset drawer access to components and collapse behavior.
 - Browser smoke for inspector color picker labels, typography toggle labels, keyboard toggle behavior, and clean console output.
+- TypeScript lint for accessible panel action labels across animations, styles, data sources, code, URL, and custom property controls.
 
 The production app entrypoint is now about 298 KiB, down from about 5.56 MiB before this optimization pass. Build still reports large asset warnings for deferred Fabric/AntD/editor chunks and bundled font SVG assets. Those warnings are real remaining performance work, not build failures.
 

@@ -67,7 +67,7 @@ class CodeModal extends Component {
 		const label = (
 			<React.Fragment>
 				<span style={{ marginRight: 8 }}>{i18n.t('common.code')}</span>
-				<Button onClick={onClick} shape="circle" className="rde-action-btn">
+				<Button aria-label="Edit code" className="rde-action-btn" shape="circle" title="Edit code" onClick={onClick}>
 					<Icon name="edit" />
 				</Button>
 			</React.Fragment>

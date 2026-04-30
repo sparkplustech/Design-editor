@@ -158,10 +158,16 @@ class Animations extends Component {
 				<Form>
 					<Flex flexDirection="column">
 						<Flex justifyContent="flex-end" style={{ padding: 8 }}>
-							<Button className="rde-action-btn" shape="circle" onClick={onAdd}>
+							<Button aria-label="Add animation" className="rde-action-btn" shape="circle" title="Add animation" onClick={onAdd}>
 								<Icon name="plus" />
 							</Button>
-							<Button className="rde-action-btn" shape="circle" onClick={onClear}>
+							<Button
+								aria-label="Clear animations"
+								className="rde-action-btn"
+								shape="circle"
+								title="Clear animations"
+								onClick={onClear}
+							>
 								<Icon name="times" />
 							</Button>
 							<AnimationModal

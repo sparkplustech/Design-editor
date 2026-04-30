@@ -140,10 +140,10 @@ class Styles extends Component {
 			<Form>
 				<Flex flexDirection="column">
 					<Flex justifyContent="flex-end" style={{ padding: 8 }}>
-						<Button className="rde-action-btn" shape="circle" onClick={onAdd}>
+						<Button aria-label="Add style" className="rde-action-btn" shape="circle" title="Add style" onClick={onAdd}>
 							<Icon name="plus" />
 						</Button>
-						<Button className="rde-action-btn" shape="circle" onClick={onClear}>
+						<Button aria-label="Clear styles" className="rde-action-btn" shape="circle" title="Clear styles" onClick={onClear}>
 							<Icon name="times" />
 						</Button>
 						<StyleModal

@@ -19,8 +19,11 @@ class DataSourceList extends Component {
 				renderItem={(dataSource, index) => {
 					const actions = [
 						<Button
+							aria-label={`Edit data source ${dataSource.title}`}
 							className="rde-action-btn"
+							key="edit"
 							shape="circle"
+							title={`Edit data source ${dataSource.title}`}
 							onClick={() => {
 								onEdit(dataSource, index);
 							}}
@@ -28,8 +31,11 @@ class DataSourceList extends Component {
 							<Icon name="edit" />
 						</Button>,
 						<Button
+							aria-label={`Delete data source ${dataSource.title}`}
 							className="rde-action-btn"
+							key="delete"
 							shape="circle"
+							title={`Delete data source ${dataSource.title}`}
 							onClick={() => {
 								onDelete(index);
 							}}
