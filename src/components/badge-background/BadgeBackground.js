@@ -2,7 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Row, Col, Spin, Input, message } from 'antd';
 import './BadgeBackgroundStyle.less';
 import CONSTANTS from '../../../constant';
-import { authHeaders, fetchDesignerJson, getCanvasObjects, loadDesignerSession } from '../../utils/designerApi';
+import {
+	authHeaders,
+	fetchDesignerJson,
+	getCanvasObjects,
+	isOptionalDesignerSessionError,
+	loadDesignerSession,
+} from '../../utils/designerApi';
 
 const BadgeBackground = ({ canvasRef, mainLoader, onCanvasChange, badgeType }) => {
 	const [templatesData, setTemplatesData] = useState([]);
@@ -30,7 +36,9 @@ const BadgeBackground = ({ canvasRef, mainLoader, onCanvasChange, badgeType }) =
 				setTemplatesData(badgeType === 'template' ? templates : background);
 			} catch (error) {
 				if (!isMounted) return;
-				message.error('Unable to load badge assets.');
+				if (!isOptionalDesignerSessionError(error)) {
+					message.error('Unable to load badge assets.');
+				}
 			} finally {
 				if (isMounted) {
 					setLoading(false);
@@ -129,11 +137,14 @@ const BadgeBackground = ({ canvasRef, mainLoader, onCanvasChange, badgeType }) =
 				</div>
 			)}
 			{visibleTemplates.length === 0 && (
-				<Row className="template-row">
-					<Col span={24}>
-						<h3>{query ? 'No badge assets match your search.' : `No ${badgeType === 'template' ? 'templates' : 'shapes'} available.`}</h3>
-					</Col>
-				</Row>
+				<div className="designer-panel-empty">
+					<div className="designer-panel-empty-title">
+						{query ? 'No badge assets match your search.' : `No ${badgeType === 'template' ? 'templates' : 'shapes'} available.`}
+					</div>
+					<div className="designer-panel-empty-copy">
+						Add objects from Components while badge assets are unavailable.
+					</div>
+				</div>
 			)}
 		</div>
 	);

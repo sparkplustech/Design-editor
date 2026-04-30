@@ -80,6 +80,7 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - Browser smoke for `/certificate-designer` on local dev server with 0 console errors, aside from React Router future warnings.
 - Browser smoke for rulers, safe-area overlay, component add flow, and inspector selection state.
 - Browser smoke for asset search empty state, layer-list empty state, add-text selection, and compact mobile viewport footer layout.
+- Browser smoke for certificate template empty state with optional session handling and no console errors.
 
 The production app entrypoint is now about 298 KiB, down from about 5.56 MiB before this optimization pass. Build still reports large asset warnings for deferred Fabric/AntD/editor chunks and bundled font SVG assets. Those warnings are real remaining performance work, not build failures.
 

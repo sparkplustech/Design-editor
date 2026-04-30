@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Spin, Input, message } from 'antd';
 import './TemplatesStyle.less';
-import { authHeaders, fetchDesignerJson, getCanvasObjects, loadDesignerSession } from '../../utils/designerApi';
+import {
+	authHeaders,
+	fetchDesignerJson,
+	getCanvasObjects,
+	isOptionalDesignerSessionError,
+	loadDesignerSession,
+} from '../../utils/designerApi';
 
 const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => {
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -36,7 +42,9 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 				});
 			} catch (error) {
 				if (!isMounted) return;
-				message.error('Unable to load certificate templates.');
+				if (!isOptionalDesignerSessionError(error)) {
+					message.error('Unable to load certificate templates.');
+				}
 			} finally {
 				if (isMounted) {
 					setLoading(false);
@@ -193,11 +201,14 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) 
 			)}
 
 			{visiblePortraitTemplates.length === 0 && visibleLandscapeTemplates.length === 0 && (
-				<Row className="template-row">
-					<Col span={24}>
-						<h3>{query ? 'No templates match your search.' : 'No templates available.'}</h3>
-					</Col>
-				</Row>
+				<div className="designer-panel-empty">
+					<div className="designer-panel-empty-title">
+						{query ? 'No templates match your search.' : 'No templates available.'}
+					</div>
+					<div className="designer-panel-empty-copy">
+						Use Components to build a certificate from scratch while templates are unavailable.
+					</div>
+				</div>
 			)}
 
 			{selectedTemplate && selectedTemplate.length > 0 && (

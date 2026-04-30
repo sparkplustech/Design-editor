@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Row, Col, Divider, Empty, Input, message } from 'antd';
 import PropTypes from 'prop-types';
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid } from '../../utils/uuid';
 import { DESIGN_VARIABLE_GROUPS } from '../../utils/designVariables';
 
 class Attributes extends Component {

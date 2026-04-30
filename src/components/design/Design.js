@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Spin, Input, message } from 'antd';
 import './DesignStyle.less';
-import { authHeaders, fetchDesignerJson, getCanvasObjects, loadDesignerSession } from '../../utils/designerApi';
+import {
+	authHeaders,
+	fetchDesignerJson,
+	getCanvasObjects,
+	isOptionalDesignerSessionError,
+	loadDesignerSession,
+} from '../../utils/designerApi';
 
 const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => {
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -36,7 +42,9 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 				});
 			} catch (error) {
 				if (!isMounted) return;
-				message.error('Unable to load saved designs.');
+				if (!isOptionalDesignerSessionError(error)) {
+					message.error('Unable to load saved designs.');
+				}
 			} finally {
 				if (isMounted) {
 					setLoading(false);
@@ -193,11 +201,14 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 			)}
 
 			{visiblePortraitTemplates.length === 0 && visibleLandscapeTemplates.length === 0 && (
-				<Row className="template-row">
-					<Col span={24}>
-						<h3>{query ? 'No designs match your search.' : 'No designs available.'}</h3>
-					</Col>
-				</Row>
+				<div className="designer-panel-empty">
+					<div className="designer-panel-empty-title">
+						{query ? 'No saved designs match your search.' : 'No saved designs yet.'}
+					</div>
+					<div className="designer-panel-empty-copy">
+						Start from Templates or add objects from Components. Saved certificate designs will appear here.
+					</div>
+				</div>
 			)}
 
 			{selectedTemplate && selectedTemplate.length > 0 && (
