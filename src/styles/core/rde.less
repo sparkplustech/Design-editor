@@ -828,10 +828,26 @@ video {
 		.rde-editor-items {
 			flex-basis: 78px;
 			width: 78px;
+			overflow: visible;
+			z-index: 1100;
 		}
 
 		.rde-editor-items-panel {
-			display: none;
+			position: fixed;
+			top: 132px;
+			bottom: 0;
+			left: 78px;
+			z-index: 1101;
+			display: flex;
+			width: 272px;
+			max-width: 272px;
+			border-right: 1px solid #d9e1ec;
+			background: #ffffff;
+			box-shadow: 10px 0 28px rgba(31, 42, 55, 0.16);
+		}
+
+		.rde-editor-items.minimize .rde-editor-items-panel {
+			display: none !important;
 		}
 
 		.rde-editor-configurations {

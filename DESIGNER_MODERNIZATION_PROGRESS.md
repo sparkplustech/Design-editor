@@ -85,6 +85,7 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - Browser smoke for admin certificate header actions, disabled Save & Close styling, and compact export/upload controls.
 - Browser smoke for selected text toolbar priority, inspector collapse/expand behavior, and advanced alignment/group controls.
 - Browser smoke for proof-passed modal state and clean preview/export framing without editor-only aids.
+- Browser smoke for mobile asset drawer access to components and collapse behavior.
 
 The production app entrypoint is now about 298 KiB, down from about 5.56 MiB before this optimization pass. Build still reports large asset warnings for deferred Fabric/AntD/editor chunks and bundled font SVG assets. Those warnings are real remaining performance work, not build failures.
 
