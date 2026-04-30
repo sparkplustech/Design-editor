@@ -7,16 +7,16 @@ import ColorPicker from '../../../components/common/ColorPicker';
 export default {
 	render(canvasRef, form, data) {
 		const { getFieldDecorator } = form;
-		const enabeld = data.shadow ? data.shadow.enabled || false : false;
+		const enabled = data.shadow ? data.shadow.enabled || false : false;
 		return (
 			<React.Fragment>
 				<Form.Item label={i18n.t('imagemap.shadow.shadow-enabled')} colon={false}>
 					{getFieldDecorator('shadow.enabled', {
 						valuePropName: 'checked',
-						initialValue: enabeld,
+						initialValue: enabled,
 					})(<Switch size="small" />)}
 				</Form.Item>
-				{enabeld ? (
+				{enabled ? (
 					<React.Fragment>
 						<Form.Item label={i18n.t('common.color')} colon={false}>
 							{getFieldDecorator('shadow.color', {

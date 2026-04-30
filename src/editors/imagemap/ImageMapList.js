@@ -27,6 +27,8 @@ class ImageMapList extends Component {
 							style={{ width: '100%', height: 30 }}
 							disabled={idCropping}
 							onClick={e => canvasRef.handler.sendBackwards()}
+							aria-label={i18next.t('action.send-backwards')}
+							title={i18next.t('action.send-backwards')}
 						>
 							<Icon name="arrow-up" />
 						</Button>
@@ -37,6 +39,8 @@ class ImageMapList extends Component {
 							style={{ width: '100%', height: 30 }}
 							disabled={idCropping}
 							onClick={e => canvasRef.handler.bringForward()}
+							aria-label={i18next.t('action.bring-forward')}
+							title={i18next.t('action.bring-forward')}
 						>
 							<Icon name="arrow-down" />
 						</Button>
@@ -49,11 +53,13 @@ class ImageMapList extends Component {
 	renderItem = () => {
 		const { canvasRef, selectedItem } = this.props;
 		const idCropping = canvasRef ? canvasRef.handler?.interactionMode === 'crop' : false;
-		return canvasRef
-			? canvasRef.canvas
+		if (!canvasRef?.canvas) {
+			return null;
+		}
+		const layers = canvasRef.canvas
 					.getObjects()
 					.filter(obj => {
-						if (obj.id === 'workarea') {
+						if (obj.id === 'workarea' || obj.id === 'grid' || obj.id === 'safe-area' || obj.superType === 'port') {
 							return false;
 						}
 						if (obj.id) {
@@ -61,7 +67,15 @@ class ImageMapList extends Component {
 						}
 						return false;
 					})
-					.map(obj => {
+		if (!layers.length) {
+			return (
+				<div className="rde-canvas-list-empty">
+					<div className="rde-canvas-list-empty-title">No layers yet</div>
+					<div className="rde-canvas-list-empty-copy">Add text, images, or shapes to build the design.</div>
+				</div>
+			);
+		}
+		return layers.map(obj => {
 						let icon;
 						let title = obj.name || obj.type;
 						let prefix = 'fas';
@@ -104,7 +118,16 @@ class ImageMapList extends Component {
 								className={className}
 								flex="1"
 								style={{ cursor: 'pointer' }}
+								role="button"
+								tabIndex={0}
+								aria-label={`Select ${title}`}
 								onClick={() => canvasRef.handler.select(obj)}
+								onKeyDown={event => {
+									if (event.key === 'Enter' || event.key === ' ') {
+										event.preventDefault();
+										canvasRef.handler.select(obj);
+									}
+								}}
 								onMouseDown={e => e.preventDefault()}
 								onDoubleClick={e => {
 									canvasRef.handler.zoomHandler.zoomToCenter();
@@ -124,6 +147,8 @@ class ImageMapList extends Component {
 											className="rde-action-btn"
 											shape="circle"
 											disabled={idCropping}
+											aria-label={`Duplicate ${title}`}
+											title={`Duplicate ${title}`}
 											onClick={e => {
 												e.stopPropagation();
 												canvasRef.handler.duplicateById(obj.id);
@@ -135,6 +160,8 @@ class ImageMapList extends Component {
 											className="rde-action-btn"
 											shape="circle"
 											disabled={idCropping}
+											aria-label={`Delete ${title}`}
+											title={`Delete ${title}`}
 											onClick={e => {
 												e.stopPropagation();
 												canvasRef.handler.removeById(obj.id);
@@ -146,8 +173,7 @@ class ImageMapList extends Component {
 								</Flex>
 							</Flex.Item>
 						);
-					})
-			: null;
+					});
 	};
 
 	render() {

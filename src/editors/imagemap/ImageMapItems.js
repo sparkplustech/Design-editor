@@ -22,7 +22,7 @@ import BadgeBackground from '../../components/badge-background/BadgeBackground';
 import BadgeDesign from '../../components/badge-design/BadgeDesign';
 import Attributes from '../../components/attributes/Attributes';
 import { SVGModal } from '../../components/common';
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid } from '../../utils/uuid';
 import { FlowSettings } from '../flow';
 import { fetchSvgText, sanitizeSvgText } from '../../utils/svgSanitizer';
 import { parseEditorSession } from '../../utils/editorSession';
@@ -35,6 +35,7 @@ notification.config({
 class ImageMapItems extends Component {
 	static propTypes = {
 		canvasRef: PropTypes.any,
+		getCanvasRef: PropTypes.func,
 		descriptors: PropTypes.object,
 		onPageSizeChange: PropTypes.any,
 		onCanvasChange: PropTypes.any,
@@ -54,14 +55,16 @@ class ImageMapItems extends Component {
 	};
 
 	componentDidMount() {
-		const { canvasRef } = this.props;
-		this.waitForCanvasRender(canvasRef);
+		this.isItemsMounted = true;
+		this.waitForCanvasRender(this.getCanvasRef());
 		const editorSession = parseEditorSession();
 
 		this.setState({ editorSession });
 
 		if (editorSession.isAdminPath) {
 			this.setState({ activeSection: 'template' });
+		} else if (editorSession.isCertificatePath) {
+			this.setState({ activeSection: 'components' });
 		}
 	}
 
@@ -89,29 +92,43 @@ class ImageMapItems extends Component {
 			return true;
 		} else if (this.state.svgModalVisible !== nextState.svgModalVisible) {
 			return true;
+		} else if (this.state.svgOption !== nextState.svgOption) {
+			return true;
 		} else if (this.state.activeSection !== nextState.activeSection) {
+			return true;
+		} else if (JSON.stringify(this.state.editorSession) !== JSON.stringify(nextState.editorSession)) {
 			return true;
 		}
 		return false;
 	}
 
 	componentWillUnmount() {
-		const { canvasRef } = this.props;
-		this.detachEventListener(canvasRef);
+		this.isItemsMounted = false;
+		clearTimeout(this.waitForCanvasTimer);
+		this.detachEventListener(this.getCanvasRef());
 	}
 
+	getCanvasRef = () => this.props.canvasRef || (this.props.getCanvasRef && this.props.getCanvasRef());
+
 	waitForCanvasRender = canvas => {
-		setTimeout(() => {
-			if (canvas) {
-				this.attachEventListener(canvas);
+		clearTimeout(this.waitForCanvasTimer);
+		this.waitForCanvasTimer = setTimeout(() => {
+			if (!this.isItemsMounted) {
 				return;
 			}
-			const { canvasRef } = this.props;
-			this.waitForCanvasRender(canvasRef);
+			const canvasRef = canvas || this.getCanvasRef();
+			if (canvasRef?.handler) {
+				this.attachEventListener(canvasRef);
+				return;
+			}
+			this.waitForCanvasRender();
 		}, 5);
 	};
 
 	attachEventListener = canvas => {
+		if (!canvas?.canvas?.wrapperEl) {
+			return;
+		}
 		canvas.canvas.wrapperEl.addEventListener('dragenter', this.events.onDragEnter, false);
 		canvas.canvas.wrapperEl.addEventListener('dragover', this.events.onDragOver, false);
 		canvas.canvas.wrapperEl.addEventListener('dragleave', this.events.onDragLeave, false);
@@ -119,6 +136,9 @@ class ImageMapItems extends Component {
 	};
 
 	detachEventListener = canvas => {
+		if (!canvas?.canvas?.wrapperEl) {
+			return;
+		}
 		canvas.canvas.wrapperEl.removeEventListener('dragenter', this.events.onDragEnter);
 		canvas.canvas.wrapperEl.removeEventListener('dragover', this.events.onDragOver);
 		canvas.canvas.wrapperEl.removeEventListener('dragleave', this.events.onDragLeave);
@@ -128,7 +148,11 @@ class ImageMapItems extends Component {
 	/* eslint-disable react/sort-comp, react/prop-types */
 	handlers = {
 		onAddItem: async (item, centered) => {
-			const { canvasRef } = this.props;
+			const canvasRef = this.getCanvasRef();
+			if (!canvasRef?.handler) {
+				message.error('Canvas is still loading. Try again in a moment.');
+				return;
+			}
 			if (canvasRef.handler.interactionMode === 'polygon') {
 				message.info('Already drawing');
 				return;
@@ -161,7 +185,11 @@ class ImageMapItems extends Component {
 			canvasRef.handler.add(option, centered);
 		},
 		onAddSVG: (option, centered) => {
-			const { canvasRef } = this.props;
+			const canvasRef = this.getCanvasRef();
+			if (!canvasRef?.handler) {
+				message.error('Canvas is still loading. Try again in a moment.');
+				return;
+			}
 			try {
 				const svg = sanitizeSvgText(option.svg);
 				canvasRef.handler.add({ ...option, loadType: 'svg', svg, type: 'svg', superType: 'svg', id: uuid(), name: 'New SVG' }, centered);
@@ -171,7 +199,11 @@ class ImageMapItems extends Component {
 			}
 		},
 		onDrawingItem: item => {
-			const { canvasRef } = this.props;
+			const canvasRef = this.getCanvasRef();
+			if (!canvasRef?.handler) {
+				message.error('Canvas is still loading. Try again in a moment.');
+				return;
+			}
 			if (canvasRef.handler.interactionMode === 'polygon') {
 				message.info('Already drawing');
 				return;
@@ -206,10 +238,11 @@ class ImageMapItems extends Component {
 		transformList: () => {
 			return Object.values(this.props.descriptors).reduce((prev, curr) => prev.concat(curr), []);
 		},
-		onSVGModalVisible: () => {
+		onSVGModalVisible: svgOption => {
 			this.setState(prevState => {
 				return {
 					svgModalVisible: !prevState.svgModalVisible,
+					svgOption: svgOption || null,
 				};
 			});
 		},
@@ -273,6 +306,9 @@ class ImageMapItems extends Component {
 				});
 				return false;
 			}
+			if (!this.item?.option) {
+				return false;
+			}
 			const option = Object.assign({}, this.item.option, { left: layerX, top: layerY });
 			const newItem = Object.assign({}, this.item, { option });
 			this.handlers.onAddItem(newItem, true);
@@ -284,58 +320,89 @@ class ImageMapItems extends Component {
 		},
 	};
 
-	// renderItems = items => (
-	// 	<Flex flexWrap="wrap" flexDirection="row"  style={{ width: '100%',padding:"40px", gap:'10px'	}}>
-	// 		{items.map(item => this.renderItem(item))}
-	// 	</Flex>
-	// );
+	renderPanelEmpty = (title, copy) => (
+		<div className="designer-panel-empty" role="status">
+			<div className="designer-panel-empty-title">{title}</div>
+			<div className="designer-panel-empty-copy">{copy}</div>
+		</div>
+	);
 
-	renderItem = (item, centered) =>
-		item.type === 'drawing' ? (
-			<div
-				key={item.name}
-				draggable
-				onClick={e => this.handlers.onDrawingItem(item)}
-				className="rde-editor-items-item"
-				style={{
-					justifyContent: 'center',
-					alignItems: 'center',
-					display: 'flex',
-					flexDirection: 'column',
-					border: '1px solid #e8e8e8',
-					width: '80px',
-					height: '80px',
-				}}
+	renderItems = items => {
+		if (!items.length) {
+			return this.renderPanelEmpty(
+				this.state.textSearch ? 'No matching components' : 'No components available',
+				this.state.textSearch ? 'Try a different search term.' : 'Components will appear here when the library is loaded.',
+			);
+		}
+		return (
+			<Flex
+				flexWrap="wrap"
+				flexDirection="row"
+				className="rde-tool-grid"
+				justifyContent="center"
 			>
-				<span className="rde-editor-items-item-icon">
-					<Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />
-				</span>
-				<div className="rde-editor-items-item-text">{item.name}</div>
-			</div>
-		) : (
-			<div
-				key={item.name}
-				draggable
-				onClick={e => this.handlers.onAddItem(item, centered)}
-				onDragStart={e => this.events.onDragStart(e, item)}
-				onDragEnd={e => this.events.onDragEnd(e, item)}
-				className="rde-editor-items-item"
-				style={{
-					justifyContent: 'center',
-					alignItems: 'center',
-					display: 'flex',
-					flexDirection: 'column',
-					border: '1px solid #e8e8e8',
-					width: '80px',
-					height: '80px',
-				}}
-			>
-				<span className="rde-editor-items-item-icon">
-					<Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />
-				</span>
-				<div className="rde-editor-items-item-text">{item.name}</div>
-			</div>
+				{items.map(item => this.renderItem(item))}
+			</Flex>
 		);
+	};
+
+	getPanelTitle = () => {
+		const { activeSection, editorSession } = this.state;
+		const { isCertificatePath } = editorSession;
+		const titles = {
+			design: isCertificatePath ? 'Certificate Designs' : 'Badge Designs',
+			template: isCertificatePath ? 'Templates' : 'Shapes',
+			'badge-template': 'Badge Templates',
+			components: 'Components',
+			attribute: 'Attributes',
+		};
+		return titles[activeSection] || 'Assets';
+	};
+
+	renderNavButton = (section, icon, label) => {
+		const { activeSection } = this.state;
+		const IconComponent = icon;
+		return (
+			<button
+				type="button"
+				className={`${activeSection === section ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'}`}
+				onClick={() => this.handlers.onSectionChange(section)}
+				aria-pressed={activeSection === section}
+				aria-label={label}
+				title={label}
+			>
+				<IconComponent className="leftbarmenu-icon" />
+				<span>{label}</span>
+			</button>
+		);
+	};
+
+	renderItem = (item, centered) => {
+		const handleClick = () => {
+			if (item.type === 'drawing') {
+				this.handlers.onDrawingItem(item);
+				return;
+			}
+			this.handlers.onAddItem(item, centered);
+		};
+		return (
+			<button
+				key={`${item.type}-${item.name}-${item.option?.type || item.option?.superType || 'asset'}`}
+				type="button"
+				draggable
+				onClick={handleClick}
+				onDragStart={e => this.events.onDragStart(e, item)}
+				onDragEnd={e => this.events.onDragEnd(e)}
+				className="rde-editor-items-item"
+				aria-label={`Add ${item.name}`}
+			>
+				<span className="rde-editor-items-item-icon">
+					<Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />
+				</span>
+				<span className="rde-editor-items-item-text">{item.name}</span>
+			</button>
+		);
+	};
 
 	renderComponents = () => {
 		const components = [
@@ -355,33 +422,27 @@ class ImageMapItems extends Component {
 			},
 		];
 
-		return components.map(item => (
-			<div
-				key={item.name}
+		return components.map((item, index) => (
+			<button
+				type="button"
+				key={`${item.name}-${index}`}
 				draggable
 				onClick={e => this.handlers.onAddItem(item, true)}
 				onDragStart={e => this.events.onDragStart(e, item)}
 				onDragEnd={e => this.events.onDragEnd(e, item)}
 				className="rde-editor-items-item"
-				style={{
-					justifyContent: 'center',
-					alignItems: 'center',
-					display: 'flex',
-					flexDirection: 'column',
-					border: '1px solid #e8e8e8',
-					width: '80px',
-					height: '80px',
-				}}
+				aria-label={`Add ${item.name}`}
 			>
 				<span className="rde-editor-items-item-icon">
 					{/* <Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} /> */}
 				</span>
 				<div className="rde-editor-items-item-text">{item.name}</div>
-			</div>
+			</button>
 		));
 	};
 
 	render() {
+		const canvasRef = this.getCanvasRef();
 		const { descriptors } = this.props;
 		const {
 			collapse,
@@ -403,114 +464,54 @@ class ImageMapItems extends Component {
 			<div className={className}>
 				<Flex flex="1" flexDirection="row" style={{ height: '100%' }}>
 					<Flex
-						justifyContent="top"
+						justifyContent="flex-start"
 						flexDirection="column"
 						alignItems="center"
-						style={{ height: '100%', padding: '5px 0px', background: '#F2F4F8' }}
+						className="rde-editor-items-rail"
 					>
 						<CommonButton
 							icon={collapse ? 'angle-double-right' : 'angle-double-left'}
 							shape="circle"
-							className="rde-action-btn"
-							style={{ margin: '0 4px' }}
+							className="rde-action-btn rde-editor-collapse-btn"
 							onClick={this.handlers.onCollapse}
+							tooltipTitle={collapse ? 'Expand assets panel' : 'Collapse assets panel'}
 						/>
-						{!isAdminPath && (
-							<Flex
-								flexDirection="column"
-								className={`${
-									activeSection === 'design' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
-								}`}
-								onClick={() => this.handlers.onSectionChange('design')}
-							>
-								<AntDesignOutlined style={{ fontSize: '32px' }} /> <span>Designs</span>{' '}
-							</Flex>
-						)}
+						{!isAdminPath && this.renderNavButton('design', AntDesignOutlined, 'Designs')}
 						{isCertificatePath ? (
-							<Flex
-								flexDirection="column"
-								className={`${
-									activeSection === 'template' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
-								}`}
-								onClick={() => this.handlers.onSectionChange('template')}
-							>
-								<ProfileOutlined style={{ fontSize: '32px' }} /> <span>Templates</span>{' '}
-							</Flex>
+							this.renderNavButton('template', ProfileOutlined, 'Templates')
 						) : (
 							<>
-							<Flex
-								flexDirection="column"
-								className={`${
-									activeSection === 'badge-template'
-										? 'leftbarmenu leftbarmenu-active'
-										: 'leftbarmenu'
-								}`}
-								onClick={() => this.handlers.onSectionChange('badge-template')}
-							>
-								<ProfileOutlined style={{ fontSize: '32px' }} /> <span>Templates</span>{' '}
-							</Flex>
-							<Flex
-								flexDirection="column"
-								className={`${
-									activeSection === 'template' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
-								}`}
-								onClick={() => this.handlers.onSectionChange('template')}
-							>
-								<span className="material-icons-outlined" style={{ fontSize: '34px' }}>workspace_premium</span> <span>Shapes</span>{' '}
-							</Flex>
+							{this.renderNavButton('badge-template', ProfileOutlined, 'Templates')}
+							{this.renderNavButton('template', PictureOutlined, 'Shapes')}
 							</>
 							
 							
 						)}
 
-						<Flex
-							flexDirection="column"
-							className={`${
-								activeSection === 'components' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
-							}`}
-							onClick={() => this.handlers.onSectionChange('components')}
-						>
-							<LayoutOutlined style={{ fontSize: '32px' }} /> <span>Components</span>{' '}
-						</Flex>
-						<Flex
-							flexDirection="column"
-							className={`${
-								activeSection === 'attribute' ? 'leftbarmenu leftbarmenu-active' : 'leftbarmenu'
-							}`}
-							onClick={() => this.handlers.onSectionChange('attribute')}
-						>
-							<TagOutlined style={{ fontSize: '32px' }} /> <span>Attributes</span>{' '}
-						</Flex>
+						{this.renderNavButton('components', LayoutOutlined, 'Components')}
+						{this.renderNavButton('attribute', TagOutlined, 'Attributes')}
 					</Flex>
 
-					<Flex flex="1" flexDirection="column" style={{ overflowY: 'hidden', width: '400px', backgroundColor: '#FFFFFF' }}>
-						{/* {collapse ? null : (
+					<Flex flex="1" flexDirection="column" className="rde-editor-items-panel">
+						{collapse ? null : (
+							<div className="rde-editor-items-panel-header">
+								<div className="rde-editor-items-panel-title">{this.getPanelTitle()}</div>
+							</div>
+						)}
+						{collapse || activeSection !== 'components' ? null : (
 							<Input
-								style={{ margin: '8px' }}
-								placeholder={i18n.t('action.search-list')}
+								className="rde-editor-items-search"
+								placeholder="Search components"
 								onChange={this.handlers.onSearchNode}
 								value={textSearch}
 								allowClear
 							/>
-						)} */}
+						)}
 						<Scrollbar>
 							{activeSection === 'components' && (
 								<Flex flex="1" style={{ overflowY: 'hidden' }}>
 									{(textSearch.length && this.renderItems(filteredDescriptors)) || (
-										<Flex
-											flexWrap="wrap"
-											flexDirection="row"
-											style={{
-												width: '100%',
-												padding: '15px 10px 10px',
-												gap: '10px',
-												justifyContent: 'center',
-											}}
-											justifyContent="center"
-										>
-											{this.handlers.transformList().map(item => this.renderItem(item))}
-											{/* {this.renderComponents()} */}
-										</Flex>
+										this.renderItems(this.handlers.transformList())
 									)}
 								</Flex>
 							)}
@@ -518,14 +519,14 @@ class ImageMapItems extends Component {
 								<Flex flex="1" style={{ overflowY: 'hidden' }}>
 									{isCertificatePath ? (
 										<Design
-											canvasRef={this.props.canvasRef}
+											canvasRef={canvasRef}
 											onPageSizeChange={this.props.onPageSizeChange}
 											onCanvasChange={this.props.onCanvasChange}
 											mainLoader={this.props.mainLoader}
 										/>
 									) : (
 										<BadgeDesign
-											canvasRef={this.props.canvasRef}
+											canvasRef={canvasRef}
 											mainLoader={this.props.mainLoader}
 											onCanvasChange={this.props.onCanvasChange}
 										/>
@@ -537,14 +538,14 @@ class ImageMapItems extends Component {
 								<Flex flex="1" style={{ overflowY: 'hidden' }}>
 									{isCertificatePath ? (
 										<Templates
-											canvasRef={this.props.canvasRef}
+											canvasRef={canvasRef}
 											onPageSizeChange={this.props.onPageSizeChange}
 											onCanvasChange={this.props.onCanvasChange}
 											mainLoader={this.props.mainLoader}
 										/>
 									) : (
 										<BadgeBackground
-											canvasRef={this.props.canvasRef}
+											canvasRef={canvasRef}
 											mainLoader={this.props.mainLoader}
 											onCanvasChange={this.props.onCanvasChange}
 										/>
@@ -554,7 +555,7 @@ class ImageMapItems extends Component {
 							{activeSection === 'badge-template' && (
 								<Flex flex="1" style={{ overflowY: 'hidden' }}>
 									<BadgeBackground
-										canvasRef={this.props.canvasRef}
+										canvasRef={canvasRef}
 										mainLoader={this.props.mainLoader}
 										onCanvasChange={this.props.onCanvasChange}
 										badgeType="template"
@@ -563,7 +564,7 @@ class ImageMapItems extends Component {
 							)}
 							{activeSection === 'attribute' && (
 								<div>
-									<Attributes canvasRef={this.props.canvasRef} />
+									<Attributes canvasRef={canvasRef} />
 								</div>
 							)}
 						</Scrollbar>

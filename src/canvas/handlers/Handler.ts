@@ -1,6 +1,6 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { union } from 'lodash';
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid } from '../../utils/uuid';
 import warning from 'warning';
 import {
 	AlignmentHandler,
@@ -293,6 +293,7 @@ class Handler implements HandlerOptions {
 
 	private isRequsetAnimFrame = false;
 	private requestFrame: any;
+	private safeAreaObject?: FabricObject<fabric.Rect>;
 	/**
 	 * Copied object
 	 *
@@ -399,7 +400,7 @@ class Handler implements HandlerOptions {
 		const objects = this.canvas.getObjects().filter((obj: FabricObject) => {
 			if (obj.id === 'workarea') {
 				return false;
-			} else if (obj.id === 'grid') {
+			} else if (obj.id === 'grid' || obj.id === 'safe-area') {
 				return false;
 			} else if (obj.superType === 'port') {
 				return false;
@@ -423,20 +424,20 @@ class Handler implements HandlerOptions {
 	 * @returns
 	 */
 	public set = (key: keyof FabricObject, value: any) => {
-		const activeObject = this.canvas.getActiveObject() as FabricObject;
+		const activeObject = this.canvas.getActiveObject() as any;
 		if (!activeObject) {
 			return;
 		}
+		const normalizedValue = this.normalizeObjectValue(key, value);
 		if (activeObject.type === 'svg' && (key === 'fill' || key === 'stroke')) {
-			(activeObject as FabricGroup)._objects.forEach(obj => obj.set(key, value));
+			(activeObject as FabricGroup)._objects.forEach(obj => obj.set(key, normalizedValue));
 		}
-		activeObject.set(key, value);
-		activeObject.setCoords();
-		this.canvas.requestRenderAll();
+		activeObject.set(key, normalizedValue);
+		this.refreshTextMetrics(activeObject, key);
 		const { id, superType, type, player, width, height } = activeObject as any;
 		if (superType === 'element') {
 			if (key === 'visible') {
-				if (value) {
+				if (normalizedValue) {
 					activeObject.element.style.display = 'block';
 				} else {
 					activeObject.element.style.display = 'none';
@@ -457,6 +458,49 @@ class Handler implements HandlerOptions {
 		}
 	};
 
+	private normalizeObjectValue = (key: keyof FabricObject, value: any) => {
+		const numericKeys = ['fontSize', 'lineHeight', 'charSpacing', 'width', 'height', 'left', 'top', 'angle', 'strokeWidth'];
+		if (numericKeys.includes(key as string) && value !== '' && value !== null && value !== undefined) {
+			const numericValue = Number(value);
+			return Number.isNaN(numericValue) ? value : numericValue;
+		}
+		return value;
+	};
+
+	private refreshTextMetrics = (object: any, changedKey?: keyof FabricObject) => {
+		const textMetricKeys = ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'text', 'textAlign', 'lineHeight', 'charSpacing', 'width'];
+		const isTextObject = object && ['textbox', 'i-text', 'text'].includes(object.type);
+
+		if (isTextObject && (!changedKey || textMetricKeys.includes(changedKey as string))) {
+			object.dirty = true;
+			if (typeof object.initDimensions === 'function') {
+				object.initDimensions();
+			}
+			if (typeof object.setCoords === 'function') {
+				object.setCoords();
+			}
+
+			if (changedKey === 'fontFamily' && typeof document !== 'undefined' && (document as any).fonts) {
+				(document as any).fonts
+					.load(`${object.fontSize || 16}px "${object.fontFamily}"`)
+					.then(() => {
+						object.dirty = true;
+						if (typeof object.initDimensions === 'function') {
+							object.initDimensions();
+						}
+						object.setCoords();
+						this.canvas.requestRenderAll();
+					})
+					.catch(() => {
+						this.canvas.requestRenderAll();
+					});
+			}
+		}
+
+		object.setCoords();
+		this.canvas.requestRenderAll();
+	};
+
 	/**
 	 * Set option
 	 * @param {Partial<FabricObject>} option
@@ -468,11 +512,13 @@ class Handler implements HandlerOptions {
 			return;
 		}
 		Object.keys(option).forEach(key => {
-			if (option[key] !== activeObject[key]) {
-				activeObject.set(key, option[key]);
-				activeObject.setCoords();
+			const normalizedValue = this.normalizeObjectValue(key as keyof FabricObject, option[key]);
+			if (normalizedValue !== activeObject[key]) {
+				activeObject.set(key, normalizedValue);
+				this.refreshTextMetrics(activeObject, key as keyof FabricObject);
 			}
 		});
+		activeObject.setCoords();
 		this.canvas.requestRenderAll();
 		const { id, superType, type, player, width, height } = activeObject;
 		if (superType === 'element') {
@@ -860,7 +906,7 @@ class Handler implements HandlerOptions {
 	 */
 	public addImage = (obj: FabricImage) => {
 		const { objectOption } = this;
-		const { filters = [], src, file, ...otherOption } = obj;
+		const { filters = [], src, file, type: _type, ...otherOption } = obj;
 		const image = new Image();
 		// if (typeof src === 'string') {
 		// 	image.src = src;
@@ -1540,8 +1586,22 @@ class Handler implements HandlerOptions {
 	 * @param {number} height
 	 */
 	public scaleToResize = (width: number, height: number) => {
-		const activeObject = this.canvas.getActiveObject() as FabricObject;
+		const activeObject = this.canvas.getActiveObject() as any;
 		const { id } = activeObject;
+		if (['textbox', 'i-text', 'text'].includes(activeObject.type)) {
+			activeObject.set({
+				width: Number(width) || activeObject.width,
+				height: Number(height) || activeObject.height,
+				scaleX: 1,
+				scaleY: 1,
+			});
+			this.refreshTextMetrics(activeObject, 'width' as keyof FabricObject);
+			const { onModified } = this;
+			if (onModified) {
+				onModified(activeObject);
+			}
+			return;
+		}
 		const obj = {
 			id,
 			scaleX: width / activeObject.width,
@@ -1616,7 +1676,13 @@ class Handler implements HandlerOptions {
 	/**
 	 * Export json
 	 */
-	public exportJSON = () => this.canvas.toObject(this.propertiesToInclude).objects as FabricObject[];
+	public exportJSON = () =>
+		(this.canvas.toObject(this.propertiesToInclude).objects as FabricObject[]).filter((obj: FabricObject) => {
+			if (obj.id === 'grid' || obj.id === 'safe-area' || obj.superType === 'port') {
+				return false;
+			}
+			return true;
+		});
 
 	/**
 	 * Active selection to group
@@ -1765,7 +1831,7 @@ class Handler implements HandlerOptions {
 		} else {
 			this.canvas.discardActiveObject();
 			this.canvas.getObjects().forEach((obj: any) => {
-				if (obj.id === 'grid' || obj.id === 'workarea') {
+				if (obj.id === 'grid' || obj.id === 'workarea' || obj.id === 'safe-area') {
 					return;
 				}
 				this.canvas.remove(obj);
@@ -1972,6 +2038,46 @@ class Handler implements HandlerOptions {
 	 */
 	public setGridOption = (gridOption: GridOption) => {
 		this.gridOption = Object.assign({}, this.gridOption, gridOption);
+		if (this.gridHandler) {
+			this.gridHandler.initialize();
+		}
+	};
+
+	public setSafeAreaOption = ({ enabled, margin = 40 }: { enabled: boolean; margin?: number }) => {
+		if (this.safeAreaObject) {
+			this.canvas.remove(this.safeAreaObject);
+			this.safeAreaObject = null;
+		}
+		if (!enabled || !this.workarea) {
+			this.canvas.requestRenderAll();
+			return;
+		}
+
+		const workareaWidth = this.workarea.width * (this.workarea.scaleX || 1);
+		const workareaHeight = this.workarea.height * (this.workarea.scaleY || 1);
+		const safeMargin = Math.min(margin, workareaWidth / 4, workareaHeight / 4);
+
+		this.safeAreaObject = new fabric.Rect({
+			id: 'safe-area',
+			name: 'Safe area',
+			left: this.workarea.left + safeMargin,
+			top: this.workarea.top + safeMargin,
+			width: Math.max(1, workareaWidth - safeMargin * 2),
+			height: Math.max(1, workareaHeight - safeMargin * 2),
+			fill: 'rgba(255, 108, 54, 0.025)',
+			stroke: 'rgba(255, 108, 54, 0.62)',
+			strokeDashArray: [8, 6],
+			strokeWidth: 1,
+			selectable: false,
+			evented: false,
+			hasControls: false,
+			hasBorders: false,
+			excludeFromExport: true,
+			hoverCursor: 'default',
+		}) as FabricObject<fabric.Rect>;
+
+		this.canvas.add(this.safeAreaObject);
+		this.canvas.requestRenderAll();
 	};
 
 	/**

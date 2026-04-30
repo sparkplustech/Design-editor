@@ -17,7 +17,13 @@ import ImageMapPreview from './ImageMapPreview';
 import ImageMapTitle from './ImageMapTitle';
 import CONSTANTS from '../../../constant';
 import { Flex } from '../../components/flex';
-import { authHeaders, fetchDesignerJson, getCanvasObjects, loadDesignerSession } from '../../utils/designerApi';
+import {
+	authHeaders,
+	fetchDesignerJson,
+	getCanvasObjects,
+	isOptionalDesignerSessionError,
+	loadDesignerSession,
+} from '../../utils/designerApi';
 import { parseEditorSession } from '../../utils/editorSession';
 import { getBlockingProofIssues, getDesignProofIssues, summarizeProofIssues } from '../../utils/designProof';
 
@@ -116,11 +122,20 @@ class ImageMapEditor extends Component {
 		isAdminBadgePath: false,
 		previewVisible: false,
 		previewImage: '',
-		toolbarClass: 'minimize',
+		toolbarClass: '',
 		skip: 0,
 		proofIssues: [],
 		proofModalVisible: false,
+		gridEnabled: false,
+		snapToGrid: false,
+		guidesEnabled: true,
+		rulersEnabled: true,
+		safeAreaEnabled: true,
 	};
+
+	isEditorMounted = false;
+
+	importObjectsTimer = null;
 
 	getExportMultiplier = () => 2;
 
@@ -161,6 +176,39 @@ class ImageMapEditor extends Component {
 		return { proofIssues, blockingIssues };
 	};
 
+	fitCanvasToViewport = () => {
+		const handler = this.canvasRef?.handler;
+		if (!handler?.canvas || !handler?.workarea || !handler?.zoomHandler) {
+			return;
+		}
+
+		handler.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+		handler.canvas.centerObject(handler.workarea);
+		handler.workarea.setCoords();
+		handler.zoomHandler.zoomToFit();
+		this.syncSafeAreaOverlay();
+	};
+
+	handleWindowResizeFit = debounce(() => {
+		this.fitCanvasToViewport();
+	}, 160);
+
+	handleCanvasLoad = () => {
+		window.requestAnimationFrame(() => {
+			window.requestAnimationFrame(() => {
+				this.fitCanvasToViewport();
+				this.syncSafeAreaOverlay();
+			});
+		});
+	};
+
+	syncSafeAreaOverlay = () => {
+		this.canvasRef?.handler?.setSafeAreaOption?.({
+			enabled: this.state.safeAreaEnabled,
+			margin: this.state.isBadgePath ? 32 : 42,
+		});
+	};
+
 	getCanvasImageDataUrl = option => {
 		const cachedViewportTransform = this.canvasRef.canvas.viewportTransform;
 		let { left, top, width, height, scaleX, scaleY } = this.canvasRef.handler.workarea;
@@ -198,8 +246,13 @@ class ImageMapEditor extends Component {
 	};
 
 	componentDidMount() {
+		this.isEditorMounted = true;
+		window.addEventListener('resize', this.handleWindowResizeFit);
 		this.showLoading(true);
 		import('./Descriptors.json').then(descriptors => {
+			if (!this.isEditorMounted) {
+				return;
+			}
 			this.setState(
 				{
 					descriptors,
@@ -258,6 +311,9 @@ class ImageMapEditor extends Component {
 		});
 
 		const handleFetch = async (accessToken, isBadgePath, id) => {
+			if (!this.isEditorMounted) {
+				return;
+			}
 			this.setState({ loading: true, createTemplateCalled: true });
 			const templateEndpoint = isAdminPath
 				? isBadgePath
@@ -271,6 +327,9 @@ class ImageMapEditor extends Component {
 				const data = await fetchDesignerJson(templateEndpoint, {
 					headers: authHeaders(accessToken),
 				});
+				if (!this.isEditorMounted) {
+					return;
+				}
 
 				if (data.statusCode === 400) {
 					queryParams.delete('id');
@@ -286,8 +345,11 @@ class ImageMapEditor extends Component {
 					const importObjects = this.state.isBadgePath ? [CONSTANTS.JSON_CONSTANT.BADGE, ...objects] : objects;
 
 					this.canvasRef.handler.clear(true);
-					setTimeout(() => {
-						this.canvasRef.handler.importJSON(importObjects);
+					clearTimeout(this.importObjectsTimer);
+					this.importObjectsTimer = setTimeout(() => {
+						if (this.isEditorMounted) {
+							this.canvasRef.handler.importJSON(importObjects).then(this.syncSafeAreaOverlay);
+						}
 					}, 50);
 				}
 
@@ -300,6 +362,9 @@ class ImageMapEditor extends Component {
 					selectedPageSize: data?.pageSize,
 				});
 			} catch (error) {
+				if (!this.isEditorMounted) {
+					return;
+				}
 				message.error('Unable to load the selected design.');
 				this.setState({ loading: false });
 			}
@@ -307,6 +372,9 @@ class ImageMapEditor extends Component {
 
 		loadDesignerSession()
 			.then(data => {
+				if (!this.isEditorMounted) {
+					return;
+				}
 				this.setState({ userData: data });
 				if (data.designId) {
 					this.setState({ loading: true, createTemplateCalled: true, isEdit: true, editId: data.designId });
@@ -319,8 +387,14 @@ class ImageMapEditor extends Component {
 					this.createTemplate(data);
 				}
 			})
-			.catch(() => {
-				message.error('Unable to start designer session.');
+			.catch(error => {
+				if (!this.isEditorMounted) {
+					return;
+				}
+				if (!isOptionalDesignerSessionError(error)) {
+					message.error('Unable to start designer session.');
+					this.setState({ errorMessage: 'Designer session unavailable.', successMessage: '' });
+				}
 				this.setState({ loading: false });
 			});
 
@@ -354,6 +428,10 @@ class ImageMapEditor extends Component {
 	// }
 
 	componentWillUnmount() {
+		this.isEditorMounted = false;
+		window.removeEventListener('resize', this.handleWindowResizeFit);
+		this.handleWindowResizeFit.cancel();
+		clearTimeout(this.importObjectsTimer);
 		clearInterval(this.autoSave);
 		clearTimeout(this.clearSuccessMessageTimer);
 	}
@@ -684,6 +762,7 @@ class ImageMapEditor extends Component {
 				return;
 			}
 			this.canvasRef.handler.select(target);
+			this.canvasHandlers.onSelect(target);
 		},
 		onSelect: target => {
 			const { selectedItem } = this.state;
@@ -822,7 +901,7 @@ class ImageMapEditor extends Component {
 				return;
 			}
 			if (changedKey === 'textAlign') {
-				this.canvasRef.handler.set(changedKey, Object.keys(changedValue)[0]);
+				this.canvasRef.handler.set(changedKey, typeof changedValue === 'string' ? changedValue : Object.keys(changedValue)[0]);
 				return;
 			}
 			if (changedKey === 'trigger') {
@@ -1040,6 +1119,7 @@ class ImageMapEditor extends Component {
 			);
 		},
 		onTransaction: transaction => {
+			this.syncSafeAreaOverlay();
 			this.forceUpdate();
 		},
 	};
@@ -1099,7 +1179,7 @@ class ImageMapEditor extends Component {
 								}
 								return true;
 							});
-							this.canvasRef.handler.importJSON(data);
+							this.canvasRef.handler.importJSON(data).then(this.syncSafeAreaOverlay);
 							this.setState({ editing: true, proofIssues: [] });
 						} catch (error) {
 							message.error(error.message || 'Unable to import design JSON.');
@@ -1264,7 +1344,7 @@ class ImageMapEditor extends Component {
 			this.canvasRef.handler.clear(true);
 
 		if (Array.isArray(objects)) {
-			this.canvasRef.handler.importJSON(objects);
+			this.canvasRef.handler.importJSON(objects).then(this.syncSafeAreaOverlay);
 		} else {
 			message.error('Unable to resize canvas because the current design data is invalid.');
 		}
@@ -1351,6 +1431,34 @@ class ImageMapEditor extends Component {
 		this.setState({ proofModalVisible: false });
 	};
 
+	handleToggleGrid = () => {
+		this.setState(
+			prevState => ({ gridEnabled: !prevState.gridEnabled }),
+			() => {
+				this.canvasRef?.canvas?.requestRenderAll();
+			},
+		);
+	};
+
+	handleToggleSnap = () => {
+		this.setState(prevState => ({
+			snapToGrid: !prevState.snapToGrid,
+			gridEnabled: prevState.snapToGrid ? prevState.gridEnabled : true,
+		}));
+	};
+
+	handleToggleGuides = () => {
+		this.setState(prevState => ({ guidesEnabled: !prevState.guidesEnabled }));
+	};
+
+	handleToggleRulers = () => {
+		this.setState(prevState => ({ rulersEnabled: !prevState.rulersEnabled }));
+	};
+
+	handleToggleSafeArea = () => {
+		this.setState(prevState => ({ safeAreaEnabled: !prevState.safeAreaEnabled }), this.syncSafeAreaOverlay);
+	};
+
 	parseImportedDesign = rawJson => {
 		let parsedDesign;
 
@@ -1396,6 +1504,11 @@ class ImageMapEditor extends Component {
 			toolbarClass,
 			proofIssues,
 			proofModalVisible,
+			gridEnabled,
+			snapToGrid,
+			guidesEnabled,
+			rulersEnabled,
+			safeAreaEnabled,
 		} = this.state;
 		const {
 			onAdd,
@@ -1435,6 +1548,7 @@ class ImageMapEditor extends Component {
 					backgroundColor: '#FFFFFF',
 					boxShadow: '2px 2px 16px 0px rgb(242,244,248)',
 			  };
+		const rulerTicks = Array.from({ length: isBadgePath ? 7 : 9 }, (_, index) => index * 100);
 
 		const action = (
 			<React.Fragment>
@@ -1445,7 +1559,10 @@ class ImageMapEditor extends Component {
 					value={inputData}
 				/>
 				{!this.state.successMessage && !this.state.errorMessage && (
-					<span className={`text-width ${!editing ? 'text-opa' : ''}`}>You have unsaved changes</span>
+					<span className={`designer-save-state ${editing ? 'is-dirty' : 'is-saved'}`}>
+						<span />
+						{editing ? 'Unsaved' : 'Saved'}
+					</span>
 				)}
 				{this.state.successMessage && !this.state.errorMessage && (
 					<div className="org-txt">{this.state.successMessage}</div>
@@ -1464,6 +1581,9 @@ class ImageMapEditor extends Component {
 					</button>
 				)}
 
+				<button type="button" className="proof-action-btn" onClick={this.handleOpenProofIssues}>
+					Proof
+				</button>
 				<CommonButton
 					name="Save & Close"
 					className="saveBtn"
@@ -1529,7 +1649,7 @@ class ImageMapEditor extends Component {
 		);
 		const titleContent = (
 			<React.Fragment>
-				<CommonButton icon="arrow-left" onClick={this.handleBackButton} />
+				<CommonButton icon="arrow-left" onClick={this.handleBackButton} tooltipTitle="Back" />
 				<span style={{ marginLeft: '10px' }}>SOLO {isBadgePath ? 'Badge' : 'Certificate'} Designer</span>
 			</React.Fragment>
 		);
@@ -1542,13 +1662,14 @@ class ImageMapEditor extends Component {
 						this.itemsRef = c;
 					}}
 					canvasRef={this.canvasRef}
+					getCanvasRef={() => this.canvasRef}
 					descriptors={descriptors}
 					onPageSizeChange={this.handlePageSizeChange}
 					onCanvasChange={this.handleCanvasChange}
 					mainLoader={this.handleMainLoader}
 					userData={userData}
 				/>
-				<div style={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
+				<div className="rde-editor-main-panel">
 					<div className="rde-editor-header-toolbar">
 						<ImageMapHeaderToolbar
 							canvasRef={this.canvasRef}
@@ -1559,7 +1680,7 @@ class ImageMapEditor extends Component {
 							onClassNameUpdate={this.handleToolbarClassUpdate}
 						/>
 					</div>
-					<div className="rde-editor-canvas-container" style={{ overflow: 'scroll', minWidth: '200px' }}>
+					<div className="rde-editor-canvas-container">
 						<div
 							ref={c => {
 								this.container = c;
@@ -1567,6 +1688,32 @@ class ImageMapEditor extends Component {
 							className="rde-editor-canvas"
 							style={{ paddingBottom: '20px', paddingTop: '20px' }}
 						>
+							<div className="rde-artboard-meta">
+								<span>{isBadgePath ? 'Badge' : 'Certificate'}</span>
+								<span>
+									{isBadgePath
+										? 'Square canvas'
+										: selectedPageSize === 'a4landscape'
+										? 'A4 landscape'
+										: 'A4 portrait'}
+								</span>
+								<span>Proof checks active</span>
+							</div>
+							{rulersEnabled && (
+								<div className="rde-canvas-rulers" aria-hidden="true">
+									<div className="rde-canvas-ruler-corner" />
+									<div className="rde-canvas-ruler rde-canvas-ruler-top">
+										{rulerTicks.map(tick => (
+											<span key={`x-${tick}`}>{tick}</span>
+										))}
+									</div>
+									<div className="rde-canvas-ruler rde-canvas-ruler-left">
+										{rulerTicks.map(tick => (
+											<span key={`y-${tick}`}>{tick}</span>
+										))}
+									</div>
+								</div>
+							)}
 							<Canvas
 								ref={c => {
 									this.canvasRef = c;
@@ -1581,12 +1728,23 @@ class ImageMapEditor extends Component {
 								onRemove={onRemove}
 								onSelect={onSelect}
 								onZoom={onZoom}
+								onLoad={this.handleCanvasLoad}
 								onTooltip={onTooltip}
 								onClick={onClick}
 								onContext={onContext}
 								onTransaction={onTransaction}
 								keyEvent={{
 									transaction: true,
+								}}
+								gridOption={{
+									enabled: gridEnabled,
+									grid: 10,
+									snapToGrid,
+									lineColor: 'rgba(255, 108, 54, 0.13)',
+									borderColor: 'rgba(255, 108, 54, 0.28)',
+								}}
+								guidelineOption={{
+									enabled: guidesEnabled,
 								}}
 								canvasOption={{
 									selectionColor: 'rgba(255, 136, 94, 0.3)',
@@ -1603,15 +1761,22 @@ class ImageMapEditor extends Component {
 								// style={{width:'800px',height:'618px', top:'50%',left:'50%',transform:'translate(-50%,-50%'}}
 							/>
 						</div>
-						<div
-							className="rde-editor-footer-toolbar"
-							style={{ position: 'fixed', width: '400px', bottom: '-5px' }}
-						>
+						<div className="rde-editor-footer-toolbar">
 							<ImageMapFooterToolbar
 								canvasRef={this.canvasRef}
 								preview={preview}
 								onChangePreview={onChangePreview}
 								zoomRatio={zoomRatio}
+								gridEnabled={gridEnabled}
+								snapToGrid={snapToGrid}
+								guidesEnabled={guidesEnabled}
+								rulersEnabled={rulersEnabled}
+								safeAreaEnabled={safeAreaEnabled}
+								onToggleGrid={this.handleToggleGrid}
+								onToggleSnap={this.handleToggleSnap}
+								onToggleGuides={this.handleToggleGuides}
+								onToggleRulers={this.handleToggleRulers}
+								onToggleSafeArea={this.handleToggleSafeArea}
 							/>
 						</div>
 					</div>

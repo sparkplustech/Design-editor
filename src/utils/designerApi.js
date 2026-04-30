@@ -13,6 +13,11 @@ export function getDesignCode() {
 	return designCode;
 }
 
+export function isOptionalDesignerSessionError(error) {
+	const message = error?.message || '';
+	return message === 'Missing design code.' || message === 'Designer API is not configured for this design code.';
+}
+
 export function authHeaders(accessToken) {
 	return {
 		Authorization: `Bearer ${accessToken}`,

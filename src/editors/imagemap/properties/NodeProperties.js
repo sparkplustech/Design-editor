@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Collapse, List, Divider } from 'antd';
+import { Form, Divider } from 'antd';
 
 import PropertyDefinition from './PropertyDefinition';
-import Scrollbar from '../../../components/common/Scrollbar';
 import { Flex } from '../../../components/flex';
+import Icon from '../../../components/icon/Icon';
 
 
 class NodeProperties extends Component {
@@ -23,49 +23,45 @@ class NodeProperties extends Component {
 
 	render() {
 		const { canvasRef, selectedItem, form } = this.props;
-		const showArrow = false;
+		const hasEditableControls = selectedItem && PropertyDefinition[selectedItem.type];
 		return (
-			
-				<Form>
-						{selectedItem && PropertyDefinition[selectedItem.type] ? (
-							Object.keys(PropertyDefinition[selectedItem.type]).map(key => {
-								return (
-									<>
-									<Flex flexDirection='column' style={{padding:'10px'}}>
-								<h4>{PropertyDefinition[selectedItem.type][key].title}
-										</h4>
-									
-										{PropertyDefinition[selectedItem.type][key].component.render(
-											canvasRef,
-											form,
-											selectedItem,
-										)}
-									
-									</Flex>
-									{PropertyDefinition[selectedItem.type][key].title !== "Shadow" && (
-										<Divider className='divider-class'/>
-									)}
-									</>
-									
-								);
-							})
-						) : (
-							<Flex
-								justifyContent="center"
-								alignItems="center"
-								style={{
-									width: '100%',
-									height: '100%',
-									color: 'rgba(0, 0, 0, 0.45)',
-									fontSie: 16,
-									padding: 16,
-								}}
-							>
-								<List />
-							</Flex>
-						)}
-				</Form>
-			
+			<Form className="premium-inspector-form">
+				{hasEditableControls ? (
+					<React.Fragment>
+						<div className="premium-inspector-header">
+							<div>
+								<div className="premium-inspector-eyebrow">Layer</div>
+								<div className="premium-inspector-heading">{selectedItem.name || selectedItem.type}</div>
+							</div>
+							<span>{selectedItem.type}</span>
+						</div>
+						{Object.keys(PropertyDefinition[selectedItem.type]).map(key => {
+							const definition = PropertyDefinition[selectedItem.type][key];
+							return (
+								<div className="premium-inspector-section" key={key}>
+									<div className="premium-inspector-section-title">{definition.title}</div>
+									{definition.component.render(canvasRef, form, selectedItem)}
+									{definition.title !== 'Shadow' && <Divider className="divider-class" />}
+								</div>
+							);
+						})}
+					</React.Fragment>
+				) : (
+					<Flex justifyContent="center" alignItems="center" className="premium-inspector-empty">
+						<div>
+							<div className="premium-inspector-empty-icon">
+								<Icon name="mouse-pointer" />
+							</div>
+							<div className="premium-inspector-empty-title">
+								{selectedItem ? 'No editable controls' : 'Select an object'}
+							</div>
+							<div className="premium-inspector-empty-copy">
+								{selectedItem ? 'This layer can still be moved, duplicated, or deleted.' : 'No layer is selected.'}
+							</div>
+						</div>
+					</Flex>
+				)}
+			</Form>
 		);
 	}
 }

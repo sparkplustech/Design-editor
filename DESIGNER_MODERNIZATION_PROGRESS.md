@@ -2,7 +2,7 @@
 
 Date: 2026-04-30
 
-Branch: `designer-modern`
+Branch: `designer-editor`
 
 ## Direction
 
@@ -56,6 +56,18 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - Replaced deprecated `uuidv4` wrapper imports with `uuid` v4 imports and removed the unused `uuidv4` dependency.
 - Removed stale commented console logging in touched editor/resource files.
 - Gated audit output from source control via `.gitignore`.
+- Re-enabled project lockfile usage in `.npmrc` so `npm install`, `npm ci`, and audit tooling honor `package-lock.json`.
+- Added `audit:prod` and `verify` scripts for repeatable production-readiness checks.
+- Removed the production `new Function` chart option path; chart options now accept JSON object payloads instead of executable code.
+- Tightened external image URL validation to HTTPS, local HTTP, blob URLs, and image data URLs only.
+- Added a CSP to sandboxed HTML previews.
+- Replaced visible material-icon text in the alignment toolbar with bundled icon glyphs.
+- Refined the designer shell with a cleaner top bar, proof action, artboard metadata, grid canvas background, and non-overlapping toolbar layout.
+- Added production editor aid controls for grid, snap, and alignment guides, with auxiliary grid objects excluded from layer lists and exported template JSON.
+- Made the left asset rail keyboard-accessible, searchable for components, and visually consistent with the premium editor shell.
+- Added contextual inspector layer headers and clearer unsupported-selection empty states.
+- Added visible ruler overlays and a non-exported Fabric safe-area overlay that can be toggled from the editor aid controls.
+- Converted component palette tiles into semantic buttons while preserving click and drag-to-canvas behavior.
 
 ## Verified
 
@@ -65,10 +77,15 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - Browser smoke for `/certificate-designer` and `/badge-designer` on local dev server with no runtime console errors, aside from expected API 400s for fake smoke design codes
 - `npm run smoke:routes`
 - `npm audit --omit=dev --audit-level=high`
+- Browser smoke for `/certificate-designer` on local dev server with 0 console errors, aside from React Router future warnings.
+- Browser smoke for rulers, safe-area overlay, component add flow, and inspector selection state.
+- Browser smoke for asset search empty state, layer-list empty state, add-text selection, and compact mobile viewport footer layout.
 
 The production app entrypoint is now about 298 KiB, down from about 5.56 MiB before this optimization pass. Build still reports large asset warnings for deferred Fabric/AntD/editor chunks and bundled font SVG assets. Those warnings are real remaining performance work, not build failures.
 
 Audit now reports 22 remaining production advisories. The high/critical paths are tied to Fabric 4's old `jsdom/request` chain, AntD 3's old editor dependencies, ECharts 4's zrender chain, and canvas/node-pre-gyp tar. `npm audit fix --omit=dev --package-lock-only --package-lock=true` could not resolve them without forced breaking upgrades, so these are tracked as planned major-upgrade work rather than hidden.
+
+`npm audit fix` also still requires breaking upgrades for the dev toolchain, including Webpack/dev-server, Less, html-webpack-plugin, compression-webpack-plugin, Typedoc, and gh-pages. Those are not safe blind upgrades in this branch.
 
 ## Still Open
 
@@ -76,5 +93,5 @@ Audit now reports 22 remaining production advisories. The high/critical paths ar
 - Signed server-issued editor session contract instead of client-only route/query inference.
 - Server-side Fabric render worker for deterministic PDF/PNG outputs.
 - Bulk generation queue.
-- Modern editor shell redesign: contextual inspector, rulers/guides/safe area, save status, proof/export workflow.
+- Advanced ruler calibration against zoomed artboard coordinates and automated visual regression coverage.
 - Visual regression tests.

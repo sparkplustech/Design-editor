@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import throttle from 'lodash/throttle';
 
 import { LinkObject } from '../objects/Link';
@@ -91,7 +91,7 @@ class TransactionHandler {
 			this.state = objects.filter(obj => {
 				if (obj.id === 'workarea') {
 					return false;
-				} else if (obj.id === 'grid') {
+				} else if (obj.id === 'grid' || obj.id === 'safe-area') {
 					return false;
 				} else if (obj.superType === 'port') {
 					return false;

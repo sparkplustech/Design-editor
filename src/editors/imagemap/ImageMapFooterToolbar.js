@@ -12,6 +12,16 @@ class ImageMapFooterToolbar extends Component {
 		preview: PropTypes.bool,
 		onChangePreview: PropTypes.func,
 		zoomRatio: PropTypes.number,
+		gridEnabled: PropTypes.bool,
+		snapToGrid: PropTypes.bool,
+		guidesEnabled: PropTypes.bool,
+		rulersEnabled: PropTypes.bool,
+		safeAreaEnabled: PropTypes.bool,
+		onToggleGrid: PropTypes.func,
+		onToggleSnap: PropTypes.func,
+		onToggleGuides: PropTypes.func,
+		onToggleRulers: PropTypes.func,
+		onToggleSafeArea: PropTypes.func,
 	};
 
 	state = {
@@ -19,17 +29,24 @@ class ImageMapFooterToolbar extends Component {
 	};
 
 	componentDidMount() {
+		this.isFooterMounted = true;
 		const { canvasRef } = this.props;
 		this.waitForCanvasRender(canvasRef);
 	}
 
 	componentWillUnmount() {
+		this.isFooterMounted = false;
+		clearTimeout(this.waitForCanvasTimer);
 		const { canvasRef } = this.props;
 		this.detachEventListener(canvasRef);
 	}
 
 	waitForCanvasRender = canvas => {
-		setTimeout(() => {
+		clearTimeout(this.waitForCanvasTimer);
+		this.waitForCanvasTimer = setTimeout(() => {
+			if (!this.isFooterMounted) {
+				return;
+			}
 			if (canvas) {
 				this.attachEventListener(canvas);
 				return;
@@ -40,10 +57,16 @@ class ImageMapFooterToolbar extends Component {
 	};
 
 	attachEventListener = canvasRef => {
+		if (!canvasRef?.canvas?.wrapperEl) {
+			return;
+		}
 		canvasRef.canvas.wrapperEl.addEventListener('keydown', this.events.keydown, false);
 	};
 
 	detachEventListener = canvasRef => {
+		if (!canvasRef?.canvas?.wrapperEl) {
+			return;
+		}
 		canvasRef.canvas.wrapperEl.removeEventListener('keydown', this.events.keydown);
 	};
 
@@ -81,7 +104,22 @@ class ImageMapFooterToolbar extends Component {
 	};
 
 	render() {
-		const { canvasRef, preview, zoomRatio, onChangePreview } = this.props;
+		const {
+			canvasRef,
+			preview,
+			zoomRatio,
+			onChangePreview,
+			gridEnabled,
+			snapToGrid,
+			guidesEnabled,
+			rulersEnabled,
+			safeAreaEnabled,
+			onToggleGrid,
+			onToggleSnap,
+			onToggleGuides,
+			onToggleRulers,
+			onToggleSafeArea,
+		} = this.props;
 		const { interactionMode } = this.state;
 		const { selection, grab } = this.handlers;
 		if (!canvasRef) {
@@ -144,6 +182,42 @@ class ImageMapFooterToolbar extends Component {
 							}}
 							icon="search-plus"
 							tooltipTitle={i18n.t('action.zoom-in')}
+						/>
+					</Button.Group>
+				</div>
+				<div className="rde-editor-footer-toolbar-aids">
+					<Button.Group>
+						<CommonButton
+							type={gridEnabled ? 'primary' : 'default'}
+							style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
+							onClick={onToggleGrid}
+							icon="th"
+							tooltipTitle="Grid"
+						/>
+						<CommonButton
+							type={snapToGrid ? 'primary' : 'default'}
+							onClick={onToggleSnap}
+							icon="magnet"
+							tooltipTitle="Snap"
+						/>
+						<CommonButton
+							type={guidesEnabled ? 'primary' : 'default'}
+							onClick={onToggleGuides}
+							icon="ruler-combined"
+							tooltipTitle="Guides"
+						/>
+						<CommonButton
+							type={rulersEnabled ? 'primary' : 'default'}
+							onClick={onToggleRulers}
+							icon="ruler-horizontal"
+							tooltipTitle="Rulers"
+						/>
+						<CommonButton
+							type={safeAreaEnabled ? 'primary' : 'default'}
+							style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
+							onClick={onToggleSafeArea}
+							icon="vector-square"
+							tooltipTitle="Safe area"
 						/>
 					</Button.Group>
 				</div>

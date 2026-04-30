@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 
 import Handler from './Handler';
 import { FabricObject } from '../utils';
@@ -17,6 +17,7 @@ class GridHandler {
 	 *
 	 */
 	public initialize = () => {
+		this.destroy();
 		const { grid, lineColor, borderColor, enabled } = this.handler.gridOption;
 		if (enabled && grid) {
 			const width = 5000;
@@ -45,6 +46,15 @@ class GridHandler {
 				}
 			}
 		}
+	};
+
+	public destroy = () => {
+		if (!this.handler?.canvas) {
+			return;
+		}
+		const gridObjects = this.handler.canvas.getObjects().filter((obj: FabricObject) => obj.id === 'grid');
+		gridObjects.forEach(obj => this.handler.canvas.remove(obj));
+		this.handler.canvas.requestRenderAll();
 	};
 
 	/**

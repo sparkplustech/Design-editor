@@ -10,10 +10,13 @@
 			},
 			"option": {
 				"type": "textbox",
-				"text": "",
-				"width": 600,
-				"height": 30,
+				"text": "Your text",
+				"width": 520,
+				"height": 64,
+				"fontFamily": "Arial",
 				"fontSize": 32,
+				"lineHeight": 1.16,
+				"textAlign": "center",
 				"name": "New text"
 			}
 		}

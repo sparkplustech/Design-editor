@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { FabricEvent, FabricObject, WorkareaObject } from '../utils';
 import Handler from './Handler';
 

@@ -23,6 +23,7 @@ class CommonButton extends Component {
 		loading: PropTypes.bool,
 		type: PropTypes.string,
 		iconType: PropTypes.oneOf(['fas', 'material']),
+		ariaLabel: PropTypes.string,
 	};
 
 	static defaultProps = {
@@ -34,11 +35,17 @@ class CommonButton extends Component {
 	};
 
 	render() {
+		const buttonLabel = this.props.ariaLabel || this.props.tooltipTitle || this.props.name;
+		const buttonProps = {
+			'aria-label': buttonLabel,
+			title: buttonLabel,
+		};
 		return this.props.visible ? (
 			<Tooltip title={this.props.tooltipTitle} placement={this.props.tooltipPlacement}>
 				{this.props.wrapperClassName || this.props.wrapperStyle ? (
 					<span style={this.props.wrapperStyle} className={this.props.wrapperClassName}>
 						<Button
+							{...buttonProps}
 							id={this.props.id}
 							className={this.props.className}
 							name={this.props.name}
@@ -74,6 +81,7 @@ class CommonButton extends Component {
 					</span>
 				) : (
 					<Button
+						{...buttonProps}
 						id={this.props.id}
 						className={this.props.className}
 						name={this.props.name}
