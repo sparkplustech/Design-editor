@@ -184,6 +184,55 @@
 	}
 }
 
+.ant-btn.saveBtn[disabled],
+.ant-btn.saveBtn[disabled]:hover,
+.ant-btn.saveBtn[disabled]:focus {
+	border-color: #d9e1ec !important;
+	background: #f1f5f9 !important;
+	color: #8a94a6 !important;
+	cursor: not-allowed;
+
+	span {
+		color: #8a94a6 !important;
+	}
+}
+
+.designer-save-action {
+	display: inline-flex;
+
+	.ant-btn {
+		height: 32px;
+		border: 1px solid transparent;
+		border-radius: 8px;
+		background: #ff885e;
+		color: #ffffff;
+		font-weight: 600;
+		line-height: 1;
+		box-shadow: none;
+
+		span {
+			color: inherit;
+		}
+
+		&:hover,
+		&:focus {
+			border-color: transparent;
+			background: #ff6c36;
+			color: #ffffff;
+		}
+
+		&[disabled],
+		&[disabled]:hover,
+		&[disabled]:focus {
+			border-color: #d9e1ec;
+			background: #f1f5f9;
+			color: #8a94a6;
+			cursor: not-allowed;
+			box-shadow: none;
+		}
+	}
+}
+
 .warn-txt {
 	max-width: 260px;
 	color: #8a5a00;
@@ -251,6 +300,26 @@
 		flex-wrap: wrap;
 		gap: 8px;
 		margin-right: 0;
+
+		> .rde-action-btn.ant-btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 32px;
+			height: 32px;
+			border: 1px solid #d9e1ec;
+			border-radius: 8px;
+			background: #ffffff;
+			color: #435066;
+			box-shadow: 0 1px 2px rgba(31, 42, 55, 0.06);
+
+			&:hover,
+			&:focus {
+				border-color: #ffb08f;
+				background: #fff7f2;
+				color: #ff6c36;
+			}
+		}
 	}
 }
 
@@ -583,6 +652,44 @@
 		border-color: #2855b8;
 		color: #2855b8;
 		outline: none;
+	}
+}
+
+.designer-admin-actions {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	height: 32px;
+	padding: 0 4px;
+	border-left: 1px solid #d9e1ec;
+
+	.ant-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		border: 1px solid #d9e1ec;
+		border-radius: 8px;
+		background: #ffffff;
+		color: #435066;
+		box-shadow: 0 1px 2px rgba(31, 42, 55, 0.06);
+
+		&:hover,
+		&:focus {
+			border-color: #ffb08f;
+			background: #fff7f2;
+			color: #ff6c36;
+		}
+
+		&[disabled],
+		&[disabled]:hover,
+		&[disabled]:focus {
+			border-color: #e1e7ef;
+			background: #f8fafc;
+			color: #a9b3c1;
+			box-shadow: none;
+		}
 	}
 }
 

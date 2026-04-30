@@ -1587,11 +1587,12 @@ class ImageMapEditor extends Component {
 				<CommonButton
 					name="Save & Close"
 					className="saveBtn"
+					wrapperClassName="designer-save-action"
 					onClick={onSaveImageAndJson}
 					disabled={isSaving || isInputEmpty}
 				/>
 				{isAdminPath && (
-					<div>
+					<div className="designer-admin-actions">
 						<CommonButton
 							className="rde-action-btn"
 							shape="circle"
