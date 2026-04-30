@@ -62,22 +62,27 @@ class UrlModal extends Component {
 			return false;
 		}
 
-		if (value.startsWith('data:image/') || value.startsWith('blob:')) {
+		if (/^data:image\/(png|jpeg|jpg|webp|gif|svg\+xml);base64,/i.test(value) || value.startsWith('blob:')) {
 			return true;
 		}
 
 		try {
 			const parsedUrl = new URL(value);
-			return ['http:', 'https:'].includes(parsedUrl.protocol);
+			const isLocalHttp =
+				parsedUrl.protocol === 'http:' &&
+				['localhost', '127.0.0.1', '[::1]'].includes(parsedUrl.hostname);
+			return parsedUrl.protocol === 'https:' || isLocalHttp;
 		} catch (error) {
 			return false;
 		}
 	};
 
-	UNSAFE_componentWillReceiveProps(nextProps) {
-		this.setState({
-			url: nextProps.value || '',
-		});
+	componentDidUpdate(prevProps) {
+		if (prevProps.value !== this.props.value) {
+			this.setState({
+				url: this.props.value || '',
+			});
+		}
 	}
 
 	render() {

@@ -25,10 +25,12 @@ class FileUpload extends Component {
 		fileList: this.props.value ? [this.props.value] : [],
 	};
 
-	UNSAFE_componentWillReceiveProps(nextProps) {
-		this.setState({
-			fileList: nextProps.value ? [nextProps.value] : [],
-		});
+	componentDidUpdate(prevProps) {
+		if (prevProps.value !== this.props.value) {
+			this.setState({
+				fileList: this.props.value ? [this.props.value] : [],
+			});
+		}
 	}
 
 	getCanvasSize = () => {

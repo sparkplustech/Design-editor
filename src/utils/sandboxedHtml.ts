@@ -9,6 +9,7 @@ export function buildSandboxedHtml(html = '', css = '', js = '') {
 <html>
 <head>
 	<meta charset="utf-8" />
+	<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; font-src data:;" />
 	<style>
 		html,
 		body {

@@ -26,8 +26,6 @@ const excludeWords = [
 
 const includeWords = ['return'];
 
-const parameters = ['value', 'animations', 'styles', 'userProperty'];
-
 class SandBox {
 	/**
 	 *Creates an instance of SandBox.
@@ -39,23 +37,25 @@ class SandBox {
 		this.includeWords = params.includeWords || includeWords;
 	}
 
-	// eslint-disable-next-line class-methods-use-this
-	verify(code) {
-		const newCode = code.toString();
+	parseJsonOption(code) {
+		const newCode = code.toString().trim();
 		if (this.excludeWords.some(word => new RegExp(`(^|[^\\w$])${word}([^\\w$]|$)`).test(newCode))) {
 			throw new UnsafetyWordException();
 		}
-		if (!this.includeWords.some(word => code.includes(word))) {
+
+		const jsonOption = newCode.replace(/^return\s+/i, '').replace(/;$/, '');
+		if (!jsonOption.startsWith('{') || !jsonOption.endsWith('}')) {
 			throw new NoExistWordException();
 		}
-		// eslint-disable-next-line no-new-func
-		return new Function(parameters, `"use strict"; ${newCode}`);
+
+		return JSON.parse(jsonOption);
 	}
 
 	// eslint-disable-next-line consistent-return
 	compile(code) {
 		try {
-			return this.verify(code);
+			const chartOption = this.parseJsonOption(code);
+			return () => chartOption;
 		} catch (error) {
 			return null;
 		}
