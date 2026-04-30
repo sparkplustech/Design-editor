@@ -1,6 +1,6 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import i18next from 'i18next';
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid } from '../../utils/uuid';
 
 import { FabricObject } from '../utils';
 import { LinkObject } from './Link';

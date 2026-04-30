@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 
 import { Handler } from '.';
 import { WorkareaLayout, WorkareaObject, FabricImage } from '../utils';
@@ -19,15 +19,58 @@ class WorkareaHandler {
 	 */
 	public initialize() {
 		const { workareaOption } = this.handler;
-		const image = new Image(workareaOption.width, workareaOption.height);
-		image.width = workareaOption.width;
-		image.height = workareaOption.height;
-		this.handler.workarea = new fabric.Image(image, workareaOption) as WorkareaObject;
+		const { type: _type, ...imageOption } = workareaOption;
+		const image = this.createBlankElement(workareaOption.width, workareaOption.height);
+		this.handler.workarea = new fabric.Image(image, imageOption) as WorkareaObject;
+		this.applyBlankPageStyle(this.handler.workarea);
 		this.handler.canvas.add(this.handler.workarea);
 		this.handler.objects = this.handler.getObjects();
 		this.handler.canvas.centerObject(this.handler.workarea);
 		this.handler.canvas.renderAll();
 	}
+
+	private createBlankElement = (width = 1, height = 1) => {
+		const blankCanvas = document.createElement('canvas');
+		blankCanvas.width = Math.max(1, Math.round(width));
+		blankCanvas.height = Math.max(1, Math.round(height));
+		const context = blankCanvas.getContext('2d');
+		if (context) {
+			context.fillStyle = '#ffffff';
+			context.fillRect(0, 0, blankCanvas.width, blankCanvas.height);
+		}
+		return blankCanvas;
+	};
+
+	private applyBlankPageStyle = (workarea: WorkareaObject) => {
+		workarea.set({
+			backgroundColor: '#ffffff',
+			shadow: new fabric.Shadow({
+				color: 'rgba(22, 32, 44, 0.22)',
+				blur: 28,
+				offsetX: 0,
+				offsetY: 14,
+			}),
+		});
+	};
+
+	private resetToBlank = (width: number, height: number) => {
+		const { canvas, workarea } = this.handler;
+		workarea.setElement(this.createBlankElement(width, height) as any);
+		workarea.set({
+			src: null,
+			file: null,
+			width,
+			height,
+			scaleX: 1,
+			scaleY: 1,
+			isElement: false,
+			selectable: false,
+		});
+		this.applyBlankPageStyle(workarea);
+		canvas.centerObject(workarea);
+		canvas.requestRenderAll();
+		return Promise.resolve(workarea);
+	};
 
 	/**
 	 * Set the layout on workarea
@@ -152,7 +195,7 @@ class WorkareaHandler {
 							selectable: false,
 						});
 					} else {
-						const image = new Image(workareaWidth, workareaHeight);
+						const image = this.createBlankElement(workareaWidth, workareaHeight);
 						workarea.setElement(image);
 						workarea.set({
 							isElement: false,
@@ -196,7 +239,7 @@ class WorkareaHandler {
 				src: null,
 				file: null,
 			});
-			return imageFromUrl(source as string);
+			return this.resetToBlank(workarea.workareaWidth, workarea.workareaHeight);
 		}
 		if (source instanceof File) {
 			return new Promise<WorkareaObject>(resolve => {
@@ -254,7 +297,7 @@ class WorkareaHandler {
 							selectable: false,
 						});
 					} else {
-						workarea.setElement(new Image());
+						workarea.setElement(this.createBlankElement(width, height) as any);
 						workarea.set({
 							width,
 							height,
@@ -301,7 +344,9 @@ class WorkareaHandler {
 				src: null,
 				file: null,
 			});
-			return imageFromUrl(source as string);
+			const width = workarea.layout === 'fixed' ? workarea.width * workarea.scaleX : canvas.getWidth();
+			const height = workarea.layout === 'fixed' ? workarea.height * workarea.scaleY : canvas.getHeight();
+			return this.resetToBlank(width, height);
 		}
 		if (source instanceof File) {
 			return new Promise<WorkareaObject>(resolve => {

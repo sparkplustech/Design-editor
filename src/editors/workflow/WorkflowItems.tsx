@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import i18n from 'i18next';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid } from '../../utils/uuid';
 import { CanvasInstance } from '../../canvas';
 import { CommonButton, Scrollbar } from '../../components/common';
 import { Flex } from '../../components/flex';

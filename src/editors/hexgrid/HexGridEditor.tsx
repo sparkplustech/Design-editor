@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { extendHex, defineGrid } from 'honeycomb-grid';
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid } from '../../utils/uuid';
 import { Canvas, Handler } from '../../canvas';
 import { Content } from '../../components/layout';
 import { CanvasInstance } from '../../canvas/Canvas';

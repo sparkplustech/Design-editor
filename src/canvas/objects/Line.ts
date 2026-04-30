@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 
 const Line = fabric.util.createClass(fabric.Line, {
 	type: 'line',

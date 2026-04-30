@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import LogicNode from './LogicNode';
 import { getEllipsis } from '../../configuration/NodeConfiguration';
 import { Port } from '../../../../canvas/objects';

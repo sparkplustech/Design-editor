@@ -1,5 +1,5 @@
-import { fabric } from 'fabric';
-import { v4 as uuid } from 'uuid';
+import * as fabric from 'fabric';
+import { v4 as uuid } from '../../utils/uuid';
 import { Arrow, Line } from '../objects';
 import { FabricEvent, FabricObject } from '../utils';
 import Handler from './Handler';
@@ -9,6 +9,24 @@ class DrawingHandler {
 	constructor(handler: Handler) {
 		this.handler = handler;
 	}
+
+	private getPointer = (opt: FabricEvent) => {
+		const event = opt as any;
+		const pointer =
+			event.absolutePointer ||
+			event.scenePoint ||
+			event.pointer ||
+			(event.e ? this.handler.canvas.getPointer(event.e) : null);
+
+		if (!pointer || typeof pointer.x !== 'number' || typeof pointer.y !== 'number') {
+			return null;
+		}
+
+		return {
+			x: pointer.x,
+			y: pointer.y,
+		};
+	};
 
 	polygon = {
 		init: () => {
@@ -35,8 +53,11 @@ class DrawingHandler {
 			this.handler.interactionHandler.selection();
 		},
 		addPoint: (opt: FabricEvent) => {
-			const { e, absolutePointer } = opt;
-			const { x, y } = absolutePointer;
+			const pointer = this.getPointer(opt);
+			if (!pointer) {
+				return;
+			}
+			const { x, y } = pointer;
 			const circle = new fabric.Circle({
 				radius: 1,
 				fill: '#ffffff',
@@ -75,7 +96,10 @@ class DrawingHandler {
 				class: 'line',
 			});
 			if (this.handler.activeShape) {
-				const position = this.handler.canvas.getPointer(e);
+				const position = this.getPointer(opt);
+				if (!position) {
+					return;
+				}
 				const activeShapePoints = this.handler.activeShape.get('points') as Array<{ x: number; y: number }>;
 				activeShapePoints.push({
 					x: position.x,
@@ -213,8 +237,11 @@ class DrawingHandler {
 			this.handler.interactionHandler.selection();
 		},
 		addPoint: (opt: FabricEvent) => {
-			const { absolutePointer } = opt;
-			const { x, y } = absolutePointer;
+			const pointer = this.getPointer(opt);
+			if (!pointer) {
+				return;
+			}
+			const { x, y } = pointer;
 			const circle = new fabric.Circle({
 				radius: 3,
 				fill: '#ffffff',
@@ -254,8 +281,11 @@ class DrawingHandler {
 			this.handler.canvas.add(circle);
 		},
 		generate: (opt: FabricEvent) => {
-			const { absolutePointer } = opt;
-			const { x, y } = absolutePointer;
+			const pointer = this.getPointer(opt);
+			if (!pointer) {
+				return;
+			}
+			const { x, y } = pointer;
 			let points = [] as number[];
 			const id = uuid();
 			this.handler.pointArray.forEach(point => {
@@ -298,8 +328,11 @@ class DrawingHandler {
 			this.handler.interactionHandler.selection();
 		},
 		addPoint: (opt: FabricEvent) => {
-			const { absolutePointer } = opt;
-			const { x, y } = absolutePointer;
+			const pointer = this.getPointer(opt);
+			if (!pointer) {
+				return;
+			}
+			const { x, y } = pointer;
 			const circle = new fabric.Circle({
 				radius: 3,
 				fill: '#ffffff',
@@ -337,8 +370,11 @@ class DrawingHandler {
 			this.handler.canvas.add(circle);
 		},
 		generate: (opt: FabricEvent) => {
-			const { absolutePointer } = opt;
-			const { x, y } = absolutePointer;
+			const pointer = this.getPointer(opt);
+			if (!pointer) {
+				return;
+			}
+			const { x, y } = pointer;
 			let points = [] as number[];
 			this.handler.pointArray.forEach(point => {
 				points = points.concat(point.left, point.top, x, y);

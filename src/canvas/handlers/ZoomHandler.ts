@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 
 import { VideoObject } from '../objects/Video';
 import { FabricObject } from '../utils';
@@ -61,7 +61,11 @@ class ZoomHandler {
 	 * Zoom to fit
 	 *
 	 */
-	public zoomToFit = () => {
+	public zoomToFit = (paddingRatio: number = 0.92) => {
+		if (!this.handler.workarea?.width || !this.handler.workarea?.height) {
+			return;
+		}
+		const boundedPaddingRatio = Math.min(Math.max(paddingRatio, 0.1), 1);
 		let scaleX = this.handler.canvas.getWidth() / this.handler.workarea.width;
 		const scaleY = this.handler.canvas.getHeight() / this.handler.workarea.height;
 		if (this.handler.workarea.height >= this.handler.workarea.width) {
@@ -76,7 +80,7 @@ class ZoomHandler {
 		}
 		const center = this.handler.canvas.getCenter();
 		this.handler.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-		this.zoomToPoint(new fabric.Point(center.left, center.top), scaleX);
+		this.zoomToPoint(new fabric.Point(center.left, center.top), scaleX * boundedPaddingRatio);
 	};
 
 	/**

@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import Link, { LinkObject } from './Link';
 import { NodeObject } from './Node';
 import { PortObject } from './Port';

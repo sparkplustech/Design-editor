@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { FabricGroup, FabricObject, FabricObjectOption, toObject } from '../utils';
 import { resolveSvgText } from '../../utils/svgSanitizer';
 

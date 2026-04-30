@@ -1,5 +1,5 @@
 import anime from 'animejs';
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { code } from '../constants';
 import { NodeObject } from '../objects/Node';
 import { VideoObject } from '../objects/Video';

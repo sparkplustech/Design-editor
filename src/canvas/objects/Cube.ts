@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { FabricObject } from '../utils';
 
 export interface CubeObject extends FabricObject {}

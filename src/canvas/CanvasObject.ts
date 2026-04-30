@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 
 import {
 	Arrow,
@@ -30,35 +30,35 @@ export const createCanvasObject = (objectSchema: CanvasObjectSchema) => objectSc
 
 const CanvasObject: CanvasObjectSchema = {
 	group: {
-		create: ({ objects, ...option }: { objects: FabricObject[] }) => new fabric.Group(objects, option),
+		create: ({ objects, type: _type, ...option }: { objects: FabricObject[]; type?: string }) => new fabric.Group(objects, option),
 	},
 	'i-text': {
-		create: ({ text, ...option }: { text: string }) => new fabric.IText(text, option),
+		create: ({ text, type: _type, ...option }: { text: string; type?: string }) => new fabric.IText(text, option),
 	},
 	textbox: {
-		create: ({ text, ...option }: { text: string }) => new fabric.Textbox(text, option),
+		create: ({ text, type: _type, ...option }: { text: string; type?: string }) => new fabric.Textbox(text, option),
 	},
 	triangle: {
-		create: (option: any) => new fabric.Triangle(option),
+		create: ({ type: _type, ...option }: any) => new fabric.Triangle(option),
 	},
 	circle: {
-		create: (option: any) => new fabric.Circle(option),
+		create: ({ type: _type, ...option }: any) => new fabric.Circle(option),
 	},
 	rect: {
-		create: (option: any) => new fabric.Rect(option),
+		create: ({ type: _type, ...option }: any) => new fabric.Rect(option),
 	},
 	cube: {
 		create: (option: any) => new Cube(option),
 	},
 	image: {
-		create: ({ element = new Image(), ...option }) =>
+		create: ({ element = new Image(), type: _type, ...option }) =>
 			new fabric.Image(element, {
 				...option,
 				crossOrigin: 'anonymous',
 			}),
 	},
 	polygon: {
-		create: ({ points, ...option }: { points: any }) =>
+		create: ({ points, type: _type, ...option }: { points: any; type?: string }) =>
 			new fabric.Polygon(points, {
 				...option,
 				perPixelTargetFind: true,

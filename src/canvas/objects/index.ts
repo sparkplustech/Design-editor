@@ -1,3 +1,5 @@
+import '../fabricCompat';
+
 export { default as Arrow } from './Arrow';
 export { default as Chart } from './Chart';
 export { default as CirclePort } from './CirclePort';

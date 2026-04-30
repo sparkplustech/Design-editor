@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDom from 'react-dom';
+import './canvas/fabricCompat';
 import App from './App';
 import { unregister } from './serviceWorker';
 import { i18nClient } from './i18n';

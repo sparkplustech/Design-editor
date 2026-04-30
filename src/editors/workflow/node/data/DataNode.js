@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 
 import { NODE_COLORS } from '../../constant/constants';
 import { Node } from '../../../../canvas/objects';

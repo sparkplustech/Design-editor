@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid } from '../../utils/uuid';
 import { Canvas, FiberHandler } from '../../canvas';
 import { CanvasInstance } from '../../canvas/Canvas';
 import { Content } from '../../components/layout';

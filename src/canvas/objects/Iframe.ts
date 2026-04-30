@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { FabricElement, toObject } from '../utils';
 
 export interface IframeObject extends FabricElement {

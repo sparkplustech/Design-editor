@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { FabricObject } from '../../../canvas';
 
 export const CableColorCode = {

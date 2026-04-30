@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 
 import Handler from './Handler';
 import { VideoObject } from '../objects/Video';

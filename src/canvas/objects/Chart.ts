@@ -1,5 +1,5 @@
 import * as echarts from 'echarts';
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { FabricElement, toObject } from '../utils';
 
 export interface ChartObject extends FabricElement {
