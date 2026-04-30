@@ -233,14 +233,14 @@ export default {
 						<Form.Item label="Fill Color" colon={false}>
 							{getFieldDecorator('animation.fill', {
 								initialValue: data.animation.fill || data.fill,
-							})(<ColorPicker />)}
+							})(<ColorPicker ariaLabel="Fill Color" />)}
 						</Form.Item>
 					</Col>
 					<Col span={12}>
 						<Form.Item label="Stroke Color" colon={false}>
 							{getFieldDecorator('animation.stroke', {
 								initialValue: data.animation.stroke || data.stroke,
-							})(<ColorPicker />)}
+							})(<ColorPicker ariaLabel="Stroke Color" />)}
 						</Form.Item>
 					</Col>
 				</Row>

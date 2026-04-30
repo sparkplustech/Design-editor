@@ -21,7 +21,7 @@ export default {
 						<Form.Item label={i18n.t('common.color')} colon={false}>
 							{getFieldDecorator('shadow.color', {
 								initialValue: data.shadow.color || 'rgba(0, 0, 0, 0)',
-							})(<ColorPicker />)}
+							})(<ColorPicker ariaLabel={i18n.t('common.color')} />)}
 						</Form.Item>
 						<Form.Item label={i18n.t('common.blur')} colon={false}>
 							{getFieldDecorator('shadow.blur', {

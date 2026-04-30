@@ -12,7 +12,7 @@ export default {
 				<Form.Item label={i18n.t('imagemap.style.fill-color')} colon={false}>
 					{getFieldDecorator('fill', {
 						initialValue: data.fill || 'rgba(0, 0, 0, 1)',
-					})(<ColorPicker />)}
+					})(<ColorPicker ariaLabel={i18n.t('imagemap.style.fill-color')} />)}
 				</Form.Item>
 				{/* <Form.Item label={i18n.t('common.opacity')} colon={false} style={{ marginTop: '7px' }}>
 					{getFieldDecorator('opacity', {
@@ -31,7 +31,7 @@ export default {
 						<Form.Item label={i18n.t('imagemap.style.stroke-color')} colon={false}>
 							{getFieldDecorator('stroke', {
 								initialValue: data.stroke || 'rgba(255, 255, 255, 0)',
-							})(<ColorPicker />)}
+							})(<ColorPicker ariaLabel={i18n.t('imagemap.style.stroke-color')} />)}
 						</Form.Item>
 					</Col>
 					<Col md={24} lg={12}>

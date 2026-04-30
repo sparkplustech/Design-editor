@@ -5,10 +5,15 @@ import { SketchPicker } from 'react-color';
 
 class ColorPicker extends Component {
 	static propTypes = {
+		ariaLabel: PropTypes.string,
+		onChange: PropTypes.func,
+		value: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 		valueType: PropTypes.oneOf(['string', 'object']),
 	};
 
 	static defaultProps = {
+		ariaLabel: 'Select color',
+		onChange: () => {},
 		valueType: 'string',
 	};
 
@@ -52,9 +57,18 @@ class ColorPicker extends Component {
 	render() {
 		const { color } = this.state;
 		const { onChange } = this.handlers;
+		const { ariaLabel } = this.props;
+		const backgroundColor = this.getBackgroundColor(color);
+		const buttonLabel = `${ariaLabel}: ${backgroundColor}`;
 		return (
 			<Popover trigger="click" placement="bottom" content={<SketchPicker color={color} onChange={onChange} />}>
-				<Button style={{ background: this.getBackgroundColor(color) }} shape="circle" />
+				<Button
+					aria-label={buttonLabel}
+					className="rde-color-swatch-btn"
+					shape="circle"
+					style={{ background: backgroundColor }}
+					title={buttonLabel}
+				/>
 			</Popover>
 		);
 	}

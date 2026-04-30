@@ -1,7 +1,8 @@
 import React from 'react';
-import { Form, Slider, Row, Col, Select, Tag, InputNumber, Radio } from 'antd';
+import { Form, Slider, Row, Col, Select, InputNumber, Radio } from 'antd';
 import sortBy from 'lodash/sortBy';
 
+import AccessibleCheckableTag from '../../../components/common/AccessibleCheckableTag';
 import Icon from '../../../components/icon/Icon';
 import Fonts from '../../../components/font/fonts';
 
@@ -51,9 +52,9 @@ export default {
 									valuePropName: 'checked',
 									initialValue: data.fontWeight === 'bold',
 								})(
-									<Tag.CheckableTag className="rde-action-tag">
+									<AccessibleCheckableTag label="Bold">
 										<Icon name="bold" />
-									</Tag.CheckableTag>,
+									</AccessibleCheckableTag>,
 								)}
 							</Form.Item>
 						</Col>
@@ -63,9 +64,9 @@ export default {
 									valuePropName: 'checked',
 									initialValue: data.fontStyle === 'italic',
 								})(
-									<Tag.CheckableTag className="rde-action-tag">
+									<AccessibleCheckableTag label="Italic">
 										<Icon name="italic" />
-									</Tag.CheckableTag>,
+									</AccessibleCheckableTag>,
 								)}
 							</Form.Item>
 						</Col>
@@ -75,9 +76,9 @@ export default {
 									valuePropName: 'checked',
 									initialValue: data.underline,
 								})(
-									<Tag.CheckableTag className="rde-action-tag">
+									<AccessibleCheckableTag label="Underline">
 										<Icon name="underline" />
-									</Tag.CheckableTag>,
+									</AccessibleCheckableTag>,
 								)}
 							</Form.Item>
 						</Col>
@@ -87,9 +88,9 @@ export default {
 									valuePropName: 'checked',
 									initialValue: data.linethrough,
 								})(
-									<Tag.CheckableTag className="rde-action-tag">
+									<AccessibleCheckableTag label="Strikethrough">
 										<Icon name="strikethrough" />
-									</Tag.CheckableTag>,
+									</AccessibleCheckableTag>,
 								)}
 							</Form.Item>
 						</Col>
@@ -100,16 +101,16 @@ export default {
 						initialValue: data.textAlign || 'left',
 					})(
 						<Radio.Group className="text-align-group">
-							<Radio.Button value="left">
+							<Radio.Button aria-label="Align left" title="Align left" value="left">
 								<Icon name="align-left" />
 							</Radio.Button>
-							<Radio.Button value="center">
+							<Radio.Button aria-label="Align center" title="Align center" value="center">
 								<Icon name="align-center" />
 							</Radio.Button>
-							<Radio.Button value="right">
+							<Radio.Button aria-label="Align right" title="Align right" value="right">
 								<Icon name="align-right" />
 							</Radio.Button>
-							<Radio.Button value="justify">
+							<Radio.Button aria-label="Justify text" title="Justify text" value="justify">
 								<Icon name="align-justify" />
 							</Radio.Button>
 						</Radio.Group>,

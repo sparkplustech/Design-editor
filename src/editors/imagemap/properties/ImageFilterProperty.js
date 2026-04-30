@@ -1,6 +1,8 @@
 import React from 'react';
-import { Row, Col, Form, Tag, Slider } from 'antd';
+import { Row, Col, Form, Slider } from 'antd';
 import i18n from 'i18next';
+
+import AccessibleCheckableTag from '../../../components/common/AccessibleCheckableTag';
 
 export default {
 	render(canvasRef, form, data) {
@@ -14,7 +16,7 @@ export default {
 							{getFieldDecorator('filters.grayscale', {
 								valuePropName: 'checked',
 								initialValue: !!filters[0],
-							})(<Tag.CheckableTag className="rde-action-tag">{'G'}</Tag.CheckableTag>)}
+							})(<AccessibleCheckableTag label={i18n.t('imagemap.filter.grayscale')}>{'G'}</AccessibleCheckableTag>)}
 						</Form.Item>
 					</Col>
 					<Col md={24} lg={6}>
@@ -22,7 +24,7 @@ export default {
 							{getFieldDecorator('filters.invert', {
 								valuePropName: 'checked',
 								initialValue: !!filters[1],
-							})(<Tag.CheckableTag className="rde-action-tag">{'I'}</Tag.CheckableTag>)}
+							})(<AccessibleCheckableTag label={i18n.t('imagemap.filter.invert')}>{'I'}</AccessibleCheckableTag>)}
 						</Form.Item>
 					</Col>
 					<Col md={24} lg={6}>
@@ -30,7 +32,7 @@ export default {
 							{getFieldDecorator('filters.sepia', {
 								valuePropName: 'checked',
 								initialValue: !!filters[3],
-							})(<Tag.CheckableTag className="rde-action-tag">{'S'}</Tag.CheckableTag>)}
+							})(<AccessibleCheckableTag label={i18n.t('imagemap.filter.sepia')}>{'S'}</AccessibleCheckableTag>)}
 						</Form.Item>
 					</Col>
 					<Col md={24} lg={6}>
@@ -38,7 +40,7 @@ export default {
 							{getFieldDecorator('filters.brownie', {
 								valuePropName: 'checked',
 								initialValue: !!filters[4],
-							})(<Tag.CheckableTag className="rde-action-tag">{'B'}</Tag.CheckableTag>)}
+							})(<AccessibleCheckableTag label={i18n.t('imagemap.filter.brownie')}>{'B'}</AccessibleCheckableTag>)}
 						</Form.Item>
 					</Col>
 				</Row>
@@ -48,7 +50,7 @@ export default {
 							{getFieldDecorator('filters.vintage', {
 								valuePropName: 'checked',
 								initialValue: !!filters[9],
-							})(<Tag.CheckableTag className="rde-action-tag">{'V'}</Tag.CheckableTag>)}
+							})(<AccessibleCheckableTag label={i18n.t('imagemap.filter.vintage')}>{'V'}</AccessibleCheckableTag>)}
 						</Form.Item>
 					</Col>
 					<Col md={24} lg={6}>
@@ -56,7 +58,7 @@ export default {
 							{getFieldDecorator('filters.blackwhite', {
 								valuePropName: 'checked',
 								initialValue: !!filters[19],
-							})(<Tag.CheckableTag className="rde-action-tag">{'B'}</Tag.CheckableTag>)}
+							})(<AccessibleCheckableTag label={i18n.t('imagemap.filter.blackwhite')}>{'B'}</AccessibleCheckableTag>)}
 						</Form.Item>
 					</Col>
 					<Col md={24} lg={6}>
@@ -64,7 +66,7 @@ export default {
 							{getFieldDecorator('filters.technicolor', {
 								valuePropName: 'checked',
 								initialValue: !!filters[14],
-							})(<Tag.CheckableTag className="rde-action-tag">{'T'}</Tag.CheckableTag>)}
+							})(<AccessibleCheckableTag label={i18n.t('imagemap.filter.technicolor')}>{'T'}</AccessibleCheckableTag>)}
 						</Form.Item>
 					</Col>
 					<Col md={24} lg={6}>
@@ -72,7 +74,7 @@ export default {
 							{getFieldDecorator('filters.polaroid', {
 								valuePropName: 'checked',
 								initialValue: !!filters[15],
-							})(<Tag.CheckableTag className="rde-action-tag">{'P'}</Tag.CheckableTag>)}
+							})(<AccessibleCheckableTag label={i18n.t('imagemap.filter.polaroid')}>{'P'}</AccessibleCheckableTag>)}
 						</Form.Item>
 					</Col>
 				</Row>
@@ -82,7 +84,7 @@ export default {
 							{getFieldDecorator('filters.sharpen', {
 								valuePropName: 'checked',
 								initialValue: !!filters[12],
-							})(<Tag.CheckableTag className="rde-action-tag">{'S'}</Tag.CheckableTag>)}
+							})(<AccessibleCheckableTag label={i18n.t('imagemap.filter.sharpen')}>{'S'}</AccessibleCheckableTag>)}
 						</Form.Item>
 					</Col>
 					<Col md={24} lg={6}>
@@ -90,7 +92,7 @@ export default {
 							{getFieldDecorator('filters.emboss', {
 								valuePropName: 'checked',
 								initialValue: !!filters[13],
-							})(<Tag.CheckableTag className="rde-action-tag">{'E'}</Tag.CheckableTag>)}
+							})(<AccessibleCheckableTag label={i18n.t('imagemap.filter.emboss')}>{'E'}</AccessibleCheckableTag>)}
 						</Form.Item>
 					</Col>
 				</Row>
@@ -100,7 +102,7 @@ export default {
 							{getFieldDecorator('filters.gamma.enabled', {
 								valuePropName: 'checked',
 								initialValue: !!filters[17],
-							})(<Tag.CheckableTag className="rde-action-tag">{'G'}</Tag.CheckableTag>)}
+							})(<AccessibleCheckableTag label={i18n.t('imagemap.filter.gamma')}>{'G'}</AccessibleCheckableTag>)}
 						</Form.Item>
 					</Col>
 					<Col md={24} lg={6}>
@@ -131,7 +133,7 @@ export default {
 							{getFieldDecorator('filters.brightness.enabled', {
 								valuePropName: 'checked',
 								initialValue: !!filters[5],
-							})(<Tag.CheckableTag className="rde-action-tag">{'B'}</Tag.CheckableTag>)}
+							})(<AccessibleCheckableTag label={i18n.t('imagemap.filter.brightness')}>{'B'}</AccessibleCheckableTag>)}
 						</Form.Item>
 					</Col>
 					<Col md={24} lg={18}>
@@ -148,7 +150,7 @@ export default {
 							{getFieldDecorator('filters.contrast.enabled', {
 								valuePropName: 'checked',
 								initialValue: !!filters[6],
-							})(<Tag.CheckableTag className="rde-action-tag">{'C'}</Tag.CheckableTag>)}
+							})(<AccessibleCheckableTag label={i18n.t('imagemap.filter.contrast')}>{'C'}</AccessibleCheckableTag>)}
 						</Form.Item>
 					</Col>
 					<Col md={24} lg={18}>
@@ -165,7 +167,7 @@ export default {
 							{getFieldDecorator('filters.saturation.enabled', {
 								valuePropName: 'checked',
 								initialValue: !!filters[7],
-							})(<Tag.CheckableTag className="rde-action-tag">{'S'}</Tag.CheckableTag>)}
+							})(<AccessibleCheckableTag label={i18n.t('imagemap.filter.saturation')}>{'S'}</AccessibleCheckableTag>)}
 						</Form.Item>
 					</Col>
 					<Col md={24} lg={18}>
@@ -182,7 +184,7 @@ export default {
 							{getFieldDecorator('filters.hue.enabled', {
 								valuePropName: 'checked',
 								initialValue: !!filters[21],
-							})(<Tag.CheckableTag className="rde-action-tag">{'H'}</Tag.CheckableTag>)}
+							})(<AccessibleCheckableTag label={i18n.t('imagemap.filter.hue')}>{'H'}</AccessibleCheckableTag>)}
 						</Form.Item>
 					</Col>
 					<Col md={24} lg={18}>
@@ -199,7 +201,7 @@ export default {
 							{getFieldDecorator('filters.noise.enabled', {
 								valuePropName: 'checked',
 								initialValue: !!filters[8],
-							})(<Tag.CheckableTag className="rde-action-tag">{'N'}</Tag.CheckableTag>)}
+							})(<AccessibleCheckableTag label={i18n.t('imagemap.filter.noise')}>{'N'}</AccessibleCheckableTag>)}
 						</Form.Item>
 					</Col>
 					<Col md={24} lg={18}>
@@ -216,7 +218,7 @@ export default {
 							{getFieldDecorator('filters.pixelate.enabled', {
 								valuePropName: 'checked',
 								initialValue: !!filters[10],
-							})(<Tag.CheckableTag className="rde-action-tag">{'P'}</Tag.CheckableTag>)}
+							})(<AccessibleCheckableTag label={i18n.t('imagemap.filter.pixelate')}>{'P'}</AccessibleCheckableTag>)}
 						</Form.Item>
 					</Col>
 					<Col md={24} lg={18}>
@@ -233,7 +235,7 @@ export default {
 							{getFieldDecorator('filters.blur.enabled', {
 								valuePropName: 'checked',
 								initialValue: !!filters[11],
-							})(<Tag.CheckableTag className="rde-action-tag">{'B'}</Tag.CheckableTag>)}
+							})(<AccessibleCheckableTag label={i18n.t('imagemap.filter.blur')}>{'B'}</AccessibleCheckableTag>)}
 						</Form.Item>
 					</Col>
 					<Col md={24} lg={18}>

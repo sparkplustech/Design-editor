@@ -245,14 +245,14 @@ export default {
 						<Form.Item label={i18n.t('imagemap.style.fill-color')} colon={false}>
 							{getFieldDecorator('animation.fill', {
 								initialValue: data.animation.fill || data.fill,
-							})(<ColorPicker />)}
+							})(<ColorPicker ariaLabel={i18n.t('imagemap.style.fill-color')} />)}
 						</Form.Item>
 					</Col>
 					<Col span={12}>
 						<Form.Item label={i18n.t('imagemap.style.stroke-color')} colon={false}>
 							{getFieldDecorator('animation.stroke', {
 								initialValue: data.animation.stroke || data.stroke,
-							})(<ColorPicker />)}
+							})(<ColorPicker ariaLabel={i18n.t('imagemap.style.stroke-color')} />)}
 						</Form.Item>
 					</Col>
 				</Row>

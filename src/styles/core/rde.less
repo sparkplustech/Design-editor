@@ -157,6 +157,20 @@ video {
 	}
 }
 
+.rde-color-swatch-btn.ant-btn {
+	width: 32px;
+	height: 32px;
+	border: 1px solid #d4dbe7;
+	box-shadow: inset 0 0 0 2px #ffffff, 0 1px 2px rgba(15, 23, 42, 0.08);
+	vertical-align: middle;
+
+	&:hover,
+	&:focus {
+		border-color: #ff8a3d;
+		box-shadow: 0 0 0 3px rgba(255, 138, 61, 0.18), inset 0 0 0 2px #ffffff;
+	}
+}
+
 .rde-action-btn {
 	background: transparent;
 	border: transparent;
@@ -351,8 +365,13 @@ video {
 	height: 32px;
 	text-align: center;
 	padding-top: 4px;
+	outline: none;
 	&.ant-tag-checkable {
 		border: 1px solid #d9d9d9;
+	}
+	&:focus {
+		border-color: #ff8a3d;
+		box-shadow: 0 0 0 3px rgba(255, 138, 61, 0.18);
 	}
 }
 
