@@ -190,6 +190,34 @@
 	text-overflow: ellipsis;
 }
 
+.proof-status-btn {
+	cursor: pointer;
+	height: 30px;
+	text-align: left;
+
+	&:focus {
+		outline: 2px solid #d99f00;
+		outline-offset: 2px;
+	}
+}
+
+.proof-issue-list {
+	margin: 0;
+	padding-left: 20px;
+
+	&-item {
+		margin-bottom: 8px;
+	}
+
+	.proof-error {
+		color: #a8071a;
+	}
+
+	.proof-warning {
+		color: #8a5a00;
+	}
+}
+
 
 /* width */
 *::-webkit-scrollbar {

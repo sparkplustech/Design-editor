@@ -119,6 +119,7 @@ class ImageMapEditor extends Component {
 		toolbarClass: 'minimize',
 		skip: 0,
 		proofIssues: [],
+		proofModalVisible: false,
 	};
 
 	getExportMultiplier = () => 2;
@@ -1335,6 +1336,21 @@ class ImageMapEditor extends Component {
 		});
 	};
 
+	handleOpenProofIssues = () => {
+		const { proofIssues } = this.runDesignProofValidation({ showMessage: false });
+
+		if (!proofIssues.length) {
+			message.success('Proof checks passed.');
+			return;
+		}
+
+		this.setState({ proofModalVisible: true });
+	};
+
+	handleCloseProofIssues = () => {
+		this.setState({ proofModalVisible: false });
+	};
+
 	parseImportedDesign = rawJson => {
 		let parsedDesign;
 
@@ -1379,6 +1395,7 @@ class ImageMapEditor extends Component {
 			previewImage,
 			toolbarClass,
 			proofIssues,
+			proofModalVisible,
 		} = this.state;
 		const {
 			onAdd,
@@ -1437,9 +1454,14 @@ class ImageMapEditor extends Component {
 					<div className="err-txt">{this.state.errorMessage}</div>
 				)}
 				{proofIssues.length > 0 && !this.state.errorMessage && !this.state.successMessage && (
-					<div className="warn-txt" title={summarizeProofIssues(proofIssues)}>
+					<button
+						type="button"
+						className="warn-txt proof-status-btn"
+						title={summarizeProofIssues(proofIssues)}
+						onClick={this.handleOpenProofIssues}
+					>
 						Proof checks: {proofIssues.length} issue{proofIssues.length > 1 ? 's' : ''}
-					</div>
+					</button>
 				)}
 
 				<CommonButton
@@ -1629,7 +1651,32 @@ class ImageMapEditor extends Component {
 				<img alt="Preview" className="previewPop-Img" src={this.state.previewImage} />
 			</Modal>
 		);
-		return <Content title={title} content={content} loading={loading} previewModal={previewModal} className="" />;
+		const proofModal = (
+			<Modal
+				title="Proof Checks"
+				visible={proofModalVisible}
+				footer={[
+					<Button key="close" className="saveBtn" onClick={this.handleCloseProofIssues}>
+						Close
+					</Button>,
+				]}
+				onCancel={this.handleCloseProofIssues}
+			>
+				<ul className="proof-issue-list">
+					{proofIssues.map((issue, index) => (
+						<li key={`${issue.message}-${index}`} className={`proof-issue-list-item proof-${issue.severity}`}>
+							{issue.message}
+						</li>
+					))}
+				</ul>
+			</Modal>
+		);
+		return (
+			<React.Fragment>
+				<Content title={title} content={content} loading={loading} previewModal={previewModal} className="" />
+				{proofModal}
+			</React.Fragment>
+		);
 	}
 }
 
