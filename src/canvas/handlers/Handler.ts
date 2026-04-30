@@ -1903,33 +1903,47 @@ class Handler implements HandlerOptions {
 	public saveCanvasImage = (option = { name: 'New Image', format: 'png', quality: 1 }) => {
 		// If it's zoomed out/in, the container will also include in the image
 		// hence need to reset the zoom level.
-		let { left, top, width, height, scaleX, scaleY } = this.workarea;
+		let { width, height, scaleX, scaleY } = this.workarea;
 		width = Math.ceil(width * scaleX);
 		height = Math.ceil(height * scaleY);
 		// cachedVT is used to reset the viewportTransform after the image is saved.
 		const cachedVT = this.canvas.viewportTransform;
+		const exportHiddenObjects = this.canvas
+			.getObjects()
+			.filter(obj => obj.id === 'grid' || obj.id === 'safe-area')
+			.map(obj => ({ obj, visible: obj.visible }));
+		const cachedWorkareaShadow = this.workarea.shadow;
 		// reset the viewportTransform to default (no zoom)
 		this.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
-		const dataUrl = this.canvas.toDataURL({
-			...option,
-			left,
-			top,
-			width,
-			height,
-			multiplier: (option as any).multiplier || 2,
-			enableRetinaScaling: true,
-		});
+		exportHiddenObjects.forEach(({ obj }) => obj.set('visible', false));
+		this.workarea.set('shadow', null);
 
-		if (dataUrl) {
-			const anchorEl = document.createElement('a');
-			anchorEl.href = dataUrl;
-			anchorEl.download = `${option.name}.png`;
-			document.body.appendChild(anchorEl);
-			anchorEl.click();
-			anchorEl.remove();
+		try {
+			const dataUrl = this.canvas.toDataURL({
+				...option,
+				left: 0,
+				top: 0,
+				width,
+				height,
+				multiplier: (option as any).multiplier || 1,
+				enableRetinaScaling: true,
+			});
+
+			if (dataUrl) {
+				const anchorEl = document.createElement('a');
+				anchorEl.href = dataUrl;
+				anchorEl.download = `${option.name}.png`;
+				document.body.appendChild(anchorEl);
+				anchorEl.click();
+				anchorEl.remove();
+			}
+		} finally {
+			this.workarea.set('shadow', cachedWorkareaShadow);
+			exportHiddenObjects.forEach(({ obj, visible }) => obj.set('visible', visible));
+			// reset the viewportTransform to previous value.
+			this.canvas.viewportTransform = cachedVT;
+			this.canvas.requestRenderAll();
 		}
-		// reset the viewportTransform to previous value.
-		this.canvas.viewportTransform = cachedVT;
 	};
 
 	/**

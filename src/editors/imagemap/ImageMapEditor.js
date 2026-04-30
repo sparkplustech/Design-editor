@@ -137,7 +137,7 @@ class ImageMapEditor extends Component {
 
 	importObjectsTimer = null;
 
-	getExportMultiplier = () => 2;
+	getExportMultiplier = () => 1;
 
 	normalizeDesignName = value => {
 		if (value === null || value === undefined || value === 'null') {
@@ -211,23 +211,34 @@ class ImageMapEditor extends Component {
 
 	getCanvasImageDataUrl = option => {
 		const cachedViewportTransform = this.canvasRef.canvas.viewportTransform;
-		let { left, top, width, height, scaleX, scaleY } = this.canvasRef.handler.workarea;
+		const exportHiddenObjects = this.canvasRef.canvas
+			.getObjects()
+			.filter(obj => obj.id === 'grid' || obj.id === 'safe-area')
+			.map(obj => ({ obj, visible: obj.visible }));
+		const { workarea } = this.canvasRef.handler;
+		const cachedWorkareaShadow = workarea.shadow;
+		let { width, height, scaleX, scaleY } = this.canvasRef.handler.workarea;
 		width = Math.ceil(width * scaleX);
 		height = Math.ceil(height * scaleY);
 		this.canvasRef.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
+		exportHiddenObjects.forEach(({ obj }) => obj.set('visible', false));
+		workarea.set('shadow', null);
 
 		try {
 			return this.canvasRef.canvas.toDataURL({
 				...option,
-				left,
-				top,
+				left: 0,
+				top: 0,
 				width,
 				height,
 				multiplier: this.getExportMultiplier(),
 				enableRetinaScaling: true,
 			});
 		} finally {
+			workarea.set('shadow', cachedWorkareaShadow);
+			exportHiddenObjects.forEach(({ obj, visible }) => obj.set('visible', visible));
 			this.canvasRef.canvas.viewportTransform = cachedViewportTransform;
+			this.canvasRef.canvas.requestRenderAll();
 		}
 	};
 
@@ -1417,13 +1428,7 @@ class ImageMapEditor extends Component {
 	};
 
 	handleOpenProofIssues = () => {
-		const { proofIssues } = this.runDesignProofValidation({ showMessage: false });
-
-		if (!proofIssues.length) {
-			message.success('Proof checks passed.');
-			return;
-		}
-
+		this.runDesignProofValidation({ showMessage: false });
 		this.setState({ proofModalVisible: true });
 	};
 
@@ -1807,6 +1812,7 @@ class ImageMapEditor extends Component {
 			<Modal
 				title="Preview"
 				visible={this.state.previewVisible}
+				className="designer-preview-modal"
 				footer={[
 					<Button key="close" className="saveBtn" onClick={this.handleCancelPreview}>
 						Close
@@ -1821,6 +1827,7 @@ class ImageMapEditor extends Component {
 			<Modal
 				title="Proof Checks"
 				visible={proofModalVisible}
+				className="designer-proof-modal"
 				footer={[
 					<Button key="close" className="saveBtn" onClick={this.handleCloseProofIssues}>
 						Close
@@ -1828,13 +1835,25 @@ class ImageMapEditor extends Component {
 				]}
 				onCancel={this.handleCloseProofIssues}
 			>
-				<ul className="proof-issue-list">
-					{proofIssues.map((issue, index) => (
-						<li key={`${issue.message}-${index}`} className={`proof-issue-list-item proof-${issue.severity}`}>
-							{issue.message}
-						</li>
-					))}
-				</ul>
+				{proofIssues.length > 0 ? (
+					<ul className="proof-issue-list">
+						{proofIssues.map((issue, index) => (
+							<li key={`${issue.message}-${index}`} className={`proof-issue-list-item proof-${issue.severity}`}>
+								{issue.message}
+							</li>
+						))}
+					</ul>
+				) : (
+					<div className="proof-pass-state" role="status">
+						<div className="proof-pass-state-icon">OK</div>
+						<div>
+							<div className="proof-pass-state-title">No proof issues found</div>
+							<div className="proof-pass-state-copy">
+								The current design passes safe-area, variable, overflow, and scan-size checks.
+							</div>
+						</div>
+					</div>
+				)}
 			</Modal>
 		);
 		return (
