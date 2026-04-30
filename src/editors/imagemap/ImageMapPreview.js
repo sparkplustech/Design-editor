@@ -25,7 +25,7 @@ class ImageMapPreview extends Component {
 							this.container = c;
 						}}
 						style={{
-							overvlow: 'hidden',
+							overflow: 'hidden',
 							display: 'flex',
 							flex: '1',
 							height: '100%',

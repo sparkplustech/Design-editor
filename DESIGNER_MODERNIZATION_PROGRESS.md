@@ -48,6 +48,11 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - Added route smoke checks for all designer routes via `npm run smoke:routes`.
 - Centralized editor route/query parsing so the main editor, header toolbar, properties, API helper, and resource panels share the same session interpretation.
 - Tightened explicit save validation so Save & Close requires a non-empty design name and persists trimmed names.
+- Added a central variable registry for designer variables.
+- Added proof validation for object safe-area placement, unknown variable tokens, text overflow risk, QR source presence, and QR minimum scan size.
+- Added guarded design JSON import failures instead of crashing on malformed files.
+- Removed no-op canvas change listeners and fixed the preview overflow style typo.
+- Added `DESIGNER_PRODUCTION_AUDIT_PLAN.md` for the remaining major dependency and server-owned work.
 - Replaced deprecated `uuidv4` wrapper imports with `uuid` v4 imports and removed the unused `uuidv4` dependency.
 - Removed stale commented console logging in touched editor/resource files.
 - Gated audit output from source control via `.gitignore`.
@@ -68,9 +73,8 @@ Audit now reports 22 remaining production advisories. The high/critical paths ar
 ## Still Open
 
 - Full TypeScript coverage for the Fabric canvas code. The current codebase has many legacy declaration gaps when all canvas sources are included.
-- Dependency security upgrade plan for Fabric 4, AntD 3, Webpack 4, old request/jsdom chains, and related transitive advisories.
 - Signed server-issued editor session contract instead of client-only route/query inference.
 - Server-side Fabric render worker for deterministic PDF/PNG outputs.
-- Variable registry, proof validation, text overflow checks, QR validation, and bulk generation queue.
+- Bulk generation queue.
 - Modern editor shell redesign: contextual inspector, rulers/guides/safe area, save status, proof/export workflow.
 - Visual regression tests.

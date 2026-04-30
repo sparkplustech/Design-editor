@@ -12,9 +12,9 @@ ghpages.publish(
 	},
 	function(err) {
 		if (err) {
-			console.error(err);
+			process.stderr.write(`${err}\n`);
 		} else {
-			console.log('published https://salgum1114.github.io/react-design-editor');
+			process.stdout.write('published https://salgum1114.github.io/react-design-editor\n');
 		}
 	},
 );

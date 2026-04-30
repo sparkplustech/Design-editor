@@ -99,7 +99,7 @@ class TransactionHandler {
 				return true;
 			});
 		} catch (error) {
-			console.error(error);
+			return;
 		}
 	};
 

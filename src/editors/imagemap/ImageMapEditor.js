@@ -19,6 +19,7 @@ import CONSTANTS from '../../../constant';
 import { Flex } from '../../components/flex';
 import { authHeaders, fetchDesignerJson, getCanvasObjects, loadDesignerSession } from '../../utils/designerApi';
 import { parseEditorSession } from '../../utils/editorSession';
+import { getBlockingProofIssues, getDesignProofIssues, summarizeProofIssues } from '../../utils/designProof';
 
 const propertiesToInclude = [
 	'id',
@@ -117,6 +118,7 @@ class ImageMapEditor extends Component {
 		previewImage: '',
 		toolbarClass: 'minimize',
 		skip: 0,
+		proofIssues: [],
 	};
 
 	getExportMultiplier = () => 2;
@@ -138,6 +140,24 @@ class ImageMapEditor extends Component {
 		}
 
 		return true;
+	};
+
+	runDesignProofValidation = ({ showMessage = true } = {}) => {
+		const proofIssues = getDesignProofIssues(this.canvasRef);
+		const blockingIssues = getBlockingProofIssues(proofIssues);
+
+		this.setState({ proofIssues });
+
+		if (showMessage && proofIssues.length > 0) {
+			const summary = summarizeProofIssues(proofIssues);
+			if (blockingIssues.length > 0) {
+				message.error(summary);
+			} else {
+				message.warning(summary);
+			}
+		}
+
+		return { proofIssues, blockingIssues };
 	};
 
 	getCanvasImageDataUrl = option => {
@@ -457,6 +477,12 @@ class ImageMapEditor extends Component {
 		}
 		if (editType === 'click' && !this.validateDesignName()) {
 			return;
+		}
+		if (editType === 'click') {
+			const { blockingIssues } = this.runDesignProofValidation();
+			if (blockingIssues.length > 0) {
+				return;
+			}
 		}
 		this.saveInFlight = true;
 
@@ -871,7 +897,7 @@ class ImageMapEditor extends Component {
 					selectedItem.setChartOptionStr(changedValue);
 					this.canvasRef.handler.elementHandler.setById(selectedItem.id, chartOption);
 				} catch (error) {
-					console.error(error);
+					message.error('Unable to apply chart script.');
 				}
 				return;
 			}
@@ -1050,27 +1076,32 @@ class ImageMapEditor extends Component {
 						}
 					};
 					reader.onload = e => {
-						const { objects, animations, styles, dataSources } = JSON.parse(e.target.result);
+						try {
+							const { objects, animations = [], styles = [], dataSources = [] } = this.parseImportedDesign(
+								e.target.result,
+							);
 
-						if (this.state.isBadgePath) {
-							objects.unshift(CONSTANTS.JSON_CONSTANT.BADGE);
-						}
+							const importedObjects = this.state.isBadgePath
+								? [CONSTANTS.JSON_CONSTANT.BADGE, ...objects]
+								: objects;
 
-						this.setState({
-							animations,
-							styles,
-							dataSources,
-						});
-						if (objects) {
+							this.setState({
+								animations,
+								styles,
+								dataSources,
+							});
+
 							this.canvasRef.handler.clear(true);
-							const data = objects.filter(obj => {
+							const data = importedObjects.filter(obj => {
 								if (!obj.id) {
 									return false;
 								}
 								return true;
 							});
 							this.canvasRef.handler.importJSON(data);
-							this.setState({ editing: true });
+							this.setState({ editing: true, proofIssues: [] });
+						} catch (error) {
+							message.error(error.message || 'Unable to import design JSON.');
 						}
 					};
 					reader.onloadend = () => {
@@ -1284,6 +1315,11 @@ class ImageMapEditor extends Component {
 	};
 
 	handlePreview = () => {
+		const { blockingIssues } = this.runDesignProofValidation();
+		if (blockingIssues.length > 0) {
+			return;
+		}
+
 		let option = { name: 'New Image', format: 'png', quality: 1 };
 		const dataUrl = this.getCanvasImageDataUrl(option);
 		this.setState({
@@ -1297,6 +1333,22 @@ class ImageMapEditor extends Component {
 			previewVisible: false,
 			previewImage: '',
 		});
+	};
+
+	parseImportedDesign = rawJson => {
+		let parsedDesign;
+
+		try {
+			parsedDesign = JSON.parse(rawJson);
+		} catch (error) {
+			throw new Error('The selected JSON file is not valid.');
+		}
+
+		if (!parsedDesign || !Array.isArray(parsedDesign.objects)) {
+			throw new Error('The selected JSON file does not contain valid designer objects.');
+		}
+
+		return parsedDesign;
 	};
 
 	render() {
@@ -1326,6 +1378,7 @@ class ImageMapEditor extends Component {
 			previewVisible,
 			previewImage,
 			toolbarClass,
+			proofIssues,
 		} = this.state;
 		const {
 			onAdd,
@@ -1383,8 +1436,12 @@ class ImageMapEditor extends Component {
 				{this.state.errorMessage && !this.state.successMessage && (
 					<div className="err-txt">{this.state.errorMessage}</div>
 				)}
+				{proofIssues.length > 0 && !this.state.errorMessage && !this.state.successMessage && (
+					<div className="warn-txt" title={summarizeProofIssues(proofIssues)}>
+						Proof checks: {proofIssues.length} issue{proofIssues.length > 1 ? 's' : ''}
+					</div>
+				)}
 
-				{/* <span className='text-width'>No unsaved changes</span> */}
 				<CommonButton
 					name="Save & Close"
 					className="saveBtn"

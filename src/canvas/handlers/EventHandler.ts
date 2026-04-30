@@ -717,7 +717,7 @@ class EventHandler {
 							this.handler.copy();
 						}
 					} catch (error) {
-						console.error(error);
+						return;
 						// const item = {
 						//     id: uuv4id(),
 						//     type: 'textbox',
@@ -726,24 +726,9 @@ class EventHandler {
 						// this.handler.add(item, true);
 					}
 				} else if (clipboardType === 'text/html') {
-					// Todo ...
-					// const textHtml = clipboardData.getData('text/html');
-					// console.log(textHtml);
+					return;
 				} else if (clipboardType === 'Files') {
-					// Array.from(clipboardData.files).forEach((file) => {
-					//     const { type } = file;
-					//     if (type === 'image/png' || type === 'image/jpeg' || type === 'image/jpg') {
-					//         const item = {
-					//             id: uuid(),
-					//             type: 'image',
-					//             file,
-					//             superType: 'image',
-					//         };
-					//         this.handler.add(item, true);
-					//     } else {
-					//         console.error('Not supported file type');
-					//     }
-					// });
+					return;
 				}
 			});
 		}

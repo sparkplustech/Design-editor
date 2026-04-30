@@ -2,36 +2,7 @@ import React, { Component } from 'react';
 import { Row, Col, Divider, Empty, Input, message } from 'antd';
 import PropTypes from 'prop-types';
 import { v4 as uuid } from 'uuid';
-
-const attributeGroups = [
-	{
-		title: 'Issuer',
-		items: [
-			{ label: 'Issuer Name', token: '[IssuerName]' },
-			{ label: 'Issuer Logo', token: '[IssuerLogo]' },
-			{ label: 'Issuer Website', token: '[IssuerWebsite]' },
-		],
-	},
-	{
-		title: 'Credential',
-		items: [
-			{ label: 'Credential ID', token: '[CredentialId]' },
-			{ label: 'Credential Name', token: '[CredentialName]' },
-			{ label: 'Issue Date', token: '[IssueDate]' },
-			{ label: 'Expiry Date', token: '[ExpiryDate]' },
-			{ label: 'Start Date', token: '[startDate]' },
-			{ label: 'End Date', token: '[endDate]' },
-			{ label: 'URL', token: '[Url]' },
-			{ label: 'UUID', token: '[Uuid]' },
-			{ label: 'Level', token: '[Level]' },
-			{ label: 'QR Code', token: '[QRCode]' },
-		],
-	},
-	{
-		title: 'Recipient',
-		items: [{ label: 'Recipient Name', token: '[RecipientName]' }],
-	},
-];
+import { DESIGN_VARIABLE_GROUPS } from '../../utils/designVariables';
 
 class Attributes extends Component {
 	static propTypes = {
@@ -92,10 +63,10 @@ class Attributes extends Component {
 		const query = this.state.query.trim().toLowerCase();
 
 		if (!query) {
-			return attributeGroups;
+			return DESIGN_VARIABLE_GROUPS;
 		}
 
-		return attributeGroups
+		return DESIGN_VARIABLE_GROUPS
 			.map(group => ({
 				...group,
 				items: group.items.filter(

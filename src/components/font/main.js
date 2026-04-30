@@ -33,7 +33,6 @@ var recGetFile = function recGetFile(target) {
     try {
         stats = _fs2.default.statSync(target);
     } catch (e) {
-        // console.error(e);
         return [];
     }
     if (stats.isDirectory()) {
@@ -41,7 +40,7 @@ var recGetFile = function recGetFile(target) {
         try {
             files = _fs2.default.readdirSync(target);
         } catch (e) {
-            console.error(e);
+            return [];
         }
         return files.reduce(function (arr, f) {
             return arr.concat(recGetFile(_path2.default.join(target, f)));
