@@ -8,4 +8,6 @@ lib/
 .vscode/
 docs/
 audit-output/
+output/
+.playwright-cli/
 .DS_Store
