@@ -231,6 +231,15 @@ video {
 	}
 }
 
+.rde-editor .rde-editor-configurations.minimize {
+	flex: 0 0 0 !important;
+	width: 0 !important;
+	min-width: 0 !important;
+	border-left: 0 !important;
+	box-shadow: none !important;
+	overflow: hidden !important;
+}
+
 .rde-content-layout {
 	background: #eef2f6;
 
@@ -488,6 +497,7 @@ video {
 		.rde-canvas-toolbar {
 			display: inline-flex;
 			align-items: center;
+			flex: 0 0 auto;
 			gap: 2px;
 			min-height: 34px;
 			margin: 0;
@@ -502,7 +512,7 @@ video {
 			}
 
 			&-history {
-				margin-left: auto;
+				margin-left: 0;
 				justify-content: flex-end;
 			}
 
