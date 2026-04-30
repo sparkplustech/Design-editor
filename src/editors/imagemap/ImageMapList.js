@@ -12,20 +12,58 @@ class ImageMapList extends Component {
 		selectedItem: PropTypes.object,
 	};
 
-	renderActions = () => {
+	state = {
+		query: '',
+	};
+
+	getLayers = () => {
 		const { canvasRef } = this.props;
+		if (!canvasRef?.canvas) {
+			return [];
+		}
+
+		return canvasRef.canvas
+			.getObjects()
+			.filter(obj => {
+				if (obj.id === 'workarea' || obj.id === 'grid' || obj.id === 'safe-area' || obj.superType === 'port') {
+					return false;
+				}
+				if (obj.id) {
+					return true;
+				}
+				return false;
+			});
+	};
+
+	getVisibleLayers = () => {
+		const query = this.state.query.trim().toLowerCase();
+		const layers = this.getLayers();
+		if (!query) {
+			return layers;
+		}
+		return layers.filter(obj => `${obj.name || ''} ${obj.type || ''}`.toLowerCase().includes(query));
+	};
+
+	renderActions = () => {
+		const { canvasRef, selectedItem } = this.props;
 		const idCropping = canvasRef ? canvasRef.handler?.interactionMode === 'crop' : false;
+		const disableLayerActions = idCropping || !selectedItem;
 		return (
 			<Flex.Item className="rde-canvas-list-actions" flex="0 1 auto">
 				<Flex>
-					<Input.Search placeholder={i18next.t('placeholder.search-node')} />
+					<Input.Search
+						allowClear
+						placeholder={i18next.t('placeholder.search-node') || 'Search layers'}
+						value={this.state.query}
+						onChange={event => this.setState({ query: event.target.value })}
+					/>
 				</Flex>
 				<Flex justifyContent="space-between" alignItems="center">
 					<Flex flex="1" justifyContent="center">
 						<Button
 							className="rde-action-btn"
 							style={{ width: '100%', height: 30 }}
-							disabled={idCropping}
+							disabled={disableLayerActions}
 							onClick={e => canvasRef.handler.sendBackwards()}
 							aria-label={i18next.t('action.send-backwards')}
 							title={i18next.t('action.send-backwards')}
@@ -37,7 +75,7 @@ class ImageMapList extends Component {
 						<Button
 							className="rde-action-btn"
 							style={{ width: '100%', height: 30 }}
-							disabled={idCropping}
+							disabled={disableLayerActions}
 							onClick={e => canvasRef.handler.bringForward()}
 							aria-label={i18next.t('action.bring-forward')}
 							title={i18next.t('action.bring-forward')}
@@ -56,22 +94,16 @@ class ImageMapList extends Component {
 		if (!canvasRef?.canvas) {
 			return null;
 		}
-		const layers = canvasRef.canvas
-					.getObjects()
-					.filter(obj => {
-						if (obj.id === 'workarea' || obj.id === 'grid' || obj.id === 'safe-area' || obj.superType === 'port') {
-							return false;
-						}
-						if (obj.id) {
-							return true;
-						}
-						return false;
-					})
+		const layers = this.getVisibleLayers();
 		if (!layers.length) {
 			return (
 				<div className="rde-canvas-list-empty">
-					<div className="rde-canvas-list-empty-title">No layers yet</div>
-					<div className="rde-canvas-list-empty-copy">Add text, images, or shapes to build the design.</div>
+					<div className="rde-canvas-list-empty-title">
+						{this.state.query ? 'No matching layers' : 'No layers yet'}
+					</div>
+					<div className="rde-canvas-list-empty-copy">
+						{this.state.query ? 'Try a different layer name or type.' : 'Add text, images, or shapes to build the design.'}
+					</div>
 				</div>
 			);
 		}
@@ -117,31 +149,27 @@ class ImageMapList extends Component {
 								key={obj.id}
 								className={className}
 								flex="1"
-								style={{ cursor: 'pointer' }}
-								role="button"
-								tabIndex={0}
-								aria-label={`Select ${title}`}
-								onClick={() => canvasRef.handler.select(obj)}
-								onKeyDown={event => {
-									if (event.key === 'Enter' || event.key === ' ') {
-										event.preventDefault();
-										canvasRef.handler.select(obj);
-									}
-								}}
 								onMouseDown={e => e.preventDefault()}
 								onDoubleClick={e => {
 									canvasRef.handler.zoomHandler.zoomToCenter();
 								}}
 							>
 								<Flex alignItems="center">
-									<Icon
-										className="rde-canvas-list-item-icon"
-										name={icon}
-										size={1.5}
-										style={{ width: 32 }}
-										prefix={prefix}
-									/>
-									<div className="rde-canvas-list-item-text">{title}</div>
+									<button
+										type="button"
+										className="rde-canvas-list-item-select"
+										aria-label={`Select ${title}`}
+										onClick={() => canvasRef.handler.select(obj)}
+									>
+										<Icon
+											className="rde-canvas-list-item-icon"
+											name={icon}
+											size={1.5}
+											style={{ width: 32 }}
+											prefix={prefix}
+										/>
+										<span className="rde-canvas-list-item-text">{title}</span>
+									</button>
 									<Flex className="rde-canvas-list-item-actions" flex="1" justifyContent="flex-end">
 										<Button
 											className="rde-action-btn"
