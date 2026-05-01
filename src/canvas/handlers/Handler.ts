@@ -1461,7 +1461,6 @@ class Handler implements HandlerOptions {
 			return false;
 		});
 		if (!exist) {
-			console.warn('Not found object by id.');
 			return null;
 		}
 		return findObject;
@@ -1484,7 +1483,6 @@ class Handler implements HandlerOptions {
 			return false;
 		});
 		if (!exist) {
-			console.warn('Not found object by id.');
 			return {};
 		}
 		return {

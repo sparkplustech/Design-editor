@@ -180,8 +180,6 @@ class AnimationHandler {
 				originFill: null,
 				originStroke: null,
 			});
-		} else {
-			console.warn('Not supported type.');
 		}
 		obj.set(option);
 		this.handler.canvas.renderAll();
@@ -328,7 +326,6 @@ class AnimationHandler {
 				easing: 'easeInQuad',
 			});
 		} else {
-			console.warn('Not supported type.');
 			return null;
 		}
 		return anime(option);

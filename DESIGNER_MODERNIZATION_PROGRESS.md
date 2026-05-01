@@ -78,6 +78,7 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - Fixed the data-source modal prop contract and localized its title validation so the preset workflow no longer reads from the wrong object.
 - Added an accessible name and tooltip for the full-screen preview close control.
 - Reworked style, animation, and data-source preset list updates to avoid mutating prop arrays and to allow unchanged titles while editing existing presets.
+- Removed noisy canvas-handler console warnings from normal unsupported-animation and missing-object paths.
 
 ## Verified
 
