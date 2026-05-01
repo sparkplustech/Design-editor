@@ -71,6 +71,11 @@ class ImageMapItems extends Component {
 	}
 
 	componentDidUpdate(prevProps) {
+		const currentCanvasRef = this.getCanvasRef();
+		if (prevProps.canvasRef !== this.props.canvasRef || (this.attachedCanvasRef && currentCanvasRef && this.attachedCanvasRef !== currentCanvasRef)) {
+			this.detachEventListener(this.attachedCanvasRef);
+			this.waitForCanvasRender(currentCanvasRef);
+		}
 		if (JSON.stringify(prevProps.descriptors) !== JSON.stringify(this.props.descriptors)) {
 			const descriptors = Object.keys(this.props.descriptors).reduce((prev, key) => {
 				return prev.concat(this.props.descriptors[key]);
@@ -107,7 +112,7 @@ class ImageMapItems extends Component {
 	componentWillUnmount() {
 		this.isItemsMounted = false;
 		clearTimeout(this.waitForCanvasTimer);
-		this.detachEventListener(this.getCanvasRef());
+		this.detachEventListener(this.attachedCanvasRef || this.getCanvasRef());
 	}
 
 	getCanvasRef = () => this.props.canvasRef || (this.props.getCanvasRef && this.props.getCanvasRef());
@@ -131,10 +136,15 @@ class ImageMapItems extends Component {
 		if (!canvas?.canvas?.wrapperEl) {
 			return;
 		}
+		if (this.attachedCanvasRef === canvas) {
+			return;
+		}
+		this.detachEventListener(this.attachedCanvasRef);
 		canvas.canvas.wrapperEl.addEventListener('dragenter', this.events.onDragEnter, false);
 		canvas.canvas.wrapperEl.addEventListener('dragover', this.events.onDragOver, false);
 		canvas.canvas.wrapperEl.addEventListener('dragleave', this.events.onDragLeave, false);
 		canvas.canvas.wrapperEl.addEventListener('drop', this.events.onDrop, false);
+		this.attachedCanvasRef = canvas;
 	};
 
 	detachEventListener = canvas => {
@@ -145,6 +155,9 @@ class ImageMapItems extends Component {
 		canvas.canvas.wrapperEl.removeEventListener('dragover', this.events.onDragOver);
 		canvas.canvas.wrapperEl.removeEventListener('dragleave', this.events.onDragLeave);
 		canvas.canvas.wrapperEl.removeEventListener('drop', this.events.onDrop);
+		if (this.attachedCanvasRef === canvas) {
+			this.attachedCanvasRef = null;
+		}
 	};
 
 	/* eslint-disable react/sort-comp, react/prop-types */
@@ -302,7 +315,11 @@ class ImageMapItems extends Component {
 			}
 			const { left, top } = this.handlers.getDropPosition(e);
 			const dt = e.dataTransfer;
-			if (dt.types.length && dt.types[0] === 'Files') {
+			if (!dt) {
+				return false;
+			}
+			const types = Array.from(dt.types || []);
+			if (types.includes('Files')) {
 				const { files } = dt;
 				Array.from(files).forEach(file => {
 					file.uid = uuid();
