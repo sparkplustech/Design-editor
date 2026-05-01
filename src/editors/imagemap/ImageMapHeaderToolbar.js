@@ -23,6 +23,7 @@ class ImageMapHeaderToolbar extends Component {
 		super(props);
 		this.state = {
 			collapse: false,
+			layerListVisible: false,
 		};
 	}
 
@@ -37,6 +38,13 @@ class ImageMapHeaderToolbar extends Component {
 				},
 			);
 		},
+		onLayerListVisibleChange: layerListVisible => {
+			this.setState({ layerListVisible }, () => {
+				if (!layerListVisible) {
+					this.props.onFocusCanvas?.();
+				}
+			});
+		},
 		runCanvasAction: action => {
 			const handler = this.props.canvasRef?.handler;
 			if (!handler) {
@@ -49,8 +57,8 @@ class ImageMapHeaderToolbar extends Component {
 
 	render() {
 		const { canvasRef, selectedItem, onPageSizeChange, selectedPageSize } = this.props;
-		const { collapse } = this.state;
-		const { onCollapse, runCanvasAction } = this.handlers;
+		const { collapse, layerListVisible } = this.state;
+		const { onCollapse, onLayerListVisibleChange, runCanvasAction } = this.handlers;
 		const handler = canvasRef?.handler;
 		const hasSelection = Boolean(selectedItem);
 		const isCropping = handler?.interactionMode === 'crop';
@@ -118,15 +126,26 @@ class ImageMapHeaderToolbar extends Component {
 		return (
 			<Flex className="rde-editor-header-toolbar-container" flex="1" role="toolbar" aria-label="Canvas controls">
 				<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-list">
-					<CommonButton
-						className="rde-action-btn"
-						shape="circle"
-						icon="layer-group"
-						tooltipTitle={i18n.t('action.canvas-list')}
-					/>
-					<div className="rde-canvas-list">
-						<ImageMapList canvasRef={canvasRef} selectedItem={selectedItem} onFocusCanvas={this.props.onFocusCanvas} />
-					</div>
+					<Popover
+						content={(
+							<div className="rde-canvas-list-popover">
+								<ImageMapList canvasRef={canvasRef} selectedItem={selectedItem} onFocusCanvas={this.props.onFocusCanvas} />
+							</div>
+						)}
+						overlayClassName="rde-layer-list-popover"
+						placement="bottomLeft"
+						trigger="click"
+						visible={layerListVisible}
+						onVisibleChange={onLayerListVisibleChange}
+					>
+						<CommonButton
+							className="rde-action-btn"
+							shape="circle"
+							icon="layer-group"
+							tooltipTitle={i18n.t('action.canvas-list')}
+							ariaPressed={layerListVisible}
+						/>
+					</Popover>
 				</Flex.Item>
 				<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-inspector-toggle">
 					<CommonButton
