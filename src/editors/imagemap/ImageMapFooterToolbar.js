@@ -36,11 +36,17 @@ class ImageMapFooterToolbar extends Component {
 		this.waitForCanvasRender(canvasRef);
 	}
 
+	componentDidUpdate(prevProps) {
+		if (prevProps.canvasRef !== this.props.canvasRef) {
+			this.detachEventListener(prevProps.canvasRef);
+			this.waitForCanvasRender(this.props.canvasRef);
+		}
+	}
+
 	componentWillUnmount() {
 		this.isFooterMounted = false;
 		clearTimeout(this.waitForCanvasTimer);
-		const { canvasRef } = this.props;
-		this.detachEventListener(canvasRef);
+		this.detachEventListener(this.attachedCanvasRef || this.props.canvasRef);
 	}
 
 	waitForCanvasRender = canvas => {
@@ -62,7 +68,12 @@ class ImageMapFooterToolbar extends Component {
 		if (!canvasRef?.canvas?.wrapperEl) {
 			return;
 		}
+		if (this.attachedCanvasRef === canvasRef) {
+			return;
+		}
+		this.detachEventListener(this.attachedCanvasRef);
 		canvasRef.canvas.wrapperEl.addEventListener('keydown', this.events.keydown, false);
+		this.attachedCanvasRef = canvasRef;
 	};
 
 	detachEventListener = canvasRef => {
@@ -70,6 +81,9 @@ class ImageMapFooterToolbar extends Component {
 			return;
 		}
 		canvasRef.canvas.wrapperEl.removeEventListener('keydown', this.events.keydown);
+		if (this.attachedCanvasRef === canvasRef) {
+			this.attachedCanvasRef = null;
+		}
 	};
 
 	/* eslint-disable react/sort-comp, react/prop-types */
@@ -77,42 +91,45 @@ class ImageMapFooterToolbar extends Component {
 		focusCanvas: () => {
 			this.props.onFocusCanvas?.();
 		},
+		getHandler: () => this.props.canvasRef?.handler,
 		selection: () => {
-			if (this.props.canvasRef.handler.interactionHandler.isDrawingMode()) {
+			const handler = this.handlers.getHandler();
+			if (!handler || handler.interactionHandler.isDrawingMode()) {
 				return;
 			}
 			this.forceUpdate();
-			this.props.canvasRef.handler.interactionHandler.selection();
+			handler.interactionHandler.selection();
 			this.setState({ interactionMode: 'selection' });
 			this.handlers.focusCanvas();
 		},
 		grab: () => {
-			if (this.props.canvasRef.handler.interactionHandler.isDrawingMode()) {
+			const handler = this.handlers.getHandler();
+			if (!handler || handler.interactionHandler.isDrawingMode()) {
 				return;
 			}
 			this.forceUpdate();
-			this.props.canvasRef.handler.interactionHandler.grab();
+			handler.interactionHandler.grab();
 			this.setState({ interactionMode: 'grab' });
 			this.handlers.focusCanvas();
 		},
 		zoomOut: () => {
-			this.props.canvasRef.handler.zoomHandler.zoomOut();
+			this.handlers.getHandler()?.zoomHandler.zoomOut();
 			this.handlers.focusCanvas();
 		},
 		zoomOneToOne: () => {
-			this.props.canvasRef.handler.zoomHandler.zoomOneToOne();
+			this.handlers.getHandler()?.zoomHandler.zoomOneToOne();
 			this.handlers.focusCanvas();
 		},
 		zoomToRatio: ratio => {
-			this.props.canvasRef.handler.zoomHandler.zoomToRatio(ratio);
+			this.handlers.getHandler()?.zoomHandler.zoomToRatio(ratio);
 			this.handlers.focusCanvas();
 		},
 		zoomToFit: () => {
-			this.props.canvasRef.handler.zoomHandler.zoomToFit();
+			this.handlers.getHandler()?.zoomHandler.zoomToFit();
 			this.handlers.focusCanvas();
 		},
 		zoomIn: () => {
-			this.props.canvasRef.handler.zoomHandler.zoomIn();
+			this.handlers.getHandler()?.zoomHandler.zoomIn();
 			this.handlers.focusCanvas();
 		},
 		toggleGrid: () => {
@@ -139,7 +156,8 @@ class ImageMapFooterToolbar extends Component {
 
 	events = {
 		keydown: e => {
-			if (this.props.canvasRef.canvas.wrapperEl !== document.activeElement) {
+			const canvas = this.props.canvasRef?.canvas;
+			if (!canvas || canvas.wrapperEl !== document.activeElement) {
 				return false;
 			}
 			if (e.code === code.KEY_Q) {
