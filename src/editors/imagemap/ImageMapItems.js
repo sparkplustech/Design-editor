@@ -170,6 +170,7 @@ class ImageMapItems extends Component {
 					const svg = await fetchSvgText(item.svgUrl);
 					canvasRef.handler.add(
 						{
+							...item.option,
 							loadType: 'svg',
 							svg,
 							type: 'svg',
@@ -187,6 +188,17 @@ class ImageMapItems extends Component {
 			}
 			canvasRef.handler.add(option, centered);
 			this.props.onFocusCanvas?.();
+		},
+		getDropPosition: event => {
+			const wrapperEl = this.getCanvasRef()?.canvas?.wrapperEl;
+			if (!wrapperEl) {
+				return { left: event.layerX, top: event.layerY };
+			}
+			const bounds = wrapperEl.getBoundingClientRect();
+			return {
+				left: event.clientX - bounds.left,
+				top: event.clientY - bounds.top,
+			};
 		},
 		onAddSVG: (option, centered) => {
 			const canvasRef = this.getCanvasRef();
@@ -288,7 +300,7 @@ class ImageMapItems extends Component {
 			if (e.stopPropagation) {
 				e.stopPropagation();
 			}
-			const { layerX, layerY } = e;
+			const { left, top } = this.handlers.getDropPosition(e);
 			const dt = e.dataTransfer;
 			if (dt.types.length && dt.types[0] === 'Files') {
 				const { files } = dt;
@@ -300,11 +312,11 @@ class ImageMapItems extends Component {
 							option: {
 								type: 'image',
 								file,
-								left: layerX,
-								top: layerY,
+								left,
+								top,
 							},
 						};
-						this.handlers.onAddItem(item, true);
+						this.handlers.onAddItem(item, false);
 					} else {
 						notification.warn({
 							message: 'Not supported file type',
@@ -316,9 +328,9 @@ class ImageMapItems extends Component {
 			if (!this.item?.option) {
 				return false;
 			}
-			const option = Object.assign({}, this.item.option, { left: layerX, top: layerY });
+			const option = Object.assign({}, this.item.option, { left, top });
 			const newItem = Object.assign({}, this.item, { option });
-			this.handlers.onAddItem(newItem, true);
+			this.handlers.onAddItem(newItem, false);
 			return false;
 		},
 		onDragEnd: e => {
