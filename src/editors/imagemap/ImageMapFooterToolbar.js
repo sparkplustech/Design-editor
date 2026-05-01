@@ -28,6 +28,7 @@ class ImageMapFooterToolbar extends Component {
 
 	state = {
 		interactionMode: 'selection',
+		zoomPresetVisible: false,
 	};
 
 	componentDidMount() {
@@ -124,6 +125,10 @@ class ImageMapFooterToolbar extends Component {
 			this.handlers.getHandler()?.zoomHandler.zoomToRatio(ratio);
 			this.handlers.focusCanvas();
 		},
+		zoomToPreset: zoomAction => {
+			zoomAction();
+			this.setState({ zoomPresetVisible: false });
+		},
 		zoomToFit: () => {
 			this.handlers.getHandler()?.zoomHandler.zoomToFit();
 			this.handlers.focusCanvas();
@@ -182,12 +187,15 @@ class ImageMapFooterToolbar extends Component {
 			interactionMode: interactionModeProp,
 		} = this.props;
 		const interactionMode = interactionModeProp || this.state.interactionMode;
+		const { zoomPresetVisible } = this.state;
+		const handlerReady = Boolean(canvasRef?.handler);
 		const {
 			selection,
 			grab,
 			zoomOut,
 			zoomOneToOne,
 			zoomToRatio,
+			zoomToPreset,
 			zoomToFit,
 			zoomIn,
 			toggleGrid,
@@ -214,13 +222,13 @@ class ImageMapFooterToolbar extends Component {
 		);
 		const zoomPresetContent = (
 			<div className="rde-zoom-preset-card" role="menu" aria-label="Zoom presets">
-				<button type="button" onClick={zoomToFit}>Fit canvas</button>
-				<button type="button" onClick={() => zoomToRatio(0.5)}>50%</button>
-				<button type="button" onClick={() => zoomToRatio(0.75)}>75%</button>
-				<button type="button" onClick={zoomOneToOne}>100%</button>
-				<button type="button" onClick={() => zoomToRatio(1.25)}>125%</button>
-				<button type="button" onClick={() => zoomToRatio(1.5)}>150%</button>
-				<button type="button" onClick={() => zoomToRatio(2)}>200%</button>
+				<button type="button" disabled={!handlerReady} onClick={() => zoomToPreset(zoomToFit)}>Fit canvas</button>
+				<button type="button" disabled={!handlerReady} onClick={() => zoomToPreset(() => zoomToRatio(0.5))}>50%</button>
+				<button type="button" disabled={!handlerReady} onClick={() => zoomToPreset(() => zoomToRatio(0.75))}>75%</button>
+				<button type="button" disabled={!handlerReady} onClick={() => zoomToPreset(zoomOneToOne)}>100%</button>
+				<button type="button" disabled={!handlerReady} onClick={() => zoomToPreset(() => zoomToRatio(1.25))}>125%</button>
+				<button type="button" disabled={!handlerReady} onClick={() => zoomToPreset(() => zoomToRatio(1.5))}>150%</button>
+				<button type="button" disabled={!handlerReady} onClick={() => zoomToPreset(() => zoomToRatio(2))}>200%</button>
 			</div>
 		);
 		return (
@@ -230,6 +238,7 @@ class ImageMapFooterToolbar extends Component {
 						<CommonButton
 							type={interactionMode === 'selection' ? 'primary' : 'default'}
 							ariaPressed={interactionMode === 'selection'}
+							disabled={!handlerReady}
 							style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
 							onClick={() => {
 								selection();
@@ -240,6 +249,7 @@ class ImageMapFooterToolbar extends Component {
 						<CommonButton
 							type={interactionMode === 'grab' ? 'primary' : 'default'}
 							ariaPressed={interactionMode === 'grab'}
+							disabled={!handlerReady}
 							style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
 							onClick={() => {
 								grab();
@@ -253,14 +263,22 @@ class ImageMapFooterToolbar extends Component {
 					<Button.Group>
 						<CommonButton
 							style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
+							disabled={!handlerReady}
 							onClick={zoomOut}
 							icon="search-minus"
 							tooltipTitle={i18n.t('action.zoom-out')}
 						/>
-						<Popover content={zoomPresetContent} placement="top" trigger="click">
+						<Popover
+							content={zoomPresetContent}
+							placement="top"
+							trigger="click"
+							visible={zoomPresetVisible}
+							onVisibleChange={visible => this.setState({ zoomPresetVisible: visible })}
+						>
 							<CommonButton
 								tooltipTitle="Zoom presets"
 								ariaLabel={`Zoom presets, current zoom ${zoomValue}%`}
+								disabled={!handlerReady}
 							>
 								{`${zoomValue}%`}
 							</CommonButton>
@@ -269,12 +287,14 @@ class ImageMapFooterToolbar extends Component {
 							onClick={zoomToFit}
 							tooltipTitle={i18n.t('action.fit')}
 							icon="expand"
+							disabled={!handlerReady}
 						/>
 						<CommonButton
 							style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
 							onClick={zoomIn}
 							icon="search-plus"
 							tooltipTitle={i18n.t('action.zoom-in')}
+							disabled={!handlerReady}
 						/>
 					</Button.Group>
 				</div>
