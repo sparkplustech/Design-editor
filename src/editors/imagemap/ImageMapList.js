@@ -64,7 +64,7 @@ class ImageMapList extends Component {
 				<Flex>
 					<Input.Search
 						allowClear
-						placeholder={i18next.t('placeholder.search-node') || 'Search layers'}
+						placeholder="Search layers"
 						value={this.state.query}
 						onChange={event => this.setState({ query: event.target.value })}
 					/>
