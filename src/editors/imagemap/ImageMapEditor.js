@@ -1516,6 +1516,9 @@ class ImageMapEditor extends Component {
 	onChangeInput = e => {
 		const inputData = e.target.value;
 		const isInputEmpty = this.normalizeDesignName(inputData) === '';
+		if (inputData !== this.state.inputData && !this.state.editing) {
+			this.changeEditing(true);
+		}
 		this.setState({
 			inputData,
 			isInputEmpty,
