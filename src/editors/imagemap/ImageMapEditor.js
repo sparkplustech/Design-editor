@@ -713,6 +713,25 @@ class ImageMapEditor extends Component {
 		if (this.saveInFlight) {
 			return;
 		}
+		if (!this.canvasRef?.handler || !this.canvasRef?.canvas) {
+			if (editType === 'click') {
+				message.error('Canvas is still loading. Try again in a moment.');
+			}
+			return;
+		}
+		if (!this.state.userData?.accessToken) {
+			if (editType === 'click') {
+				message.error('Designer session expired. Refresh and try again.');
+			}
+			return;
+		}
+		const pendingEditId = this.state.isEdit ? this.state.editId : this.state.autoSaveId;
+		if (!pendingEditId) {
+			if (editType === 'click') {
+				message.error('Save is not ready yet. Try again in a moment.');
+			}
+			return;
+		}
 		if (editType === 'click' && !this.validateDesignName()) {
 			return;
 		}
@@ -730,7 +749,7 @@ class ImageMapEditor extends Component {
 		const isEdit = this.state.isEdit;
 		const isBadgePath = this.state.isBadgePath;
 		const accessToken = this.state.userData.accessToken;
-		const editId = isEdit ? this.state.editId : this.state.autoSaveId;
+		const editId = pendingEditId;
 		const credId = this.state.credId;
 		const badgeId = this.state.badgeId;
 		const certId = this.state.certId;

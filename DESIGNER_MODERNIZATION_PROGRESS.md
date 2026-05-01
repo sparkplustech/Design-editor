@@ -87,6 +87,7 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - Added zoom presets on the zoom percentage control for faster Fit/50/75/100/125/150/200 jumps.
 - Refocused the canvas and refreshed editor overlays after applying templates, saved designs, badge designs, and badge assets; replaced the imagemap sidebar legacy receive-props lifecycle with `componentDidUpdate`.
 - Kept layer-list select, duplicate, delete, reorder, and zoom-to-layer actions in the canvas keyboard context.
+- Hardened manual save and autosave so missing canvas/session/edit identifiers do not throw during transient loading states.
 
 ## Verified
 
