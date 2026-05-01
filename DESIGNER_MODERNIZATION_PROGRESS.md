@@ -72,6 +72,7 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - Added accessible names and titles for icon-only add, clear, edit, and delete controls in reusable editor panels.
 - Tightened the selected-object toolbar by making Undo and Redo compact icon controls with accessible labels.
 - Improved tablet-width editor density with a narrower inspector, tighter footer controls, and an always-available inspector collapse toggle for Figma-like canvas focus.
+- Clarified the blocked save workflow with a visible "Name required" state, accessible design-name input, and disabled-save guidance.
 
 ## Verified
 
@@ -94,6 +95,7 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - TypeScript lint for accessible panel action labels across animations, styles, data sources, code, URL, and custom property controls.
 - Browser smoke for compact selected-object toolbar history controls with clean console output.
 - Browser smoke for 1024px tablet layout, selected-object state, and collapsed inspector canvas visibility.
+- Browser smoke for empty-name save guidance and route smoke for all designer entrypoints.
 
 The production app entrypoint is now about 298 KiB, down from about 5.56 MiB before this optimization pass. Build still reports large asset warnings for deferred Fabric/AntD/editor chunks and bundled font SVG assets. Those warnings are real remaining performance work, not build failures.
 

@@ -1515,6 +1515,12 @@ class ImageMapEditor extends Component {
 			rulersEnabled,
 			safeAreaEnabled,
 		} = this.state;
+		const saveBlockedByName = isInputEmpty;
+		const saveTooltip = saveBlockedByName
+			? 'Enter a design name to save and close.'
+			: isSaving
+			? 'Saving design...'
+			: 'Save and close';
 		const {
 			onAdd,
 			onRemove,
@@ -1560,13 +1566,15 @@ class ImageMapEditor extends Component {
 				<Input
 					placeholder="Enter a name"
 					className="name-input"
+					aria-invalid={saveBlockedByName}
+					aria-label="Design name"
 					onChange={this.onChangeInput}
 					value={inputData}
 				/>
 				{!this.state.successMessage && !this.state.errorMessage && (
-					<span className={`designer-save-state ${editing ? 'is-dirty' : 'is-saved'}`}>
+					<span className={`designer-save-state ${saveBlockedByName ? 'is-blocked' : editing ? 'is-dirty' : 'is-saved'}`}>
 						<span />
-						{editing ? 'Unsaved' : 'Saved'}
+						{saveBlockedByName ? 'Name required' : editing ? 'Unsaved' : 'Saved'}
 					</span>
 				)}
 				{this.state.successMessage && !this.state.errorMessage && (
@@ -1594,6 +1602,8 @@ class ImageMapEditor extends Component {
 					className="saveBtn"
 					wrapperClassName="designer-save-action"
 					onClick={onSaveImageAndJson}
+					tooltipTitle={saveTooltip}
+					tooltipPlacement="bottomRight"
 					disabled={isSaving || isInputEmpty}
 				/>
 				{isAdminPath && (
