@@ -423,28 +423,6 @@ class ImageMapEditor extends Component {
 		}, 30000);
 	}
 
-	// componentDidUpdate(prevState) {
-	// 	if (!prevState.editing && this.state.editing && !this.state.createTemplateCalled && !this.state.isEdit) {
-	// 		this.createTemplate(this.state.userData);
-	// 		this.setState({
-	// 			createTemplateCalled: true,
-	// 			successMessage: '',
-	// 			successMessageVisible: true,
-	// 		});
-
-	// 		if (this.clearSuccessMessageTimer) {
-	// 			clearTimeout(this.clearSuccessMessageTimer);
-	// 		}
-
-	// 		this.clearSuccessMessageTimer = setTimeout(() => {
-	// 			this.setState({
-	// 				successMessage: '',
-	// 				successMessageVisible: false,
-	// 			});
-	// 		}, 10000);
-	// 	}
-	// }
-
 	componentWillUnmount() {
 		this.isEditorMounted = false;
 		window.removeEventListener('resize', this.handleWindowResizeFit);
