@@ -88,6 +88,7 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - Refocused the canvas and refreshed editor overlays after applying templates, saved designs, badge designs, and badge assets; replaced the imagemap sidebar legacy receive-props lifecycle with `componentDidUpdate`.
 - Kept layer-list select, duplicate, delete, reorder, and zoom-to-layer actions in the canvas keyboard context.
 - Hardened manual save and autosave so missing canvas/session/edit identifiers do not throw during transient loading states.
+- Hardened initial template creation against unavailable canvas/session state.
 
 ## Verified
 

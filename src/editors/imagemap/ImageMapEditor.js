@@ -596,6 +596,22 @@ class ImageMapEditor extends Component {
 	};
 
 	createTemplate = async data => {
+		if (!this.canvasRef?.handler || !this.canvasRef?.canvas) {
+			this.setState({
+				loading: false,
+				errorMessage: 'Canvas is still loading. Refresh and try again if this continues.',
+				successMessage: '',
+			});
+			return;
+		}
+		if (!data?.accessToken) {
+			this.setState({
+				loading: false,
+				errorMessage: 'Designer session unavailable.',
+				successMessage: '',
+			});
+			return;
+		}
 		const { designCode, isAdminPath, isCertificatePath, isBadgePath, isAdminBadgePath } = this.state;
 		const accessToken = data.accessToken;
 		const pageSize = this.state.selectedPageSize;
