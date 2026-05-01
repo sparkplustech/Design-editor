@@ -9,6 +9,8 @@ import {
 	loadDesignerSession,
 } from '../../utils/designerApi';
 
+const waitForCanvasTick = () => new Promise(resolve => setTimeout(resolve, 50));
+
 const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader, onApplyCanvasAsset }) => {
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
 	const [templatesData, setTemplatesData] = useState({
@@ -92,11 +94,10 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader, on
 
 			onPageSizeChange(pageSize);
 			canvasRef.handler.clear(true);
-
-			setTimeout(() => {
-				Promise.resolve(canvasRef.handler.importJSON(objects)).then(onApplyCanvasAsset);
-				onCanvasChange(true);
-			}, 50);
+			await waitForCanvasTick();
+			await canvasRef.handler.importJSON(objects);
+			onApplyCanvasAsset?.();
+			onCanvasChange(true);
 		} catch (error) {
 			message.error('Unable to load selected certificate template.');
 		} finally {

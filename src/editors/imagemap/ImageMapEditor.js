@@ -1519,6 +1519,9 @@ class ImageMapEditor extends Component {
 		const isCertificatePath = this.state.isCertificatePath;
 		this.setState({ selectedPageSize: value });
 
+		if (!this.canvasRef?.handler) {
+			return;
+		}
 
 
 		if (isCertificatePath) {

@@ -89,6 +89,7 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - Kept layer-list select, duplicate, delete, reorder, and zoom-to-layer actions in the canvas keyboard context.
 - Hardened manual save and autosave so missing canvas/session/edit identifiers do not throw during transient loading states.
 - Hardened initial template creation against unavailable canvas/session state.
+- Kept template/design/badge loaders active through the full canvas import and guarded page-size changes before the canvas is ready.
 
 ## Verified
 

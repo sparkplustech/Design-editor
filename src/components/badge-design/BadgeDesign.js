@@ -10,6 +10,8 @@ import {
 	loadDesignerSession,
 } from '../../utils/designerApi';
 
+const waitForCanvasTick = () => new Promise(resolve => setTimeout(resolve, 50));
+
 const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange, onApplyCanvasAsset }) => {
 	const [templatesData, setTemplatesData] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -65,10 +67,10 @@ const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange, onApplyCanvasAsset
 			const importObjects = [CONSTANTS.JSON_CONSTANT.BADGE, ...objects];
 
 			canvasRef.handler.clear(true);
-			setTimeout(() => {
-				Promise.resolve(canvasRef.handler.importJSON(importObjects)).then(onApplyCanvasAsset);
-				onCanvasChange(true);
-			}, 50);
+			await waitForCanvasTick();
+			await canvasRef.handler.importJSON(importObjects);
+			onApplyCanvasAsset?.();
+			onCanvasChange(true);
 		} catch (error) {
 			message.error('Unable to load selected badge template.');
 		} finally {
