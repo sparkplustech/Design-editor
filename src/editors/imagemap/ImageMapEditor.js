@@ -26,6 +26,7 @@ import {
 } from '../../utils/designerApi';
 import { parseEditorSession } from '../../utils/editorSession';
 import { getBlockingProofIssues, getDesignProofIssues, summarizeProofIssues } from '../../utils/designProof';
+import { getReadyCanvasHandler } from '../../utils/canvasTiming';
 
 const propertiesToInclude = [
 	'id',
@@ -362,12 +363,19 @@ class ImageMapEditor extends Component {
 				if (data?.templateCode !== '') {
 					const objects = getCanvasObjects(data?.templateCode);
 					const importObjects = this.state.isBadgePath ? [CONSTANTS.JSON_CONSTANT.BADGE, ...objects] : objects;
+					const handler = getReadyCanvasHandler(this.canvasRef);
+					if (!handler) {
+						message.error('Canvas is still loading. Please try again in a moment.');
+						this.setState({ loading: false });
+						return;
+					}
 
-					this.canvasRef.handler.clear(true);
+					handler.clear(true);
 					clearTimeout(this.importObjectsTimer);
 					this.importObjectsTimer = setTimeout(() => {
 						if (this.isEditorMounted) {
-							this.canvasRef.handler.importJSON(importObjects).then(this.syncSafeAreaOverlay);
+							const importHandler = getReadyCanvasHandler(this.canvasRef);
+							importHandler?.importJSON(importObjects).then(this.syncSafeAreaOverlay);
 						}
 					}, 50);
 				}
@@ -1460,13 +1468,19 @@ class ImageMapEditor extends Component {
 			});
 		},
 		onSaveImage: () => {
+			const handler = getReadyCanvasHandler(this.canvasRef);
+			if (!handler) {
+				message.warning('Canvas is still loading. Please try again in a moment.');
+				return;
+			}
+
 			const isBadgePath = this.state.isBadgePath;
 			if (isBadgePath) {
 				this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
 				this.canvasHandlers.onChangeWokarea('src', '', '');
 			}
 
-			this.canvasRef.handler.saveCanvasImage();
+			handler.saveCanvasImage();
 
 			if (isBadgePath) {
 				this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
@@ -1517,38 +1531,40 @@ class ImageMapEditor extends Component {
 
 	handlePageSizeChange = value => {
 		const isCertificatePath = this.state.isCertificatePath;
-		this.setState({ selectedPageSize: value });
-		this.changeEditing(true);
-
-		if (!this.canvasRef?.handler) {
+		const handler = getReadyCanvasHandler(this.canvasRef);
+		if (!handler) {
+			message.warning('Canvas is still loading. Please try again in a moment.');
 			return;
 		}
 
+		this.setState({ selectedPageSize: value });
+		this.changeEditing(true);
 
-		if (isCertificatePath) {
+		if (!isCertificatePath) {
+			return;
+		}
 
-			const objects = this.canvasRef.handler.exportJSON().filter(obj => {
-				if (!obj.id) {
-					return false;
-				}
-				return true;
-			});
-	
-			objects.shift();
-
-			if (value === 'a4landscape') {
-				objects.unshift(CONSTANTS.JSON_CONSTANT.LANDSCAPE_CERTIFICATE);
-			} else {
-				objects.unshift(CONSTANTS.JSON_CONSTANT.PORTRAIT_CERTIFICATE);
+		const objects = handler.exportJSON().filter(obj => {
+			if (!obj.id) {
+				return false;
 			}
+			return true;
+		});
 
-			this.canvasRef.handler.clear(true);
+		objects.shift();
+
+		if (value === 'a4landscape') {
+			objects.unshift(CONSTANTS.JSON_CONSTANT.LANDSCAPE_CERTIFICATE);
+		} else {
+			objects.unshift(CONSTANTS.JSON_CONSTANT.PORTRAIT_CERTIFICATE);
+		}
+
+		handler.clear(true);
 
 		if (Array.isArray(objects)) {
-			this.canvasRef.handler.importJSON(objects).then(this.syncSafeAreaOverlay);
+			handler.importJSON(objects).then(this.syncSafeAreaOverlay);
 		} else {
 			message.error('Unable to resize canvas because the current design data is invalid.');
-		}
 		}
 	};
 

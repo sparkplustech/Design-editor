@@ -9,6 +9,8 @@ export default {
 			return null;
 		}
 		const type = data.animation.type || 'none';
+		const animationHandler = canvasRef?.handler?.animationHandler;
+		const canPreviewAnimation = Boolean(animationHandler && data.id);
 		return (
 			<React.Fragment>
 				<Form.Item label="Animation Type" colon={false}>
@@ -93,8 +95,9 @@ export default {
 							<Row>
 								<Col span={8}>
 									<Button
+										disabled={!canPreviewAnimation}
 										onClick={() => {
-											canvasRef.handler.animationHandler.play(data.id);
+											animationHandler?.play(data.id);
 										}}
 									>
 										Start
@@ -102,8 +105,9 @@ export default {
 								</Col>
 								<Col span={8}>
 									<Button
+										disabled={!canPreviewAnimation}
 										onClick={() => {
-											canvasRef.handler.animationHandler.pause(data.id);
+											animationHandler?.pause(data.id);
 										}}
 									>
 										Pause
@@ -111,8 +115,9 @@ export default {
 								</Col>
 								<Col span={8}>
 									<Button
+										disabled={!canPreviewAnimation}
 										onClick={() => {
-											canvasRef.handler.animationHandler.stop(data.id);
+											animationHandler?.stop(data.id);
 										}}
 									>
 										Stop

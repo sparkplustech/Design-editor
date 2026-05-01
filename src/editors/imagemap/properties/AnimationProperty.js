@@ -12,6 +12,8 @@ export default {
 			return null;
 		}
 		const type = data.animation.type || 'none';
+		const animationHandler = canvasRef?.handler?.animationHandler;
+		const canPreviewAnimation = Boolean(animationHandler && data.id);
 		return (
 			<React.Fragment>
 				<Form.Item label={i18n.t('imagemap.animation.animation-type')} colon={false}>
@@ -98,8 +100,9 @@ export default {
 									<Button
 										block
 										size="small"
+										disabled={!canPreviewAnimation}
 										onClick={() => {
-											canvasRef.handler.animationHandler.play(data.id);
+											animationHandler?.play(data.id);
 										}}
 									>
 										<Icon name="play" style={{ marginRight: 8 }} />
@@ -110,8 +113,9 @@ export default {
 									<Button
 										block
 										size="small"
+										disabled={!canPreviewAnimation}
 										onClick={() => {
-											canvasRef.handler.animationHandler.pause(data.id);
+											animationHandler?.pause(data.id);
 										}}
 									>
 										<Icon name="pause" style={{ marginRight: 8 }} />
@@ -122,8 +126,9 @@ export default {
 									<Button
 										block
 										size="small"
+										disabled={!canPreviewAnimation}
 										onClick={() => {
-											canvasRef.handler.animationHandler.stop(data.id);
+											animationHandler?.stop(data.id);
 										}}
 									>
 										<Icon name="stop" style={{ marginRight: 8 }} />

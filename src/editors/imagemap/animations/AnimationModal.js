@@ -33,9 +33,7 @@ class AnimationModal extends Component {
 	componentDidUpdate(prevProps) {
 		const { visible, animation, form } = this.props;
 		if (!visible) {
-			if (this.canvasRef) {
-				this.canvasRef.handler.animationHandler.stop('animations');
-			}
+			this.canvasRef?.handler?.animationHandler?.stop('animations');
 			return;
 		}
 		const animationChanged = JSON.stringify(animation) !== JSON.stringify(prevProps.animation);
