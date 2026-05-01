@@ -38,7 +38,11 @@ class ImageMapHeaderToolbar extends Component {
 			);
 		},
 		runCanvasAction: action => {
-			action?.();
+			const handler = this.props.canvasRef?.handler;
+			if (!handler) {
+				return;
+			}
+			action?.(handler);
 			this.props.onFocusCanvas?.();
 		},
 	};
@@ -47,11 +51,12 @@ class ImageMapHeaderToolbar extends Component {
 		const { canvasRef, selectedItem, onPageSizeChange, selectedPageSize } = this.props;
 		const { collapse } = this.state;
 		const { onCollapse, runCanvasAction } = this.handlers;
+		const handler = canvasRef?.handler;
 		const hasSelection = Boolean(selectedItem);
-		const isCropping = canvasRef ? canvasRef.handler?.interactionMode === 'crop' : false;
-		const disableObjectActions = !hasSelection || isCropping;
-		const hasCropRect = Boolean(canvasRef?.handler?.cropHandler?.cropRect);
-		const canCropSelection = Boolean(hasSelection && canvasRef?.handler?.cropHandler?.validType());
+		const isCropping = handler?.interactionMode === 'crop';
+		const disableObjectActions = !handler || !hasSelection || isCropping;
+		const hasCropRect = Boolean(handler?.cropHandler?.cropRect);
+		const canCropSelection = Boolean(hasSelection && handler?.cropHandler?.validType());
 		const showCropControls = canCropSelection || hasCropRect || isCropping;
 		const showAdvancedObjectControls = collapse;
 		const advancedObjectControls = (
@@ -60,7 +65,7 @@ class ImageMapHeaderToolbar extends Component {
 					className="rde-action-btn align-action-btn"
 					shape="circle"
 					disabled={disableObjectActions}
-					onClick={() => runCanvasAction(() => canvasRef.handler?.alignmentHandler.left())}
+					onClick={() => runCanvasAction(handler => handler.alignmentHandler.left())}
 					icon="align-left"
 					tooltipTitle={i18n.t('action.align-left')}
 				/>
@@ -68,7 +73,7 @@ class ImageMapHeaderToolbar extends Component {
 					className="rde-action-btn align-action-btn"
 					shape="circle"
 					disabled={disableObjectActions}
-					onClick={() => runCanvasAction(() => canvasRef.handler?.alignmentHandler.center())}
+					onClick={() => runCanvasAction(handler => handler.alignmentHandler.center())}
 					icon="align-center"
 					tooltipTitle={i18n.t('action.align-center')}
 				/>
@@ -76,7 +81,7 @@ class ImageMapHeaderToolbar extends Component {
 					className="rde-action-btn align-action-btn"
 					shape="circle"
 					disabled={disableObjectActions}
-					onClick={() => runCanvasAction(() => canvasRef.handler?.alignmentHandler.middle())}
+					onClick={() => runCanvasAction(handler => handler.alignmentHandler.middle())}
 					icon="arrows-alt-v"
 					tooltipTitle={i18n.t('action.align-middle')}
 				/>
@@ -84,7 +89,7 @@ class ImageMapHeaderToolbar extends Component {
 					className="rde-action-btn align-action-btn"
 					shape="circle"
 					disabled={disableObjectActions}
-					onClick={() => runCanvasAction(() => canvasRef.handler?.alignmentHandler.right())}
+					onClick={() => runCanvasAction(handler => handler.alignmentHandler.right())}
 					icon="align-right"
 					tooltipTitle={i18n.t('action.align-right')}
 				/>
@@ -93,7 +98,7 @@ class ImageMapHeaderToolbar extends Component {
 					className="rde-action-btn"
 					shape="circle"
 					disabled={disableObjectActions}
-					onClick={() => runCanvasAction(() => canvasRef.handler?.toGroup())}
+					onClick={() => runCanvasAction(handler => handler.toGroup())}
 					icon="object-group"
 					tooltipTitle={i18n.t('action.object-group')}
 				/>
@@ -101,7 +106,7 @@ class ImageMapHeaderToolbar extends Component {
 					className="rde-action-btn"
 					shape="circle"
 					disabled={disableObjectActions}
-					onClick={() => runCanvasAction(() => canvasRef.handler?.toActiveSelection())}
+					onClick={() => runCanvasAction(handler => handler.toActiveSelection())}
 					icon="object-ungroup"
 					tooltipTitle={i18n.t('action.object-ungroup')}
 				/>
@@ -150,16 +155,16 @@ class ImageMapHeaderToolbar extends Component {
 
 					<CommonButton
 						className="rde-action-btn toolbar-btn-cls"
-						disabled={isCropping || (canvasRef && !canvasRef.handler?.transactionHandler.undos.length)}
+						disabled={!handler || isCropping || !handler.transactionHandler.undos.length}
 						icon="undo-alt"
-						onClick={() => runCanvasAction(() => canvasRef.handler?.transactionHandler.undo())}
+						onClick={() => runCanvasAction(handler => handler.transactionHandler.undo())}
 						tooltipTitle="Undo"
 					/>
 					<CommonButton
 						className="rde-action-btn toolbar-btn-cls"
-						disabled={isCropping || (canvasRef && !canvasRef.handler?.transactionHandler.redos.length)}
+						disabled={!handler || isCropping || !handler.transactionHandler.redos.length}
 						icon="redo-alt"
-						onClick={() => runCanvasAction(() => canvasRef.handler?.transactionHandler.redo())}
+						onClick={() => runCanvasAction(handler => handler.transactionHandler.redo())}
 						tooltipTitle="Redo"
 					/>
 				</Flex.Item>
@@ -170,7 +175,7 @@ class ImageMapHeaderToolbar extends Component {
 								className="rde-action-btn"
 								shape="circle"
 								disabled={disableObjectActions}
-								onClick={() => runCanvasAction(() => canvasRef.handler?.saveImage())}
+								onClick={() => runCanvasAction(handler => handler.saveImage())}
 								icon="image"
 								tooltipTitle={i18n.t('action.canvas-save')}
 							/>
@@ -178,7 +183,7 @@ class ImageMapHeaderToolbar extends Component {
 								className="rde-action-btn"
 								shape="circle"
 								disabled={disableObjectActions}
-								onClick={() => runCanvasAction(() => canvasRef.handler?.duplicate())}
+								onClick={() => runCanvasAction(handler => handler.duplicate())}
 								icon="clone"
 								tooltipTitle={i18n.t('action.clone')}
 							/>
@@ -186,7 +191,7 @@ class ImageMapHeaderToolbar extends Component {
 								className="rde-action-btn"
 								shape="circle"
 								disabled={disableObjectActions}
-								onClick={() => runCanvasAction(() => canvasRef.handler?.remove())}
+								onClick={() => runCanvasAction(handler => handler.remove())}
 								icon="trash"
 								tooltipTitle={i18n.t('action.delete')}
 							/>
@@ -196,7 +201,7 @@ class ImageMapHeaderToolbar extends Component {
 								className="rde-action-btn"
 								shape="circle"
 								disabled={disableObjectActions}
-								onClick={() => runCanvasAction(() => canvasRef.handler?.bringForward())}
+								onClick={() => runCanvasAction(handler => handler.bringForward())}
 								icon="angle-up"
 								tooltipTitle={i18n.t('action.bring-forward')}
 							/>
@@ -204,7 +209,7 @@ class ImageMapHeaderToolbar extends Component {
 								className="rde-action-btn"
 								shape="circle"
 								disabled={disableObjectActions}
-								onClick={() => runCanvasAction(() => canvasRef.handler?.sendBackwards())}
+								onClick={() => runCanvasAction(handler => handler.sendBackwards())}
 								icon="angle-down"
 								tooltipTitle={i18n.t('action.send-backwards')}
 							/>
@@ -212,7 +217,7 @@ class ImageMapHeaderToolbar extends Component {
 								className="rde-action-btn"
 								shape="circle"
 								disabled={disableObjectActions}
-								onClick={() => runCanvasAction(() => canvasRef.handler?.bringToFront())}
+								onClick={() => runCanvasAction(handler => handler.bringToFront())}
 								icon="angle-double-up"
 								tooltipTitle={i18n.t('action.bring-to-front')}
 							/>
@@ -220,7 +225,7 @@ class ImageMapHeaderToolbar extends Component {
 								className="rde-action-btn"
 								shape="circle"
 								disabled={disableObjectActions}
-								onClick={() => runCanvasAction(() => canvasRef.handler?.sendToBack())}
+								onClick={() => runCanvasAction(handler => handler.sendToBack())}
 								icon="angle-double-down"
 								tooltipTitle={i18n.t('action.send-to-back')}
 							/>
@@ -252,7 +257,7 @@ class ImageMapHeaderToolbar extends Component {
 									className="rde-action-btn"
 									shape="circle"
 									disabled={!canCropSelection}
-									onClick={() => runCanvasAction(() => canvasRef.handler?.cropHandler.start())}
+									onClick={() => runCanvasAction(handler => handler.cropHandler.start())}
 									icon="crop"
 									tooltipTitle={i18n.t('action.crop')}
 								/>
@@ -260,7 +265,7 @@ class ImageMapHeaderToolbar extends Component {
 									className="rde-action-btn"
 									shape="circle"
 									disabled={!hasCropRect}
-									onClick={() => runCanvasAction(() => canvasRef.handler?.cropHandler.finish())}
+									onClick={() => runCanvasAction(handler => handler.cropHandler.finish())}
 									icon="check"
 									tooltipTitle={i18n.t('action.crop-save')}
 								/>
@@ -268,7 +273,7 @@ class ImageMapHeaderToolbar extends Component {
 									className="rde-action-btn"
 									shape="circle"
 									disabled={!hasCropRect}
-									onClick={() => runCanvasAction(() => canvasRef.handler?.cropHandler.cancel())}
+									onClick={() => runCanvasAction(handler => handler.cropHandler.cancel())}
 									icon="times"
 									tooltipTitle={i18n.t('action.crop-cancel')}
 								/>
