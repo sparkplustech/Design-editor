@@ -24,6 +24,12 @@ class StyleModal extends Component {
 		this.waitForContainerRender(this.containerRef);
 	}
 
+	componentWillUnmount() {
+		this.isUnmounted = true;
+		clearTimeout(this.canvasRenderTimer);
+		clearTimeout(this.containerRenderTimer);
+	}
+
 	componentDidUpdate(prevProps) {
 		if (JSON.stringify(this.props.style) === JSON.stringify(prevProps.style)) {
 			return;
@@ -48,7 +54,11 @@ class StyleModal extends Component {
 	};
 
 	waitForCanvasRender = (canvas, style) => {
-		setTimeout(() => {
+		clearTimeout(this.canvasRenderTimer);
+		this.canvasRenderTimer = setTimeout(() => {
+			if (this.isUnmounted) {
+				return;
+			}
 			if (canvas) {
 				Object.keys(style).forEach(key => {
 					canvas.handlers.setById('styles', key, style[key]);
@@ -60,7 +70,11 @@ class StyleModal extends Component {
 	};
 
 	waitForContainerRender = container => {
-		setTimeout(() => {
+		clearTimeout(this.containerRenderTimer);
+		this.containerRenderTimer = setTimeout(() => {
+			if (this.isUnmounted) {
+				return;
+			}
 			if (container) {
 				this.setState(
 					{
@@ -85,7 +99,7 @@ class StyleModal extends Component {
 							top: 50,
 							id: 'styles',
 						};
-						this.canvasRef.handler.add(option);
+						this.canvasRef?.handler?.add(option);
 					},
 				);
 				return;

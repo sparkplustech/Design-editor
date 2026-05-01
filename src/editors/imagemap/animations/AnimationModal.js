@@ -24,6 +24,12 @@ class AnimationModal extends Component {
 		this.waitForContainerRender(this.containerRef);
 	}
 
+	componentWillUnmount() {
+		this.isUnmounted = true;
+		clearTimeout(this.canvasRenderTimer);
+		clearTimeout(this.containerRenderTimer);
+	}
+
 	componentDidUpdate(prevProps) {
 		const { visible, animation, form } = this.props;
 		if (!visible) {
@@ -41,7 +47,11 @@ class AnimationModal extends Component {
 	}
 
 	waitForCanvasRender = (canvas, animation) => {
-		setTimeout(() => {
+		clearTimeout(this.canvasRenderTimer);
+		this.canvasRenderTimer = setTimeout(() => {
+			if (this.isUnmounted) {
+				return;
+			}
 			if (canvas) {
 				canvas.handlers.setById('animations', 'animation', animation);
 				return;
@@ -51,7 +61,11 @@ class AnimationModal extends Component {
 	};
 
 	waitForContainerRender = container => {
-		setTimeout(() => {
+		clearTimeout(this.containerRenderTimer);
+		this.containerRenderTimer = setTimeout(() => {
+			if (this.isUnmounted) {
+				return;
+			}
 			if (container) {
 				this.setState(
 					{
@@ -78,7 +92,7 @@ class AnimationModal extends Component {
 							fill: 'rgba(0, 0, 0, 1)',
 							stroke: 'rgba(255, 255, 255, 0)',
 						};
-						this.canvasRef.handler.add(option);
+						this.canvasRef?.handler?.add(option);
 					},
 				);
 				return;

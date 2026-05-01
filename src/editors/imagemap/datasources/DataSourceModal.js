@@ -28,6 +28,11 @@ class DataSourceModal extends Component {
 		this.waitForContainerRender(this.containerRef);
 	}
 
+	componentWillUnmount() {
+		this.isUnmounted = true;
+		clearTimeout(this.containerRenderTimer);
+	}
+
 	componentDidUpdate(prevProps) {
 		if (
 			this.props.visible !== prevProps.visible ||
@@ -38,7 +43,11 @@ class DataSourceModal extends Component {
 	}
 
 	waitForContainerRender = container => {
-		setTimeout(() => {
+		clearTimeout(this.containerRenderTimer);
+		this.containerRenderTimer = setTimeout(() => {
+			if (this.isUnmounted) {
+				return;
+			}
 			if (container) {
 				this.setState({
 					width: container.clientWidth,
