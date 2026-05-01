@@ -346,6 +346,7 @@ class ImageMapEditor extends Component {
 			try {
 				const data = await fetchDesignerJson(templateEndpoint, {
 					headers: authHeaders(accessToken),
+					allowErrorPayload: true,
 				});
 				if (!this.isEditorMounted) {
 					return;
@@ -402,8 +403,21 @@ class ImageMapEditor extends Component {
 				if (!this.isEditorMounted) {
 					return;
 				}
+				const shouldUseBadgeRoute = data.type === 'badge' && !isBadgePath;
+				const shouldUseCertificateRoute = data.type === 'certificate' && !isCertificatePath;
+				if (shouldUseBadgeRoute || shouldUseCertificateRoute) {
+					const nextPath = shouldUseBadgeRoute
+						? isAdminPath
+							? '/admin-badge-designer'
+							: '/badge-designer'
+						: isAdminPath
+						? '/admin-certificate-designer'
+						: '/certificate-designer';
+					window.location.replace(`${nextPath}${window.location.search}`);
+					return;
+				}
 				this.setState({ userData: data });
-				if (data.designId) {
+				if (data.designId !== null && data.designId !== undefined) {
 					this.setState({ loading: true, createTemplateCalled: true, isEdit: true, editId: data.designId });
 					const isBadgePath = data.type === 'badge';
 					handleFetch(data.accessToken, isBadgePath, data.designId);

@@ -29,7 +29,8 @@ export async function fetchDesignerJson(path, options = {}) {
 		throw new Error('Designer API is not configured for this design code.');
 	}
 
-	const response = await fetch(`${API_BASE_URL}${path}`, options);
+	const { allowErrorPayload = false, ...fetchOptions } = options;
+	const response = await fetch(`${API_BASE_URL}${path}`, fetchOptions);
 	const responseText = await response.text();
 	let payload = null;
 
@@ -42,6 +43,9 @@ export async function fetchDesignerJson(path, options = {}) {
 	}
 
 	if (!response.ok) {
+		if (allowErrorPayload && payload) {
+			return payload;
+		}
 		const message = payload?.message || payload?.error || `Designer API request failed with ${response.status}.`;
 		throw new Error(message);
 	}
