@@ -8,7 +8,7 @@ import {
 	isOptionalDesignerSessionError,
 	loadDesignerSession,
 } from '../../utils/designerApi';
-import { waitForCanvasTick } from '../../utils/canvasTiming';
+import { getReadyCanvasHandler, waitForCanvasTick } from '../../utils/canvasTiming';
 
 const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader, onApplyCanvasAsset }) => {
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -91,10 +91,11 @@ const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader, on
 				throw new Error('Template page size is missing.');
 			}
 
+			const handler = getReadyCanvasHandler(canvasRef);
 			onPageSizeChange(pageSize);
-			canvasRef.handler.clear(true);
+			handler.clear(true);
 			await waitForCanvasTick();
-			await canvasRef.handler.importJSON(objects);
+			await handler.importJSON(objects);
 			onApplyCanvasAsset?.();
 			onCanvasChange(true);
 		} catch (error) {

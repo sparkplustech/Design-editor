@@ -9,7 +9,7 @@ import {
 	isOptionalDesignerSessionError,
 	loadDesignerSession,
 } from '../../utils/designerApi';
-import { waitForCanvasTick } from '../../utils/canvasTiming';
+import { getReadyCanvasHandler, waitForCanvasTick } from '../../utils/canvasTiming';
 
 const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange, onApplyCanvasAsset }) => {
 	const [templatesData, setTemplatesData] = useState([]);
@@ -64,10 +64,11 @@ const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange, onApplyCanvasAsset
 			});
 			const objects = getCanvasObjects(data?.templateCode);
 			const importObjects = [CONSTANTS.JSON_CONSTANT.BADGE, ...objects];
+			const handler = getReadyCanvasHandler(canvasRef);
 
-			canvasRef.handler.clear(true);
+			handler.clear(true);
 			await waitForCanvasTick();
-			await canvasRef.handler.importJSON(importObjects);
+			await handler.importJSON(importObjects);
 			onApplyCanvasAsset?.();
 			onCanvasChange(true);
 		} catch (error) {
