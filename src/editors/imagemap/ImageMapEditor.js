@@ -264,6 +264,7 @@ class ImageMapEditor extends Component {
 	componentDidMount() {
 		this.isEditorMounted = true;
 		window.addEventListener('resize', this.handleWindowResizeFit);
+		window.addEventListener('beforeunload', this.handleBeforeUnload);
 		document.addEventListener('keydown', this.handleEditorShortcutKeyDown, false);
 		document.addEventListener('keyup', this.handleEditorShortcutKeyUp, false);
 		this.showLoading(true);
@@ -426,6 +427,7 @@ class ImageMapEditor extends Component {
 	componentWillUnmount() {
 		this.isEditorMounted = false;
 		window.removeEventListener('resize', this.handleWindowResizeFit);
+		window.removeEventListener('beforeunload', this.handleBeforeUnload);
 		document.removeEventListener('keydown', this.handleEditorShortcutKeyDown);
 		document.removeEventListener('keyup', this.handleEditorShortcutKeyUp);
 		this.handleWindowResizeFit.cancel();
@@ -445,6 +447,15 @@ class ImageMapEditor extends Component {
 		}
 		action(handler);
 		this.focusCanvas();
+	};
+
+	handleBeforeUnload = event => {
+		if (!this.state.editing) {
+			return undefined;
+		}
+		event.preventDefault();
+		event.returnValue = '';
+		return '';
 	};
 
 	shouldIgnoreEditorShortcut = event => {
@@ -1562,6 +1573,9 @@ class ImageMapEditor extends Component {
 	};
 
 	handleBackButton = () => {
+		if (this.state.editing && !window.confirm('You have unsaved changes. Leave the designer anyway?')) {
+			return;
+		}
 		if (this.state.isAdminPath) {
 			if (this.state.isCertificatePath) {
 				window.location.href = `${
