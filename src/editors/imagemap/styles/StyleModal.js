@@ -31,7 +31,8 @@ class StyleModal extends Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		if (JSON.stringify(this.props.style) === JSON.stringify(prevProps.style)) {
+		const styleChanged = JSON.stringify(this.props.style) !== JSON.stringify(prevProps.style);
+		if (this.props.visible === prevProps.visible && !styleChanged) {
 			return;
 		}
 		const style = this.getPreviewStyle(this.props.style);

@@ -38,10 +38,11 @@ class AnimationModal extends Component {
 			}
 			return;
 		}
-		if (JSON.stringify(animation) !== JSON.stringify(prevProps.animation)) {
+		const animationChanged = JSON.stringify(animation) !== JSON.stringify(prevProps.animation);
+		if (visible !== prevProps.visible || animationChanged) {
 			this.waitForCanvasRender(this.canvasRef, animation);
 		}
-		if (visible !== prevProps.visible || JSON.stringify(animation) !== JSON.stringify(prevProps.animation)) {
+		if (visible !== prevProps.visible || animationChanged) {
 			form.resetFields();
 		}
 	}
