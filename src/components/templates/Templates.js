@@ -8,8 +8,7 @@ import {
 	isOptionalDesignerSessionError,
 	loadDesignerSession,
 } from '../../utils/designerApi';
-
-const waitForCanvasTick = () => new Promise(resolve => setTimeout(resolve, 50));
+import { waitForCanvasTick } from '../../utils/canvasTiming';
 
 const Templates = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader, onApplyCanvasAsset }) => {
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
