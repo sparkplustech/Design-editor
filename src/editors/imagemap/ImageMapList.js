@@ -10,6 +10,7 @@ class ImageMapList extends Component {
 	static propTypes = {
 		canvasRef: PropTypes.any,
 		selectedItem: PropTypes.object,
+		onFocusCanvas: PropTypes.func,
 	};
 
 	state = {
@@ -44,6 +45,11 @@ class ImageMapList extends Component {
 		return layers.filter(obj => `${obj.name || ''} ${obj.type || ''}`.toLowerCase().includes(query));
 	};
 
+	runCanvasAction = action => {
+		action?.();
+		this.props.onFocusCanvas?.();
+	};
+
 	renderActions = () => {
 		const { canvasRef, selectedItem } = this.props;
 		const idCropping = canvasRef ? canvasRef.handler?.interactionMode === 'crop' : false;
@@ -64,7 +70,7 @@ class ImageMapList extends Component {
 							className="rde-action-btn"
 							style={{ width: '100%', height: 30 }}
 							disabled={disableLayerActions}
-							onClick={e => canvasRef.handler.sendBackwards()}
+							onClick={() => this.runCanvasAction(() => canvasRef.handler.sendBackwards())}
 							aria-label={i18next.t('action.send-backwards')}
 							title={i18next.t('action.send-backwards')}
 						>
@@ -76,7 +82,7 @@ class ImageMapList extends Component {
 							className="rde-action-btn"
 							style={{ width: '100%', height: 30 }}
 							disabled={disableLayerActions}
-							onClick={e => canvasRef.handler.bringForward()}
+							onClick={() => this.runCanvasAction(() => canvasRef.handler.bringForward())}
 							aria-label={i18next.t('action.bring-forward')}
 							title={i18next.t('action.bring-forward')}
 						>
@@ -151,7 +157,7 @@ class ImageMapList extends Component {
 								flex="1"
 								onMouseDown={e => e.preventDefault()}
 								onDoubleClick={e => {
-									canvasRef.handler.zoomHandler.zoomToCenter();
+									this.runCanvasAction(() => canvasRef.handler.zoomHandler.zoomToCenter());
 								}}
 							>
 								<Flex alignItems="center">
@@ -159,7 +165,7 @@ class ImageMapList extends Component {
 										type="button"
 										className="rde-canvas-list-item-select"
 										aria-label={`Select ${title}`}
-										onClick={() => canvasRef.handler.select(obj)}
+										onClick={() => this.runCanvasAction(() => canvasRef.handler.select(obj))}
 									>
 										<Icon
 											className="rde-canvas-list-item-icon"
@@ -179,7 +185,7 @@ class ImageMapList extends Component {
 											title={`Duplicate ${title}`}
 											onClick={e => {
 												e.stopPropagation();
-												canvasRef.handler.duplicateById(obj.id);
+												this.runCanvasAction(() => canvasRef.handler.duplicateById(obj.id));
 											}}
 										>
 											<Icon name="clone" />
@@ -192,7 +198,7 @@ class ImageMapList extends Component {
 											title={`Delete ${title}`}
 											onClick={e => {
 												e.stopPropagation();
-												canvasRef.handler.removeById(obj.id);
+												this.runCanvasAction(() => canvasRef.handler.removeById(obj.id));
 											}}
 										>
 											<Icon name="trash" />

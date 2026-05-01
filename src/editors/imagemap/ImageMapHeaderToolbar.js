@@ -120,7 +120,7 @@ class ImageMapHeaderToolbar extends Component {
 						tooltipTitle={i18n.t('action.canvas-list')}
 					/>
 					<div className="rde-canvas-list">
-						<ImageMapList canvasRef={canvasRef} selectedItem={selectedItem} />
+						<ImageMapList canvasRef={canvasRef} selectedItem={selectedItem} onFocusCanvas={this.props.onFocusCanvas} />
 					</div>
 				</Flex.Item>
 				<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-inspector-toggle">
