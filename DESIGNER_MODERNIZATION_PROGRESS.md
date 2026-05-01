@@ -81,6 +81,7 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - Removed noisy canvas-handler console warnings from normal unsupported-animation and missing-object paths.
 - Tightened editor scrolling behavior in reusable scroll containers and the asset rail, and normalized visible editor surface radii to the requested 5-8px range.
 - Stopped rendering inspector form controls while the inspector is collapsed so hidden fields do not stay in the interaction tree.
+- Improved editor ergonomics by keeping canvas shortcuts active after toolbar/sidebar actions, syncing selection/grab mode state, and adding a compact shortcut affordance near the zoom controls.
 
 ## Verified
 

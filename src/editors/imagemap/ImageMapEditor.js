@@ -131,6 +131,7 @@ class ImageMapEditor extends Component {
 		guidesEnabled: true,
 		rulersEnabled: true,
 		safeAreaEnabled: true,
+		interactionMode: 'selection',
 	};
 
 	isEditorMounted = false;
@@ -259,6 +260,7 @@ class ImageMapEditor extends Component {
 	componentDidMount() {
 		this.isEditorMounted = true;
 		window.addEventListener('resize', this.handleWindowResizeFit);
+		document.addEventListener('keydown', this.handleEditorShortcutKeyDown, false);
 		this.showLoading(true);
 		import('./Descriptors.json').then(descriptors => {
 			if (!this.isEditorMounted) {
@@ -441,11 +443,127 @@ class ImageMapEditor extends Component {
 	componentWillUnmount() {
 		this.isEditorMounted = false;
 		window.removeEventListener('resize', this.handleWindowResizeFit);
+		document.removeEventListener('keydown', this.handleEditorShortcutKeyDown);
 		this.handleWindowResizeFit.cancel();
 		clearTimeout(this.importObjectsTimer);
 		clearInterval(this.autoSave);
 		clearTimeout(this.clearSuccessMessageTimer);
 	}
+
+	focusCanvas = () => {
+		this.canvasRef?.canvas?.wrapperEl?.focus?.();
+	};
+
+	shouldIgnoreEditorShortcut = event => {
+		const target = event.target;
+		if (!target || !target.closest) {
+			return false;
+		}
+		const tagName = target.tagName ? target.tagName.toLowerCase() : '';
+		return (
+			tagName === 'input' ||
+			tagName === 'textarea' ||
+			tagName === 'select' ||
+			target.isContentEditable ||
+			Boolean(target.closest('.ant-modal, .ant-select-dropdown, .ant-dropdown, .ant-popover'))
+		);
+	};
+
+	handleEditorShortcutKeyDown = event => {
+		const handler = this.canvasRef?.handler;
+		const wrapperEl = this.canvasRef?.canvas?.wrapperEl;
+		if (!handler || !wrapperEl || wrapperEl === document.activeElement || this.shouldIgnoreEditorShortcut(event)) {
+			return;
+		}
+
+		const key = event.key ? event.key.toLowerCase() : '';
+		const isMeta = event.ctrlKey || event.metaKey;
+
+		if (isMeta && key === 'z') {
+			event.preventDefault();
+			handler.transactionHandler.undo();
+			this.focusCanvas();
+			return;
+		}
+		if ((isMeta && key === 'y') || (isMeta && event.shiftKey && key === 'z')) {
+			event.preventDefault();
+			handler.transactionHandler.redo();
+			this.focusCanvas();
+			return;
+		}
+		if (isMeta && key === 'a') {
+			event.preventDefault();
+			handler.selectAll();
+			this.focusCanvas();
+			return;
+		}
+		if (isMeta && key === 'c') {
+			event.preventDefault();
+			handler.copy();
+			this.focusCanvas();
+			return;
+		}
+		if (isMeta && key === 'x') {
+			event.preventDefault();
+			handler.cut();
+			this.focusCanvas();
+			return;
+		}
+		if (isMeta && key === 'v') {
+			event.preventDefault();
+			handler.paste();
+			this.focusCanvas();
+			return;
+		}
+		if (key === 'delete' || key === 'backspace') {
+			event.preventDefault();
+			handler.remove();
+			this.focusCanvas();
+			return;
+		}
+		if (key === 'escape') {
+			handler.canvas.discardActiveObject();
+			handler.canvas.requestRenderAll();
+			this.canvasHandlers.onSelect(null);
+			this.focusCanvas();
+			return;
+		}
+		if (key === 'q') {
+			event.preventDefault();
+			handler.interactionHandler.selection();
+			this.focusCanvas();
+			return;
+		}
+		if (key === 'w') {
+			event.preventDefault();
+			handler.interactionHandler.grab();
+			this.focusCanvas();
+			return;
+		}
+		if (key === '+' || key === '=') {
+			event.preventDefault();
+			handler.zoomHandler.zoomIn();
+			this.focusCanvas();
+			return;
+		}
+		if (key === '-' || key === '_') {
+			event.preventDefault();
+			handler.zoomHandler.zoomOut();
+			this.focusCanvas();
+			return;
+		}
+		if (key === 'o') {
+			event.preventDefault();
+			handler.zoomHandler.zoomOneToOne();
+			this.focusCanvas();
+			return;
+		}
+		if (key === 'p') {
+			event.preventDefault();
+			handler.zoomHandler.zoomToFit();
+			this.focusCanvas();
+		}
+	};
 
 	createTemplate = async data => {
 		const { designCode, isAdminPath, isCertificatePath, isBadgePath, isAdminBadgePath } = this.state;
@@ -818,6 +936,9 @@ class ImageMapEditor extends Component {
 			this.setState({
 				zoomRatio: zoom,
 			});
+		},
+		onInteraction: interactionMode => {
+			this.setState({ interactionMode });
 		},
 		onChange: (selectedItem, changedValues, allValues) => {
 			const { editing } = this.state;
@@ -1507,6 +1628,7 @@ class ImageMapEditor extends Component {
 			previewVisible,
 			previewImage,
 			toolbarClass,
+			interactionMode,
 			proofIssues,
 			proofModalVisible,
 			gridEnabled,
@@ -1532,6 +1654,7 @@ class ImageMapEditor extends Component {
 			onClick,
 			onContext,
 			onTransaction,
+			onInteraction,
 		} = this.canvasHandlers;
 		const {
 			onChangePreview,
@@ -1679,6 +1802,7 @@ class ImageMapEditor extends Component {
 					}}
 					canvasRef={this.canvasRef}
 					getCanvasRef={() => this.canvasRef}
+					onFocusCanvas={this.focusCanvas}
 					descriptors={descriptors}
 					onPageSizeChange={this.handlePageSizeChange}
 					onCanvasChange={this.handleCanvasChange}
@@ -1694,6 +1818,7 @@ class ImageMapEditor extends Component {
 							onPageSizeChange={this.handlePageSizeChange}
 							selectedPageSize={selectedPageSize}
 							onClassNameUpdate={this.handleToolbarClassUpdate}
+							onFocusCanvas={this.focusCanvas}
 						/>
 					</div>
 					<div className="rde-editor-canvas-container">
@@ -1749,6 +1874,7 @@ class ImageMapEditor extends Component {
 								onClick={onClick}
 								onContext={onContext}
 								onTransaction={onTransaction}
+								onInteraction={onInteraction}
 								keyEvent={{
 									transaction: true,
 								}}
@@ -1788,6 +1914,8 @@ class ImageMapEditor extends Component {
 								guidesEnabled={guidesEnabled}
 								rulersEnabled={rulersEnabled}
 								safeAreaEnabled={safeAreaEnabled}
+								interactionMode={interactionMode}
+								onFocusCanvas={this.focusCanvas}
 								onToggleGrid={this.handleToggleGrid}
 								onToggleSnap={this.handleToggleSnap}
 								onToggleGuides={this.handleToggleGuides}

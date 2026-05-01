@@ -40,6 +40,7 @@ class ImageMapItems extends Component {
 		onPageSizeChange: PropTypes.any,
 		onCanvasChange: PropTypes.any,
 		mainLoader: PropTypes.func,
+		onFocusCanvas: PropTypes.func,
 	};
 
 	state = {
@@ -177,12 +178,14 @@ class ImageMapItems extends Component {
 						},
 						centered,
 					);
+					this.props.onFocusCanvas?.();
 				} catch (error) {
 					message.error(error.message || 'Unable to load SVG.');
 				}
 				return;
 			}
 			canvasRef.handler.add(option, centered);
+			this.props.onFocusCanvas?.();
 		},
 		onAddSVG: (option, centered) => {
 			const canvasRef = this.getCanvasRef();
@@ -194,6 +197,7 @@ class ImageMapItems extends Component {
 				const svg = sanitizeSvgText(option.svg);
 				canvasRef.handler.add({ ...option, loadType: 'svg', svg, type: 'svg', superType: 'svg', id: uuid(), name: 'New SVG' }, centered);
 				this.handlers.onSVGModalVisible();
+				this.props.onFocusCanvas?.();
 			} catch (error) {
 				message.error(error.message || 'Unable to add SVG.');
 			}
@@ -215,6 +219,7 @@ class ImageMapItems extends Component {
 			} else {
 				canvasRef.handler.drawingHandler.polygon.init();
 			}
+			this.props.onFocusCanvas?.();
 		},
 		onChangeActiveKey: activeKey => {
 			this.setState({
@@ -249,6 +254,7 @@ class ImageMapItems extends Component {
 		onSectionChange: section => {
 			this.setState({ activeSection: section });
 			this.setState({ collapse: false });
+			this.props.onFocusCanvas?.();
 		},
 	};
 

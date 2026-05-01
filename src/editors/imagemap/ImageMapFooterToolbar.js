@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Switch, Tooltip } from 'antd';
+import { Button, Popover, Switch, Tooltip } from 'antd';
 import i18n from 'i18next';
 
 import CommonButton from '../../components/common/CommonButton';
@@ -17,11 +17,13 @@ class ImageMapFooterToolbar extends Component {
 		guidesEnabled: PropTypes.bool,
 		rulersEnabled: PropTypes.bool,
 		safeAreaEnabled: PropTypes.bool,
+		interactionMode: PropTypes.string,
 		onToggleGrid: PropTypes.func,
 		onToggleSnap: PropTypes.func,
 		onToggleGuides: PropTypes.func,
 		onToggleRulers: PropTypes.func,
 		onToggleSafeArea: PropTypes.func,
+		onFocusCanvas: PropTypes.func,
 	};
 
 	state = {
@@ -72,6 +74,9 @@ class ImageMapFooterToolbar extends Component {
 
 	/* eslint-disable react/sort-comp, react/prop-types */
 	handlers = {
+		focusCanvas: () => {
+			this.props.onFocusCanvas?.();
+		},
 		selection: () => {
 			if (this.props.canvasRef.handler.interactionHandler.isDrawingMode()) {
 				return;
@@ -79,6 +84,7 @@ class ImageMapFooterToolbar extends Component {
 			this.forceUpdate();
 			this.props.canvasRef.handler.interactionHandler.selection();
 			this.setState({ interactionMode: 'selection' });
+			this.handlers.focusCanvas();
 		},
 		grab: () => {
 			if (this.props.canvasRef.handler.interactionHandler.isDrawingMode()) {
@@ -87,6 +93,43 @@ class ImageMapFooterToolbar extends Component {
 			this.forceUpdate();
 			this.props.canvasRef.handler.interactionHandler.grab();
 			this.setState({ interactionMode: 'grab' });
+			this.handlers.focusCanvas();
+		},
+		zoomOut: () => {
+			this.props.canvasRef.handler.zoomHandler.zoomOut();
+			this.handlers.focusCanvas();
+		},
+		zoomOneToOne: () => {
+			this.props.canvasRef.handler.zoomHandler.zoomOneToOne();
+			this.handlers.focusCanvas();
+		},
+		zoomToFit: () => {
+			this.props.canvasRef.handler.zoomHandler.zoomToFit();
+			this.handlers.focusCanvas();
+		},
+		zoomIn: () => {
+			this.props.canvasRef.handler.zoomHandler.zoomIn();
+			this.handlers.focusCanvas();
+		},
+		toggleGrid: () => {
+			this.props.onToggleGrid?.();
+			this.handlers.focusCanvas();
+		},
+		toggleSnap: () => {
+			this.props.onToggleSnap?.();
+			this.handlers.focusCanvas();
+		},
+		toggleGuides: () => {
+			this.props.onToggleGuides?.();
+			this.handlers.focusCanvas();
+		},
+		toggleRulers: () => {
+			this.props.onToggleRulers?.();
+			this.handlers.focusCanvas();
+		},
+		toggleSafeArea: () => {
+			this.props.onToggleSafeArea?.();
+			this.handlers.focusCanvas();
 		},
 	};
 
@@ -114,18 +157,37 @@ class ImageMapFooterToolbar extends Component {
 			guidesEnabled,
 			rulersEnabled,
 			safeAreaEnabled,
-			onToggleGrid,
-			onToggleSnap,
-			onToggleGuides,
-			onToggleRulers,
-			onToggleSafeArea,
+			interactionMode: interactionModeProp,
 		} = this.props;
-		const { interactionMode } = this.state;
-		const { selection, grab } = this.handlers;
+		const interactionMode = interactionModeProp || this.state.interactionMode;
+		const {
+			selection,
+			grab,
+			zoomOut,
+			zoomOneToOne,
+			zoomToFit,
+			zoomIn,
+			toggleGrid,
+			toggleSnap,
+			toggleGuides,
+			toggleRulers,
+			toggleSafeArea,
+		} = this.handlers;
 		if (!canvasRef) {
 			return null;
 		}
 		const zoomValue = parseInt((zoomRatio * 100).toFixed(2), 10);
+		const shortcutContent = (
+			<div className="rde-shortcut-card">
+				<div><kbd>Q</kbd><span>Select</span></div>
+				<div><kbd>W</kbd><span>Pan canvas</span></div>
+				<div><kbd>Alt</kbd><span>Temporary pan while dragging</span></div>
+				<div><kbd>+</kbd><kbd>-</kbd><span>Zoom in/out</span></div>
+				<div><kbd>O</kbd><span>100% zoom</span></div>
+				<div><kbd>P</kbd><span>Fit canvas</span></div>
+				<div><kbd>Ctrl</kbd><kbd>Z</kbd><span>Undo</span></div>
+			</div>
+		);
 		return (
 			<React.Fragment>
 				<div className="rde-editor-footer-toolbar-interaction">
@@ -154,32 +216,24 @@ class ImageMapFooterToolbar extends Component {
 					<Button.Group>
 						<CommonButton
 							style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
-							onClick={() => {
-								canvasRef.handler.zoomHandler.zoomOut();
-							}}
+							onClick={zoomOut}
 							icon="search-minus"
 							tooltipTitle={i18n.t('action.zoom-out')}
 						/>
 						<CommonButton
-							onClick={() => {
-								canvasRef.handler.zoomHandler.zoomOneToOne();
-							}}
+							onClick={zoomOneToOne}
 							tooltipTitle={i18n.t('action.one-to-one')}
 						>
 							{`${zoomValue}%`}
 						</CommonButton>
 						<CommonButton
-							onClick={() => {
-								canvasRef.handler.zoomHandler.zoomToFit();
-							}}
+							onClick={zoomToFit}
 							tooltipTitle={i18n.t('action.fit')}
 							icon="expand"
 						/>
 						<CommonButton
 							style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
-							onClick={() => {
-								canvasRef.handler.zoomHandler.zoomIn();
-							}}
+							onClick={zoomIn}
 							icon="search-plus"
 							tooltipTitle={i18n.t('action.zoom-in')}
 						/>
@@ -190,36 +244,46 @@ class ImageMapFooterToolbar extends Component {
 						<CommonButton
 							type={gridEnabled ? 'primary' : 'default'}
 							style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
-							onClick={onToggleGrid}
+							onClick={toggleGrid}
 							icon="th"
 							tooltipTitle="Grid"
 						/>
 						<CommonButton
 							type={snapToGrid ? 'primary' : 'default'}
-							onClick={onToggleSnap}
+							onClick={toggleSnap}
 							icon="magnet"
 							tooltipTitle="Snap"
 						/>
 						<CommonButton
 							type={guidesEnabled ? 'primary' : 'default'}
-							onClick={onToggleGuides}
+							onClick={toggleGuides}
 							icon="ruler-combined"
 							tooltipTitle="Guides"
 						/>
 						<CommonButton
 							type={rulersEnabled ? 'primary' : 'default'}
-							onClick={onToggleRulers}
+							onClick={toggleRulers}
 							icon="ruler-horizontal"
 							tooltipTitle="Rulers"
 						/>
 						<CommonButton
 							type={safeAreaEnabled ? 'primary' : 'default'}
 							style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
-							onClick={onToggleSafeArea}
+							onClick={toggleSafeArea}
 							icon="vector-square"
 							tooltipTitle="Safe area"
 						/>
 					</Button.Group>
+				</div>
+				<div className="rde-editor-footer-toolbar-help">
+					<Popover content={shortcutContent} placement="topRight" trigger="click">
+						<CommonButton
+							icon="keyboard"
+							tooltipTitle="Keyboard shortcuts"
+							ariaLabel="Keyboard shortcuts"
+							onClick={this.handlers.focusCanvas}
+						/>
+					</Popover>
 				</div>
 				{/* <div className="rde-editor-footer-toolbar-preview">
 					<Tooltip title={i18n.t('action.preview')}>

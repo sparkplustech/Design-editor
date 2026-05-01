@@ -686,7 +686,8 @@
 
 .rde-editor-footer-toolbar-interaction,
 .rde-editor-footer-toolbar-zoom,
-.rde-editor-footer-toolbar-aids {
+.rde-editor-footer-toolbar-aids,
+.rde-editor-footer-toolbar-help {
 	flex: 0 0 auto;
 	pointer-events: auto;
 
@@ -697,6 +698,46 @@
 		.ant-btn {
 			float: none;
 		}
+	}
+}
+
+.rde-editor-footer-toolbar-help {
+	display: inline-flex;
+	border-radius: 8px;
+	background: #ffffff;
+	box-shadow: 0 12px 26px rgba(31, 42, 55, 0.18);
+	overflow: hidden;
+}
+
+.rde-shortcut-card {
+	display: grid;
+	gap: 8px;
+	min-width: 230px;
+	color: #253044;
+	font-size: 12px;
+
+	div {
+		display: grid;
+		grid-template-columns: max-content max-content 1fr;
+		align-items: center;
+		gap: 5px;
+	}
+
+	kbd {
+		min-width: 24px;
+		padding: 2px 6px;
+		border: 1px solid #cfd8e3;
+		border-radius: 5px;
+		background: #f8fafc;
+		color: #17202c;
+		font-size: 11px;
+		font-weight: 800;
+		text-align: center;
+	}
+
+	span {
+		color: #526070;
+		font-weight: 700;
 	}
 }
 
