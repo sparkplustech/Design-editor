@@ -25,18 +25,6 @@ class ImageMapHeaderToolbar extends Component {
 		};
 	}
 
-	componentDidUpdate(prevProps) {
-		if (prevProps.selectedItem !== this.props.selectedItem && this.props.selectedItem === null) {
-			this.setState(
-				{ collapse: false },
-				() => {
-					const className = this.state.collapse ? 'minimize' : '';
-					this.props.onClassNameUpdate?.(className);
-				},
-			);
-		}
-	}
-
 	handlers = {
 		onCollapse: () => {
 			this.setState(
@@ -76,17 +64,15 @@ class ImageMapHeaderToolbar extends Component {
 						<ImageMapList canvasRef={canvasRef} selectedItem={selectedItem} />
 					</div>
 				</Flex.Item>
-				{selectedItem && (
-					<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-inspector-toggle">
-						<CommonButton
-							className="rde-action-btn"
-							shape="circle"
-							icon={collapse ? 'angle-double-right' : 'angle-double-left'}
-							onClick={onCollapse}
-							tooltipTitle={collapse ? 'Expand inspector' : 'Collapse inspector'}
-						/>
-					</Flex.Item>
-				)}
+				<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-inspector-toggle">
+					<CommonButton
+						className="rde-action-btn"
+						shape="circle"
+						icon={collapse ? 'angle-double-right' : 'angle-double-left'}
+						onClick={onCollapse}
+						tooltipTitle={collapse ? 'Expand inspector' : 'Collapse inspector'}
+					/>
+				</Flex.Item>
 				<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-history">
 					{isCertificatePath && (
 						<Select
