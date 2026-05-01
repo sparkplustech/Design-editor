@@ -46,14 +46,19 @@ class ImageMapList extends Component {
 	};
 
 	runCanvasAction = action => {
-		action?.();
+		const handler = this.props.canvasRef?.handler;
+		if (!handler) {
+			return;
+		}
+		action?.(handler);
 		this.props.onFocusCanvas?.();
 	};
 
 	renderActions = () => {
 		const { canvasRef, selectedItem } = this.props;
-		const idCropping = canvasRef ? canvasRef.handler?.interactionMode === 'crop' : false;
-		const disableLayerActions = idCropping || !selectedItem;
+		const handler = canvasRef?.handler;
+		const idCropping = handler?.interactionMode === 'crop';
+		const disableLayerActions = !handler || idCropping || !selectedItem;
 		return (
 			<Flex.Item className="rde-canvas-list-actions" flex="0 1 auto">
 				<Flex>
@@ -70,7 +75,7 @@ class ImageMapList extends Component {
 							className="rde-action-btn"
 							style={{ width: '100%', height: 30 }}
 							disabled={disableLayerActions}
-							onClick={() => this.runCanvasAction(() => canvasRef.handler.sendBackwards())}
+							onClick={() => this.runCanvasAction(handler => handler.sendBackwards())}
 							aria-label={i18next.t('action.send-backwards')}
 							title={i18next.t('action.send-backwards')}
 						>
@@ -82,7 +87,7 @@ class ImageMapList extends Component {
 							className="rde-action-btn"
 							style={{ width: '100%', height: 30 }}
 							disabled={disableLayerActions}
-							onClick={() => this.runCanvasAction(() => canvasRef.handler.bringForward())}
+							onClick={() => this.runCanvasAction(handler => handler.bringForward())}
 							aria-label={i18next.t('action.bring-forward')}
 							title={i18next.t('action.bring-forward')}
 						>
@@ -96,7 +101,8 @@ class ImageMapList extends Component {
 
 	renderItem = () => {
 		const { canvasRef, selectedItem } = this.props;
-		const idCropping = canvasRef ? canvasRef.handler?.interactionMode === 'crop' : false;
+		const handler = canvasRef?.handler;
+		const idCropping = handler?.interactionMode === 'crop';
 		if (!canvasRef?.canvas) {
 			return null;
 		}
@@ -157,7 +163,7 @@ class ImageMapList extends Component {
 								flex="1"
 								onMouseDown={e => e.preventDefault()}
 								onDoubleClick={e => {
-									this.runCanvasAction(() => canvasRef.handler.zoomHandler.zoomToCenter());
+									this.runCanvasAction(handler => handler.zoomHandler.zoomToCenter());
 								}}
 							>
 								<Flex alignItems="center">
@@ -165,7 +171,7 @@ class ImageMapList extends Component {
 										type="button"
 										className="rde-canvas-list-item-select"
 										aria-label={`Select ${title}`}
-										onClick={() => this.runCanvasAction(() => canvasRef.handler.select(obj))}
+										onClick={() => this.runCanvasAction(handler => handler.select(obj))}
 									>
 										<Icon
 											className="rde-canvas-list-item-icon"
@@ -185,7 +191,7 @@ class ImageMapList extends Component {
 											title={`Duplicate ${title}`}
 											onClick={e => {
 												e.stopPropagation();
-												this.runCanvasAction(() => canvasRef.handler.duplicateById(obj.id));
+												this.runCanvasAction(handler => handler.duplicateById(obj.id));
 											}}
 										>
 											<Icon name="clone" />
@@ -198,7 +204,7 @@ class ImageMapList extends Component {
 											title={`Delete ${title}`}
 											onClick={e => {
 												e.stopPropagation();
-												this.runCanvasAction(() => canvasRef.handler.removeById(obj.id));
+												this.runCanvasAction(handler => handler.removeById(obj.id));
 											}}
 										>
 											<Icon name="trash" />
