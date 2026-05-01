@@ -47,6 +47,16 @@ class ShortcutHandler {
 	};
 
 	/**
+	 * Whether keydown Space
+	 *
+	 * @param {KeyboardEvent} e
+	 * @returns
+	 */
+	public isSpace = (e: KeyboardEvent) => {
+		return e.code === code.SPACE;
+	};
+
+	/**
 	 * Whether keydown Delete or Backpsace
 	 *
 	 * @param {KeyboardEvent} e

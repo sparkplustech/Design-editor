@@ -138,6 +138,8 @@ class ImageMapEditor extends Component {
 
 	importObjectsTimer = null;
 
+	temporaryPanWasGrab = false;
+
 	getExportMultiplier = () => 1;
 
 	normalizeDesignName = value => {
@@ -261,6 +263,7 @@ class ImageMapEditor extends Component {
 		this.isEditorMounted = true;
 		window.addEventListener('resize', this.handleWindowResizeFit);
 		document.addEventListener('keydown', this.handleEditorShortcutKeyDown, false);
+		document.addEventListener('keyup', this.handleEditorShortcutKeyUp, false);
 		this.showLoading(true);
 		import('./Descriptors.json').then(descriptors => {
 			if (!this.isEditorMounted) {
@@ -444,6 +447,7 @@ class ImageMapEditor extends Component {
 		this.isEditorMounted = false;
 		window.removeEventListener('resize', this.handleWindowResizeFit);
 		document.removeEventListener('keydown', this.handleEditorShortcutKeyDown);
+		document.removeEventListener('keyup', this.handleEditorShortcutKeyUp);
 		this.handleWindowResizeFit.cancel();
 		clearTimeout(this.importObjectsTimer);
 		clearInterval(this.autoSave);
@@ -540,6 +544,15 @@ class ImageMapEditor extends Component {
 			this.focusCanvas();
 			return;
 		}
+		if (event.code === 'Space') {
+			event.preventDefault();
+			if (!event.repeat) {
+				this.temporaryPanWasGrab = handler.interactionMode === 'grab';
+			}
+			handler.interactionHandler.grab();
+			this.focusCanvas();
+			return;
+		}
 		if (key === '+' || key === '=') {
 			event.preventDefault();
 			handler.zoomHandler.zoomIn();
@@ -563,6 +576,23 @@ class ImageMapEditor extends Component {
 			handler.zoomHandler.zoomToFit();
 			this.focusCanvas();
 		}
+	};
+
+	handleEditorShortcutKeyUp = event => {
+		const handler = this.canvasRef?.handler;
+		const wrapperEl = this.canvasRef?.canvas?.wrapperEl;
+		if (!handler || !wrapperEl || wrapperEl === document.activeElement || this.shouldIgnoreEditorShortcut(event)) {
+			return;
+		}
+		if (event.code !== 'Space') {
+			return;
+		}
+		event.preventDefault();
+		if (!this.temporaryPanWasGrab) {
+			handler.interactionHandler.selection();
+		}
+		this.temporaryPanWasGrab = false;
+		this.focusCanvas();
 	};
 
 	createTemplate = async data => {

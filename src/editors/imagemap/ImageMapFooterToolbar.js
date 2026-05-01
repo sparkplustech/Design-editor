@@ -181,6 +181,7 @@ class ImageMapFooterToolbar extends Component {
 			<div className="rde-shortcut-card">
 				<div><kbd>Q</kbd><span>Select</span></div>
 				<div><kbd>W</kbd><span>Pan canvas</span></div>
+				<div><kbd>Space</kbd><span>Hold to pan temporarily</span></div>
 				<div><kbd>Alt</kbd><span>Temporary pan while dragging</span></div>
 				<div><kbd>+</kbd><kbd>-</kbd><span>Zoom in/out</span></div>
 				<div><kbd>O</kbd><span>100% zoom</span></div>
@@ -194,6 +195,7 @@ class ImageMapFooterToolbar extends Component {
 					<Button.Group>
 						<CommonButton
 							type={interactionMode === 'selection' ? 'primary' : 'default'}
+							ariaPressed={interactionMode === 'selection'}
 							style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
 							onClick={() => {
 								selection();
@@ -203,6 +205,7 @@ class ImageMapFooterToolbar extends Component {
 						/>
 						<CommonButton
 							type={interactionMode === 'grab' ? 'primary' : 'default'}
+							ariaPressed={interactionMode === 'grab'}
 							style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
 							onClick={() => {
 								grab();

@@ -15,6 +15,7 @@ class EventHandler {
 	handler: Handler;
 	code: string;
 	panning: boolean;
+	temporaryPanWasGrab: boolean = false;
 
 	constructor(handler: Handler) {
 		this.handler = handler;
@@ -765,6 +766,14 @@ class EventHandler {
 			this.handler.interactionHandler.grab();
 			return;
 		}
+		if (this.handler.shortcutHandler.isSpace(e) && editable && grab) {
+			e.preventDefault();
+			if (!e.repeat) {
+				this.temporaryPanWasGrab = this.handler.interactionMode === 'grab';
+			}
+			this.handler.interactionHandler.grab();
+			return;
+		}
 		if (e.altKey && editable && grab) {
 			this.handler.interactionHandler.grab();
 			return;
@@ -829,6 +838,14 @@ class EventHandler {
 	 */
 	public keyup = (e: KeyboardEvent) => {
 		if (this.handler.interactionHandler.isDrawingMode()) {
+			return;
+		}
+		if (this.handler.shortcutHandler.isSpace(e)) {
+			e.preventDefault();
+			if (!this.temporaryPanWasGrab) {
+				this.handler.interactionHandler.selection();
+			}
+			this.temporaryPanWasGrab = false;
 			return;
 		}
 		if (!this.handler.shortcutHandler.isW(e)) {

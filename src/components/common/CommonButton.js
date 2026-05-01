@@ -20,6 +20,7 @@ class CommonButton extends Component {
 		visible: PropTypes.bool,
 		shape: PropTypes.string,
 		disabled: PropTypes.bool,
+		ariaPressed: PropTypes.bool,
 		loading: PropTypes.bool,
 		type: PropTypes.string,
 		iconType: PropTypes.oneOf(['fas', 'material']),
@@ -40,6 +41,9 @@ class CommonButton extends Component {
 			'aria-label': buttonLabel,
 			title: buttonLabel,
 		};
+		if (typeof this.props.ariaPressed === 'boolean') {
+			buttonProps['aria-pressed'] = this.props.ariaPressed;
+		}
 		return this.props.visible ? (
 			<Tooltip title={this.props.tooltipTitle} placement={this.props.tooltipPlacement}>
 				{this.props.wrapperClassName || this.props.wrapperStyle ? (
