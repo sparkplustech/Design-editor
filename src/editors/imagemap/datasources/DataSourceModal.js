@@ -28,8 +28,13 @@ class DataSourceModal extends Component {
 		this.waitForContainerRender(this.containerRef);
 	}
 
-	UNSAFE_componentWillReceiveProps(nextProps) {
-		nextProps.form.resetFields();
+	componentDidUpdate(prevProps) {
+		if (
+			this.props.visible !== prevProps.visible ||
+			JSON.stringify(this.props.dataSource) !== JSON.stringify(prevProps.dataSource)
+		) {
+			this.props.form.resetFields();
+		}
 	}
 
 	waitForContainerRender = container => {
@@ -86,7 +91,14 @@ class DataSourceModal extends Component {
 						this.containerRef = c;
 					}}
 				>
-					<Canvas ref={this.canvasRef} editable={false} width={width} height={height} />
+					<Canvas
+						ref={c => {
+							this.canvasRef = c;
+						}}
+						editable={false}
+						width={width}
+						height={height}
+					/>
 				</div>
 			</Modal>
 		);

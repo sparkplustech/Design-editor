@@ -13,10 +13,11 @@ class NodeProperties extends Component {
 		selectedItem: PropTypes.object,
 	};
 
-	UNSAFE_componentWillReceiveProps(nextProps) {
-		if (this.props.selectedItem && nextProps.selectedItem) {
-			if (this.props.selectedItem.id !== nextProps.selectedItem.id) {
-				nextProps.form.resetFields();
+	componentDidUpdate(prevProps) {
+		const { selectedItem, form } = this.props;
+		if (prevProps.selectedItem && selectedItem) {
+			if (prevProps.selectedItem.id !== selectedItem.id) {
+				form.resetFields();
 			}
 		}
 	}

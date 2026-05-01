@@ -24,8 +24,17 @@ class StyleModal extends Component {
 		this.waitForContainerRender(this.containerRef);
 	}
 
-	UNSAFE_componentWillReceiveProps(nextProps) {
-		let { style } = nextProps;
+	componentDidUpdate(prevProps) {
+		if (JSON.stringify(this.props.style) === JSON.stringify(prevProps.style)) {
+			return;
+		}
+		const style = this.getPreviewStyle(this.props.style);
+		this.waitForCanvasRender(this.canvasRef, style);
+		this.props.form.resetFields();
+	}
+
+	getPreviewStyle = currentStyle => {
+		let style = currentStyle;
 		if (!style || !Object.keys(style).length) {
 			style = {
 				fill: 'rgba(0, 0, 0, 1)',
@@ -34,10 +43,9 @@ class StyleModal extends Component {
 				strokeWidth: 1,
 			};
 		}
-		delete style.strokeDashArray;
-		this.waitForCanvasRender(this.canvasRef, style);
-		nextProps.form.resetFields();
-	}
+		const { strokeDashArray, ...previewStyle } = style;
+		return previewStyle;
+	};
 
 	waitForCanvasRender = (canvas, style) => {
 		setTimeout(() => {

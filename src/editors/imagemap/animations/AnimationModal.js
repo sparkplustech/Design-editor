@@ -24,17 +24,20 @@ class AnimationModal extends Component {
 		this.waitForContainerRender(this.containerRef);
 	}
 
-	UNSAFE_componentWillReceiveProps(nextProps) {
-		if (!nextProps.visible) {
+	componentDidUpdate(prevProps) {
+		const { visible, animation, form } = this.props;
+		if (!visible) {
 			if (this.canvasRef) {
 				this.canvasRef.handler.animationHandler.stop('animations');
 			}
 			return;
 		}
-		if (JSON.stringify(nextProps.animation) !== JSON.stringify(this.props.animation)) {
-			this.waitForCanvasRender(this.canvasRef, nextProps.animation);
+		if (JSON.stringify(animation) !== JSON.stringify(prevProps.animation)) {
+			this.waitForCanvasRender(this.canvasRef, animation);
 		}
-		nextProps.form.resetFields();
+		if (visible !== prevProps.visible || JSON.stringify(animation) !== JSON.stringify(prevProps.animation)) {
+			form.resetFields();
+		}
 	}
 
 	waitForCanvasRender = (canvas, animation) => {
