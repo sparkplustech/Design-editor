@@ -85,7 +85,16 @@ class CodeModal extends Component {
 						initialValue: chartOption,
 					})(<pre style={{ wordBreak: 'break-all', lineHeight: '1.2em' }}>{chartOption}</pre>)}
 				</Form.Item>
-				<Modal onCancel={onCancel} onOk={onOk} visible={visible} style={{ minWidth: 800 }}>
+				<Modal
+					title="Edit chart options"
+					okText="Apply options"
+					cancelText="Cancel"
+					width={900}
+					maskClosable={false}
+					onCancel={onCancel}
+					onOk={onOk}
+					visible={visible}
+				>
 					<Form.Item label={codeLabel} colon={false}>
 						<ReactAce
 							ref={c => {

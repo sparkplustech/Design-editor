@@ -50,16 +50,17 @@ class EditTable extends Component {
 			if (validateStatus === 'error') {
 				return;
 			}
+			const userProperty = { ...this.state.userProperty };
 			if (current === 'modify') {
-				delete this.state.userProperty[originKey];
+				delete userProperty[originKey];
 			}
-			const userProperty = Object.assign({}, this.state.userProperty, { [tempKey]: tempValue });
+			const nextUserProperty = Object.assign({}, userProperty, { [tempKey]: tempValue });
 			if (onChange) {
-				onChange(userProperty);
+				onChange(nextUserProperty);
 			}
 			this.setState({
 				visible: false,
-				userProperty,
+				userProperty: nextUserProperty,
 			});
 		},
 		onCancel: () => {
@@ -126,12 +127,21 @@ class EditTable extends Component {
 	};
 
 	handleDelete = key => {
-		delete this.state.userProperty[key];
-		this.setState({ userProperty: this.state.userProperty });
+		const { onChange } = this.props;
+		const userProperty = { ...this.state.userProperty };
+		delete userProperty[key];
+		this.setState({ userProperty });
+		if (onChange) {
+			onChange(userProperty);
+		}
 	};
 
 	handleClear = () => {
+		const { onChange } = this.props;
 		this.setState({ userProperty: {} });
+		if (onChange) {
+			onChange({});
+		}
 	};
 
 	render() {
@@ -209,7 +219,15 @@ class EditTable extends Component {
 					columns={columns}
 					dataSource={this.getDataSource(userProperty)}
 				/>
-				<Modal onCancel={onCancel} onOk={onOk} visible={visible}>
+				<Modal
+					title={this.state.current === 'modify' ? 'Edit custom property' : 'Add custom property'}
+					okText={this.state.current === 'modify' ? 'Update property' : 'Add property'}
+					cancelText="Cancel"
+					maskClosable={false}
+					onCancel={onCancel}
+					onOk={onOk}
+					visible={visible}
+				>
 					<Form.Item
 						required
 						label={i18n.t('common.key')}
@@ -219,6 +237,8 @@ class EditTable extends Component {
 						help={help}
 					>
 						<Input
+							aria-label="Property key"
+							placeholder="Property key"
 							defaultValue={tempKey}
 							value={tempKey}
 							onChange={e => {
@@ -228,6 +248,8 @@ class EditTable extends Component {
 					</Form.Item>
 					<Form.Item label={i18n.t('common.value')} colon={false}>
 						<Input
+							aria-label="Property value"
+							placeholder="Property value"
 							defaultValue={tempValue}
 							value={tempValue}
 							onChange={e => {

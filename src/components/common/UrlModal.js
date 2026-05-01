@@ -41,6 +41,7 @@ class UrlModal extends Component {
 		onHide: () => {
 			this.setState({
 				visible: false,
+				tempUrl: '',
 			});
 		},
 	};
@@ -111,9 +112,19 @@ class UrlModal extends Component {
 						initialValue: url || '',
 					})(<span style={{ wordBreak: 'break-all' }}>{url}</span>)}
 				</Form.Item>
-				<Modal onCancel={onCancel} onOk={onOk} visible={visible}>
+				<Modal
+					title="Edit URL"
+					okText="Apply URL"
+					cancelText="Cancel"
+					maskClosable={false}
+					onCancel={onCancel}
+					onOk={onOk}
+					visible={visible}
+				>
 					<Form.Item label={i18n.t('common.url')} colon={false}>
 						<Input
+							aria-label="URL"
+							placeholder="https://example.com/image.png"
 							defaultValue={url}
 							onChange={e => {
 								this.setState({ tempUrl: e.target.value });

@@ -88,7 +88,16 @@ class AnimationModal extends Component {
 		const { form, visible, animation, onOk, onCancel, validateTitle, onChange } = this.props;
 		const { width, height } = this.state;
 		return (
-			<Modal onOk={onOk} onCancel={onCancel} visible={visible}>
+			<Modal
+				title="Edit animation preset"
+				okText="Save animation"
+				cancelText="Cancel"
+				width={720}
+				maskClosable={false}
+				onOk={onOk}
+				onCancel={onCancel}
+				visible={visible}
+			>
 				<Form.Item
 					label={i18n.t('common.title')}
 					required
@@ -98,6 +107,8 @@ class AnimationModal extends Component {
 					validateStatus={validateTitle.validateStatus}
 				>
 					<Input
+						aria-label="Animation title"
+						placeholder="Animation title"
 						value={animation.title}
 						onChange={e => {
 							onChange(

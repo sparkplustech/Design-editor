@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Modal, Form, Input } from 'antd';
+import i18n from 'i18next';
 
 import Canvas from '../../../canvas/Canvas';
 import DataSourceProperty from '../properties/DataSourceProperty';
@@ -44,9 +45,18 @@ class DataSourceModal extends Component {
 		const { form, visible, animation, onOk, onCancel, validateTitle, onChange } = this.props;
 		const { width, height } = this.state;
 		return (
-			<Modal onOk={onOk} onCancel={onCancel} visible={visible}>
+			<Modal
+				title="Edit data source"
+				okText="Save data source"
+				cancelText="Cancel"
+				width={720}
+				maskClosable={false}
+				onOk={onOk}
+				onCancel={onCancel}
+				visible={visible}
+			>
 				<Form.Item
-					label="Title"
+					label={i18n.t('common.title')}
 					required
 					colon={false}
 					hasFeedback
@@ -54,6 +64,8 @@ class DataSourceModal extends Component {
 					validateStatus={validateTitle.validateStatus}
 				>
 					<Input
+						aria-label="Data source title"
+						placeholder="Data source title"
 						value={animation.title}
 						onChange={e => {
 							onChange(

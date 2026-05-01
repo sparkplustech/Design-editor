@@ -90,7 +90,16 @@ class StyleModal extends Component {
 		const { form, visible, style, onOk, onCancel, validateTitle, onChange } = this.props;
 		const { width, height } = this.state;
 		return (
-			<Modal onOk={onOk} onCancel={onCancel} visible={visible}>
+			<Modal
+				title="Edit style preset"
+				okText="Save style"
+				cancelText="Cancel"
+				width={720}
+				maskClosable={false}
+				onOk={onOk}
+				onCancel={onCancel}
+				visible={visible}
+			>
 				<Form.Item
 					label={i18n.t('common.title')}
 					required
@@ -100,6 +109,8 @@ class StyleModal extends Component {
 					validateStatus={validateTitle.validateStatus}
 				>
 					<Input
+						aria-label="Style title"
+						placeholder="Style title"
 						value={style.title}
 						onChange={e => {
 							onChange(null, { title: e.target.value }, { ...style, title: e.target.value });
