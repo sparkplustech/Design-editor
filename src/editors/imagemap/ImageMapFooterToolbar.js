@@ -33,6 +33,7 @@ class ImageMapFooterToolbar extends Component {
 
 	componentDidMount() {
 		this.isFooterMounted = true;
+		document.addEventListener('keydown', this.handleDocumentKeyDown, false);
 		const { canvasRef } = this.props;
 		this.waitForCanvasRender(canvasRef);
 	}
@@ -47,8 +48,15 @@ class ImageMapFooterToolbar extends Component {
 	componentWillUnmount() {
 		this.isFooterMounted = false;
 		clearTimeout(this.waitForCanvasTimer);
+		document.removeEventListener('keydown', this.handleDocumentKeyDown);
 		this.detachEventListener(this.attachedCanvasRef || this.props.canvasRef);
 	}
+
+	handleDocumentKeyDown = event => {
+		if (event.code === code.ESCAPE && this.state.zoomPresetVisible) {
+			this.setState({ zoomPresetVisible: false }, this.handlers.focusCanvas);
+		}
+	};
 
 	waitForCanvasRender = canvas => {
 		clearTimeout(this.waitForCanvasTimer);

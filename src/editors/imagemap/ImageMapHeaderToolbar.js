@@ -6,6 +6,7 @@ import { CommonButton } from '../../components/common';
 import { Flex } from '../../components/flex';
 import ImageMapList from './ImageMapList';
 import { parseEditorSession } from '../../utils/editorSession';
+import { code } from '../../canvas/constants';
 
 const { Option } = Select;
 
@@ -26,6 +27,21 @@ class ImageMapHeaderToolbar extends Component {
 			layerListVisible: false,
 		};
 	}
+
+	componentDidMount() {
+		document.addEventListener('keydown', this.handleDocumentKeyDown, false);
+	}
+
+	componentWillUnmount() {
+		document.removeEventListener('keydown', this.handleDocumentKeyDown);
+	}
+
+	handleDocumentKeyDown = event => {
+		if (event.code !== code.ESCAPE || !this.state.layerListVisible) {
+			return;
+		}
+		this.handlers.onLayerListVisibleChange(false);
+	};
 
 	handlers = {
 		onCollapse: () => {
