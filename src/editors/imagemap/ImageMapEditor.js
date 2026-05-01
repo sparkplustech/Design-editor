@@ -460,6 +460,15 @@ class ImageMapEditor extends Component {
 		this.canvasRef?.canvas?.wrapperEl?.focus?.();
 	};
 
+	runContextCanvasAction = action => {
+		const handler = this.canvasRef?.handler;
+		if (!handler) {
+			return;
+		}
+		action(handler);
+		this.focusCanvas();
+	};
+
 	shouldIgnoreEditorShortcut = event => {
 		const target = event.target;
 		if (!target || !target.closest) {
@@ -1233,44 +1242,28 @@ class ImageMapEditor extends Component {
 		},
 		onContext: (ref, event, target) => {
 			if ((target && target.id === 'workarea') || !target) {
-				const { layerX: left, layerY: top } = event;
-				return (
-					// <Menu>
-					// 	<Menu.SubMenu key="add" style={{ width: 120 }} title={i18n.t('action.add')}>
-					// 		{this.transformList().map(item => {
-					// 			const option = Object.assign({}, item.option, { left, top });
-					// 			const newItem = Object.assign({}, item, { option });
-					// 			return (
-					// 				<Menu.Item style={{ padding: 0 }} key={item.name}>
-					// 					{this.itemsRef.renderItem(newItem, false)}
-					// 				</Menu.Item>
-					// 			);
-					// 		})}
-					// 	</Menu.SubMenu>
-					// </Menu>
-					null
-				);
+				return null;
 			}
 			if (target.type === 'activeSelection') {
 				return (
 					<Menu>
 						<Menu.Item
 							onClick={() => {
-								this.canvasRef.handler.toGroup();
+								this.runContextCanvasAction(handler => handler.toGroup());
 							}}
 						>
 							{i18n.t('action.object-group')}
 						</Menu.Item>
 						<Menu.Item
 							onClick={() => {
-								this.canvasRef.handler.duplicate();
+								this.runContextCanvasAction(handler => handler.duplicate());
 							}}
 						>
 							{i18n.t('action.clone')}
 						</Menu.Item>
 						<Menu.Item
 							onClick={() => {
-								this.canvasRef.handler.remove();
+								this.runContextCanvasAction(handler => handler.remove());
 							}}
 						>
 							{i18n.t('action.delete')}
@@ -1283,21 +1276,21 @@ class ImageMapEditor extends Component {
 					<Menu>
 						<Menu.Item
 							onClick={() => {
-								this.canvasRef.handler.toActiveSelection();
+								this.runContextCanvasAction(handler => handler.toActiveSelection());
 							}}
 						>
 							{i18n.t('action.object-ungroup')}
 						</Menu.Item>
 						<Menu.Item
 							onClick={() => {
-								this.canvasRef.handler.duplicate();
+								this.runContextCanvasAction(handler => handler.duplicate());
 							}}
 						>
 							{i18n.t('action.clone')}
 						</Menu.Item>
 						<Menu.Item
 							onClick={() => {
-								this.canvasRef.handler.remove();
+								this.runContextCanvasAction(handler => handler.remove());
 							}}
 						>
 							{i18n.t('action.delete')}
@@ -1309,14 +1302,14 @@ class ImageMapEditor extends Component {
 				<Menu>
 					<Menu.Item
 						onClick={() => {
-							this.canvasRef.handler.duplicateById(target.id);
+							this.runContextCanvasAction(handler => handler.duplicateById(target.id));
 						}}
 					>
 						{i18n.t('action.clone')}
 					</Menu.Item>
 					<Menu.Item
 						onClick={() => {
-							this.canvasRef.handler.removeById(target.id);
+							this.runContextCanvasAction(handler => handler.removeById(target.id));
 						}}
 					>
 						{i18n.t('action.delete')}
