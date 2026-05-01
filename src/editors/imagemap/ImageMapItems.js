@@ -41,6 +41,7 @@ class ImageMapItems extends Component {
 		onCanvasChange: PropTypes.any,
 		mainLoader: PropTypes.func,
 		onFocusCanvas: PropTypes.func,
+		onApplyCanvasAsset: PropTypes.func,
 	};
 
 	state = {
@@ -69,10 +70,10 @@ class ImageMapItems extends Component {
 		}
 	}
 
-	UNSAFE_componentWillReceiveProps(nextProps) {
-		if (JSON.stringify(this.props.descriptors) !== JSON.stringify(nextProps.descriptors)) {
-			const descriptors = Object.keys(nextProps.descriptors).reduce((prev, key) => {
-				return prev.concat(nextProps.descriptors[key]);
+	componentDidUpdate(prevProps) {
+		if (JSON.stringify(prevProps.descriptors) !== JSON.stringify(this.props.descriptors)) {
+			const descriptors = Object.keys(this.props.descriptors).reduce((prev, key) => {
+				return prev.concat(this.props.descriptors[key]);
 			}, []);
 			this.setState({
 				descriptors,
@@ -529,12 +530,14 @@ class ImageMapItems extends Component {
 											onPageSizeChange={this.props.onPageSizeChange}
 											onCanvasChange={this.props.onCanvasChange}
 											mainLoader={this.props.mainLoader}
+											onApplyCanvasAsset={this.props.onApplyCanvasAsset}
 										/>
 									) : (
 										<BadgeDesign
 											canvasRef={canvasRef}
 											mainLoader={this.props.mainLoader}
 											onCanvasChange={this.props.onCanvasChange}
+											onApplyCanvasAsset={this.props.onApplyCanvasAsset}
 										/>
 									)}
 								</Flex>
@@ -548,12 +551,14 @@ class ImageMapItems extends Component {
 											onPageSizeChange={this.props.onPageSizeChange}
 											onCanvasChange={this.props.onCanvasChange}
 											mainLoader={this.props.mainLoader}
+											onApplyCanvasAsset={this.props.onApplyCanvasAsset}
 										/>
 									) : (
 										<BadgeBackground
 											canvasRef={canvasRef}
 											mainLoader={this.props.mainLoader}
 											onCanvasChange={this.props.onCanvasChange}
+											onApplyCanvasAsset={this.props.onApplyCanvasAsset}
 										/>
 									)}
 								</Flex>
@@ -565,6 +570,7 @@ class ImageMapItems extends Component {
 										mainLoader={this.props.mainLoader}
 										onCanvasChange={this.props.onCanvasChange}
 										badgeType="template"
+										onApplyCanvasAsset={this.props.onApplyCanvasAsset}
 									/>
 								</Flex>
 							)}

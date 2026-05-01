@@ -85,6 +85,7 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - Added Figma-style temporary pan with Space and clearer pressed states for footer interaction mode buttons.
 - Kept alignment and grouping reachable from a compact object-actions popover while the inspector remains open.
 - Added zoom presets on the zoom percentage control for faster Fit/50/75/100/125/150/200 jumps.
+- Refocused the canvas and refreshed editor overlays after applying templates, saved designs, badge designs, and badge assets; replaced the imagemap sidebar legacy receive-props lifecycle with `componentDidUpdate`.
 
 ## Verified
 

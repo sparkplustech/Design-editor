@@ -1521,6 +1521,11 @@ class ImageMapEditor extends Component {
 		this.setState({ editing: value });
 	};
 
+	handleCanvasAssetApplied = () => {
+		this.syncSafeAreaOverlay();
+		this.focusCanvas();
+	};
+
 	handleMainLoader = value => {
 		this.setState({ loading: value });
 	};
@@ -1833,6 +1838,7 @@ class ImageMapEditor extends Component {
 					canvasRef={this.canvasRef}
 					getCanvasRef={() => this.canvasRef}
 					onFocusCanvas={this.focusCanvas}
+					onApplyCanvasAsset={this.handleCanvasAssetApplied}
 					descriptors={descriptors}
 					onPageSizeChange={this.handlePageSizeChange}
 					onCanvasChange={this.handleCanvasChange}

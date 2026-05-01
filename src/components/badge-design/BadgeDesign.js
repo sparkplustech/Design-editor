@@ -10,7 +10,7 @@ import {
 	loadDesignerSession,
 } from '../../utils/designerApi';
 
-const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange }) => {
+const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange, onApplyCanvasAsset }) => {
 	const [templatesData, setTemplatesData] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [userData, setUserData] = useState(null);
@@ -66,7 +66,7 @@ const BadgeDesign = ({ canvasRef, mainLoader, onCanvasChange }) => {
 
 			canvasRef.handler.clear(true);
 			setTimeout(() => {
-				canvasRef.handler.importJSON(importObjects);
+				Promise.resolve(canvasRef.handler.importJSON(importObjects)).then(onApplyCanvasAsset);
 				onCanvasChange(true);
 			}, 50);
 		} catch (error) {

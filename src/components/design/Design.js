@@ -9,7 +9,7 @@ import {
 	loadDesignerSession,
 } from '../../utils/designerApi';
 
-const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => {
+const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader, onApplyCanvasAsset }) => {
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
 	const [templatesData, setTemplatesData] = useState({
 		a4PortraitTemplates: [],
@@ -94,7 +94,7 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader }) => 
 			canvasRef.handler.clear(true);
 
 			setTimeout(() => {
-				canvasRef.handler.importJSON(objects);
+				Promise.resolve(canvasRef.handler.importJSON(objects)).then(onApplyCanvasAsset);
 				onCanvasChange(true);
 			}, 50);
 		} catch (error) {

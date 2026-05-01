@@ -10,7 +10,7 @@ import {
 	loadDesignerSession,
 } from '../../utils/designerApi';
 
-const BadgeBackground = ({ canvasRef, mainLoader, onCanvasChange, badgeType }) => {
+const BadgeBackground = ({ canvasRef, mainLoader, onCanvasChange, badgeType, onApplyCanvasAsset }) => {
 	const [templatesData, setTemplatesData] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [userData, setUserData] = useState(null);
@@ -73,7 +73,7 @@ const BadgeBackground = ({ canvasRef, mainLoader, onCanvasChange, badgeType }) =
 			}
 
 			setTimeout(() => {
-				canvasRef.handler.importJSON(importObjects);
+				Promise.resolve(canvasRef.handler.importJSON(importObjects)).then(onApplyCanvasAsset);
 				onCanvasChange(true);
 			}, 50);
 		} catch (error) {
