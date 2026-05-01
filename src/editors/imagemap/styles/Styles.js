@@ -39,15 +39,17 @@ class Styles extends Component {
 				});
 				return;
 			}
+			let nextStyles = [...this.props.styles];
+			let nextStyle = { ...this.state.style };
 			if (this.state.current === 'add') {
 				if (Object.keys(this.state.style).length === 1) {
 					this.modalRef.validateFields((err, values) => {
-						Object.assign(this.state.style, values);
+						nextStyle = { ...nextStyle, ...values };
 					});
 				}
-				this.props.styles.push(this.state.style);
+				nextStyles = [...nextStyles, nextStyle];
 			} else {
-				this.props.styles.splice(this.state.index, 1, this.state.style);
+				nextStyles = nextStyles.map((style, index) => (index === this.state.index ? nextStyle : style));
 			}
 			this.setState(
 				{
@@ -55,7 +57,7 @@ class Styles extends Component {
 					style: {},
 				},
 				() => {
-					this.props.onChangeStyles(this.props.styles);
+					this.props.onChangeStyles(nextStyles);
 				},
 			);
 		},
@@ -83,7 +85,7 @@ class Styles extends Component {
 		onEdit: (style, index) => {
 			this.setState({
 				visible: true,
-				style,
+				style: { ...style },
 				validateTitle: {
 					validateStatus: '',
 					help: '',
@@ -93,8 +95,7 @@ class Styles extends Component {
 			});
 		},
 		onDelete: index => {
-			this.props.styles.splice(index, 1);
-			this.props.onChangeStyles(this.props.styles);
+			this.props.onChangeStyles(this.props.styles.filter((style, styleIndex) => styleIndex !== index));
 		},
 		onClear: () => {
 			this.props.onChangeStyles([]);
@@ -118,7 +119,12 @@ class Styles extends Component {
 					help: i18n.t('validation.enter-property', { arg: i18n.t('common.title') }),
 				};
 			}
-			const exist = this.props.styles.some(style => style.title === value);
+			const exist = this.props.styles.some((style, index) => {
+				if (this.state.current === 'modify' && index === this.state.index) {
+					return false;
+				}
+				return style.title === value;
+			});
 			if (!exist) {
 				return {
 					validateStatus: 'success',

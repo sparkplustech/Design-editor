@@ -48,18 +48,22 @@ class Animations extends Component {
 				});
 				return;
 			}
-			if (!this.state.animation.type) {
-				this.state.animation.type = 'none';
-			}
+			let nextAnimation = {
+				...this.state.animation,
+				type: this.state.animation.type || 'none',
+			};
+			let nextAnimations = [...this.props.animations];
 			if (Object.keys(this.state.animation).length === 2) {
 				this.modalRef.validateFields((err, values) => {
-					Object.assign(this.state.animation, values.animation);
+					nextAnimation = { ...nextAnimation, ...values.animation };
 				});
 			}
 			if (this.state.current === 'add') {
-				this.props.animations.push(this.state.animation);
+				nextAnimations = [...nextAnimations, nextAnimation];
 			} else {
-				this.props.animations.splice(this.state.index, 1, this.state.animation);
+				nextAnimations = nextAnimations.map((animation, index) =>
+					index === this.state.index ? nextAnimation : animation,
+				);
 			}
 			this.setState(
 				{
@@ -67,7 +71,7 @@ class Animations extends Component {
 					animation: {},
 				},
 				() => {
-					this.props.onChangeAnimations(this.props.animations);
+					this.props.onChangeAnimations(nextAnimations);
 				},
 			);
 		},
@@ -84,7 +88,7 @@ class Animations extends Component {
 		onAdd: () => {
 			this.setState({
 				visible: true,
-				animation: initialAnimation,
+				animation: { ...initialAnimation },
 				validateTitle: {
 					validateStatus: '',
 					help: '',
@@ -95,7 +99,7 @@ class Animations extends Component {
 		onEdit: (animation, index) => {
 			this.setState({
 				visible: true,
-				animation,
+				animation: { ...animation },
 				validateTitle: {
 					validateStatus: '',
 					help: '',
@@ -105,8 +109,9 @@ class Animations extends Component {
 			});
 		},
 		onDelete: index => {
-			this.props.animations.splice(index, 1);
-			this.props.onChangeAnimations(this.props.animations);
+			this.props.onChangeAnimations(
+				this.props.animations.filter((animation, animationIndex) => animationIndex !== index),
+			);
 		},
 		onClear: () => {
 			this.props.onChangeAnimations([]);
@@ -135,7 +140,12 @@ class Animations extends Component {
 					help: i18n.t('validation.enter-property', { arg: i18n.t('common.title') }),
 				};
 			}
-			const exist = this.props.animations.some(animation => animation.title === value);
+			const exist = this.props.animations.some((animation, index) => {
+				if (this.state.current === 'modify' && index === this.state.index) {
+					return false;
+				}
+				return animation.title === value;
+			});
 			if (!exist) {
 				return {
 					validateStatus: 'success',

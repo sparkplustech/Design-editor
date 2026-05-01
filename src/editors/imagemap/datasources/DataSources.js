@@ -43,15 +43,19 @@ class DataSources extends Component {
 				});
 				return;
 			}
+			let nextDataSource = { ...this.state.dataSource };
+			let nextDataSources = [...this.props.dataSources];
 			if (this.state.current === 'add') {
 				if (Object.keys(this.state.dataSource).length === 1) {
 					this.modalRef.validateFields((err, values) => {
-						Object.assign(this.state.dataSource, values);
+						nextDataSource = { ...nextDataSource, ...values };
 					});
 				}
-				this.props.dataSources.push(this.state.dataSource);
+				nextDataSources = [...nextDataSources, nextDataSource];
 			} else {
-				this.props.dataSources.splice(this.state.index, 1, this.state.dataSource);
+				nextDataSources = nextDataSources.map((dataSource, index) =>
+					index === this.state.index ? nextDataSource : dataSource,
+				);
 			}
 			this.setState(
 				{
@@ -59,7 +63,7 @@ class DataSources extends Component {
 					dataSource: {},
 				},
 				() => {
-					this.props.onChangeDataSources(this.props.dataSources);
+					this.props.onChangeDataSources(nextDataSources);
 				},
 			);
 		},
@@ -87,7 +91,7 @@ class DataSources extends Component {
 		onEdit: (dataSource, index) => {
 			this.setState({
 				visible: true,
-				dataSource,
+				dataSource: { ...dataSource },
 				validateTitle: {
 					validateStatus: '',
 					help: '',
@@ -97,8 +101,9 @@ class DataSources extends Component {
 			});
 		},
 		onDelete: index => {
-			this.props.dataSources.splice(index, 1);
-			this.props.onChangeDataSources(this.props.dataSources);
+			this.props.onChangeDataSources(
+				this.props.dataSources.filter((dataSource, dataSourceIndex) => dataSourceIndex !== index),
+			);
 		},
 		onClear: () => {
 			this.props.onChangeDataSources([]);
@@ -122,7 +127,12 @@ class DataSources extends Component {
 					help: i18n.t('validation.enter-property', { arg: i18n.t('common.title') }),
 				};
 			}
-			const exist = this.props.dataSources.some(dataSource => dataSource.title === value);
+			const exist = this.props.dataSources.some((dataSource, index) => {
+				if (this.state.current === 'modify' && index === this.state.index) {
+					return false;
+				}
+				return dataSource.title === value;
+			});
 			if (!exist) {
 				return {
 					validateStatus: 'success',
