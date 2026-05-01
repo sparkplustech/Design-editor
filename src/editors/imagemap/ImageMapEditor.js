@@ -138,6 +138,8 @@ class ImageMapEditor extends Component {
 
 	importObjectsTimer = null;
 
+	editRevision = 0;
+
 	temporaryPanWasGrab = false;
 
 	getExportMultiplier = () => 1;
@@ -415,7 +417,7 @@ class ImageMapEditor extends Component {
 			});
 
 		this.autoSave = setInterval(() => {
-			if (this.state.createTemplateCalled) {
+			if (this.state.createTemplateCalled && this.state.editing) {
 				this.editTemplate('autoSave');
 			}
 		}, 30000);
@@ -773,6 +775,7 @@ class ImageMapEditor extends Component {
 		const isDesignTemplate = this.state.isDesignTemplate;
 		const isAdminBadgePath = this.state.isAdminBadgePath;
 		const skip = this.state.skip;
+		const saveRevision = this.editRevision;
 
 		if (isBadgePath) {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
@@ -871,13 +874,19 @@ class ImageMapEditor extends Component {
 					message.success(successMessage);
 				}
 				const updatedName = this.normalizeDesignName(data.name);
-				this.setState({
+				const nextState = {
 					successMessage,
 					successMessageVisible: true,
 					skip: 0,
 					inputData: updatedName,
 					isInputEmpty: updatedName === '',
-				});
+				};
+
+				if (this.editRevision === saveRevision) {
+					nextState.editing = false;
+				}
+
+				this.setState(nextState);
 
 				const url = new URL(window.location.href);
 				url.searchParams.set('sk', 0);
@@ -1500,6 +1509,9 @@ class ImageMapEditor extends Component {
 	};
 
 	changeEditing = editing => {
+		if (editing) {
+			this.editRevision += 1;
+		}
 		this.setState({
 			editing,
 		});
@@ -1518,6 +1530,7 @@ class ImageMapEditor extends Component {
 	handlePageSizeChange = value => {
 		const isCertificatePath = this.state.isCertificatePath;
 		this.setState({ selectedPageSize: value });
+		this.changeEditing(true);
 
 		if (!this.canvasRef?.handler) {
 			return;
@@ -1556,6 +1569,9 @@ class ImageMapEditor extends Component {
 	};
 
 	handleCanvasChange = value => {
+		if (value) {
+			this.editRevision += 1;
+		}
 		this.setState({ editing: value });
 	};
 
