@@ -4,7 +4,6 @@ import React, { Component } from 'react';
 import { Select } from 'antd';
 import { CommonButton } from '../../components/common';
 import { Flex } from '../../components/flex';
-import Icon from '../../components/icon/Icon';
 import ImageMapList from './ImageMapList';
 import { parseEditorSession } from '../../utils/editorSession';
 
@@ -104,21 +103,17 @@ class ImageMapHeaderToolbar extends Component {
 					<CommonButton
 						className="rde-action-btn toolbar-btn-cls"
 						disabled={isCropping || (canvasRef && !canvasRef.handler?.transactionHandler.undos.length)}
+						icon="undo-alt"
 						onClick={() => canvasRef.handler?.transactionHandler.undo()}
 						tooltipTitle="Undo"
-					>
-						<Icon name="undo-alt" style={{ marginRight: 8 }} />
-						Undo
-					</CommonButton>
+					/>
 					<CommonButton
 						className="rde-action-btn toolbar-btn-cls"
 						disabled={isCropping || (canvasRef && !canvasRef.handler?.transactionHandler.redos.length)}
+						icon="redo-alt"
 						onClick={() => canvasRef.handler?.transactionHandler.redo()}
 						tooltipTitle="Redo"
-					>
-						Redo
-						<Icon name="redo-alt" style={{ marginLeft: 8 }} />
-					</CommonButton>
+					/>
 				</Flex.Item>
 				{hasSelection && (
 					<React.Fragment>
