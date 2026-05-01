@@ -1325,6 +1325,9 @@ class ImageMapEditor extends Component {
 			);
 		},
 		onTransaction: transaction => {
+			if (!this.state.editing) {
+				this.changeEditing(true);
+			}
 			this.syncSafeAreaOverlay();
 			this.forceUpdate();
 		},
