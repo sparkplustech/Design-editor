@@ -142,7 +142,8 @@ class ImageMapHeaderToolbar extends Component {
 							className="rde-action-btn"
 							shape="circle"
 							icon="layer-group"
-							tooltipTitle={i18n.t('action.canvas-list')}
+							tooltipTitle={layerListVisible ? '' : i18n.t('action.canvas-list')}
+							ariaLabel={i18n.t('action.canvas-list')}
 							ariaPressed={layerListVisible}
 						/>
 					</Popover>
