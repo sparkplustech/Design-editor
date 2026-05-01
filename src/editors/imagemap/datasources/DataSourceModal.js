@@ -10,9 +10,13 @@ class DataSourceModal extends Component {
 	static propTypes = {
 		form: PropTypes.any,
 		visible: PropTypes.bool,
-		animation: PropTypes.object,
+		dataSource: PropTypes.object,
 		onOk: PropTypes.func,
 		onCancel: PropTypes.func,
+	};
+
+	static defaultProps = {
+		dataSource: {},
 	};
 
 	state = {
@@ -42,7 +46,7 @@ class DataSourceModal extends Component {
 	};
 
 	render() {
-		const { form, visible, animation, onOk, onCancel, validateTitle, onChange } = this.props;
+		const { form, visible, dataSource, onOk, onCancel, validateTitle, onChange } = this.props;
 		const { width, height } = this.state;
 		return (
 			<Modal
@@ -66,17 +70,17 @@ class DataSourceModal extends Component {
 					<Input
 						aria-label="Data source title"
 						placeholder="Data source title"
-						value={animation.title}
+						value={dataSource.title}
 						onChange={e => {
 							onChange(
 								null,
-								{ animation: { title: e.target.value } },
-								{ animation: { ...animation, title: e.target.value } },
+								{ title: e.target.value },
+								{ ...dataSource, title: e.target.value },
 							);
 						}}
 					/>
 				</Form.Item>
-				{DataSourceProperty.render(this.canvasRef, form, { animation })}
+				{DataSourceProperty.render(this.canvasRef, form, { animation: dataSource })}
 				<div
 					ref={c => {
 						this.containerRef = c;

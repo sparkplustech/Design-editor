@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Button } from 'antd';
+import i18n from 'i18next';
 
 import { Flex } from '../../../components/flex';
 import DataSourceModal from './DataSourceModal';
@@ -118,7 +119,7 @@ class DataSources extends Component {
 			if (!value || !value.length) {
 				return {
 					validateStatus: 'error',
-					help: 'Please input title.',
+					help: i18n.t('validation.enter-property', { arg: i18n.t('common.title') }),
 				};
 			}
 			const exist = this.props.dataSources.some(dataSource => dataSource.title === value);
@@ -130,7 +131,7 @@ class DataSources extends Component {
 			}
 			return {
 				validateStatus: 'error',
-				help: 'Already exist title.',
+				help: i18n.t('validation.already-property', { arg: i18n.t('common.title') }),
 			};
 		},
 	};

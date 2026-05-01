@@ -45,7 +45,12 @@ class ImageMapPreview extends Component {
 							onClick={onClick}
 							maxZoom={500}
 						/>
-						<Button className="rde-action-btn rde-preview-close-btn" onClick={onChangePreview}>
+						<Button
+							aria-label="Close preview"
+							className="rde-action-btn rde-preview-close-btn"
+							title="Close preview"
+							onClick={onChangePreview}
+						>
 							<Icon name="times" size={1.5} />
 						</Button>
 					</div>

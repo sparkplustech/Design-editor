@@ -75,6 +75,8 @@ Fabric remains the canvas/editor foundation. The modernization path is to harden
 - Clarified the blocked save workflow with a visible "Name required" state, accessible design-name input, and disabled-save guidance.
 - Polished reusable designer modals with explicit titles, safer dismiss behavior, clearer action labels, and accessible field labels.
 - Fixed custom property delete and clear actions so inspector changes persist to the selected object instead of only updating local table state.
+- Fixed the data-source modal prop contract and localized its title validation so the preset workflow no longer reads from the wrong object.
+- Added an accessible name and tooltip for the full-screen preview close control.
 
 ## Verified
 
