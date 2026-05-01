@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Select } from 'antd';
+import { Popover, Select } from 'antd';
 import { CommonButton } from '../../components/common';
 import { Flex } from '../../components/flex';
 import ImageMapList from './ImageMapList';
@@ -54,6 +54,59 @@ class ImageMapHeaderToolbar extends Component {
 		const canCropSelection = Boolean(hasSelection && canvasRef?.handler?.cropHandler?.validType());
 		const showCropControls = canCropSelection || hasCropRect || isCropping;
 		const showAdvancedObjectControls = collapse;
+		const advancedObjectControls = (
+			<div className="rde-object-actions-popover" role="toolbar" aria-label="Object alignment and grouping">
+				<CommonButton
+					className="rde-action-btn align-action-btn"
+					shape="circle"
+					disabled={disableObjectActions}
+					onClick={() => runCanvasAction(() => canvasRef.handler?.alignmentHandler.left())}
+					icon="align-left"
+					tooltipTitle={i18n.t('action.align-left')}
+				/>
+				<CommonButton
+					className="rde-action-btn align-action-btn"
+					shape="circle"
+					disabled={disableObjectActions}
+					onClick={() => runCanvasAction(() => canvasRef.handler?.alignmentHandler.center())}
+					icon="align-center"
+					tooltipTitle={i18n.t('action.align-center')}
+				/>
+				<CommonButton
+					className="rde-action-btn align-action-btn"
+					shape="circle"
+					disabled={disableObjectActions}
+					onClick={() => runCanvasAction(() => canvasRef.handler?.alignmentHandler.middle())}
+					icon="arrows-alt-v"
+					tooltipTitle={i18n.t('action.align-middle')}
+				/>
+				<CommonButton
+					className="rde-action-btn align-action-btn"
+					shape="circle"
+					disabled={disableObjectActions}
+					onClick={() => runCanvasAction(() => canvasRef.handler?.alignmentHandler.right())}
+					icon="align-right"
+					tooltipTitle={i18n.t('action.align-right')}
+				/>
+				<span className="rde-object-actions-divider" aria-hidden="true" />
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={disableObjectActions}
+					onClick={() => runCanvasAction(() => canvasRef.handler?.toGroup())}
+					icon="object-group"
+					tooltipTitle={i18n.t('action.object-group')}
+				/>
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={disableObjectActions}
+					onClick={() => runCanvasAction(() => canvasRef.handler?.toActiveSelection())}
+					icon="object-ungroup"
+					tooltipTitle={i18n.t('action.object-ungroup')}
+				/>
+			</div>
+		);
 
 		const { isCertificatePath } = parseEditorSession();
 
@@ -175,58 +228,23 @@ class ImageMapHeaderToolbar extends Component {
 						{showAdvancedObjectControls && (
 							<React.Fragment>
 								<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
-									<CommonButton
-										className="rde-action-btn align-action-btn"
-										shape="circle"
-										disabled={disableObjectActions}
-										onClick={() => runCanvasAction(() => canvasRef.handler?.alignmentHandler.left())}
-										icon="align-left"
-										tooltipTitle={i18n.t('action.align-left')}
-									/>
-									<CommonButton
-										className="rde-action-btn align-action-btn"
-										shape="circle"
-										disabled={disableObjectActions}
-										onClick={() => runCanvasAction(() => canvasRef.handler?.alignmentHandler.center())}
-										icon="align-center"
-										tooltipTitle={i18n.t('action.align-center')}
-									/>
-									<CommonButton
-										className="rde-action-btn align-action-btn"
-										shape="circle"
-										disabled={disableObjectActions}
-										onClick={() => runCanvasAction(() => canvasRef.handler?.alignmentHandler.middle())}
-										icon="arrows-alt-v"
-										tooltipTitle={i18n.t('action.align-middle')}
-									/>
-									<CommonButton
-										className="rde-action-btn align-action-btn"
-										shape="circle"
-										disabled={disableObjectActions}
-										onClick={() => runCanvasAction(() => canvasRef.handler?.alignmentHandler.right())}
-										icon="align-right"
-										tooltipTitle={i18n.t('action.align-right')}
-									/>
-								</Flex.Item>
-								<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-group">
-									<CommonButton
-										className="rde-action-btn"
-										shape="circle"
-										disabled={disableObjectActions}
-										onClick={() => runCanvasAction(() => canvasRef.handler?.toGroup())}
-										icon="object-group"
-										tooltipTitle={i18n.t('action.object-group')}
-									/>
-									<CommonButton
-										className="rde-action-btn"
-										shape="circle"
-										disabled={disableObjectActions}
-										onClick={() => runCanvasAction(() => canvasRef.handler?.toActiveSelection())}
-										icon="object-ungroup"
-										tooltipTitle={i18n.t('action.object-ungroup')}
-									/>
+									{advancedObjectControls}
 								</Flex.Item>
 							</React.Fragment>
+						)}
+						{!showAdvancedObjectControls && (
+							<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-more">
+								<Popover content={advancedObjectControls} placement="bottom" trigger="click">
+									<CommonButton
+										className="rde-action-btn"
+										shape="circle"
+										disabled={disableObjectActions}
+										icon="ellipsis-h"
+										tooltipTitle="More object actions"
+										ariaLabel="More object actions"
+									/>
+								</Popover>
+							</Flex.Item>
 						)}
 						{showCropControls && (
 							<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-crop">
