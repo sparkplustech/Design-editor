@@ -103,6 +103,10 @@ class ImageMapFooterToolbar extends Component {
 			this.props.canvasRef.handler.zoomHandler.zoomOneToOne();
 			this.handlers.focusCanvas();
 		},
+		zoomToRatio: ratio => {
+			this.props.canvasRef.handler.zoomHandler.zoomToRatio(ratio);
+			this.handlers.focusCanvas();
+		},
 		zoomToFit: () => {
 			this.props.canvasRef.handler.zoomHandler.zoomToFit();
 			this.handlers.focusCanvas();
@@ -165,6 +169,7 @@ class ImageMapFooterToolbar extends Component {
 			grab,
 			zoomOut,
 			zoomOneToOne,
+			zoomToRatio,
 			zoomToFit,
 			zoomIn,
 			toggleGrid,
@@ -187,6 +192,17 @@ class ImageMapFooterToolbar extends Component {
 				<div><kbd>O</kbd><span>100% zoom</span></div>
 				<div><kbd>P</kbd><span>Fit canvas</span></div>
 				<div><kbd>Ctrl</kbd><kbd>Z</kbd><span>Undo</span></div>
+			</div>
+		);
+		const zoomPresetContent = (
+			<div className="rde-zoom-preset-card" role="menu" aria-label="Zoom presets">
+				<button type="button" onClick={zoomToFit}>Fit canvas</button>
+				<button type="button" onClick={() => zoomToRatio(0.5)}>50%</button>
+				<button type="button" onClick={() => zoomToRatio(0.75)}>75%</button>
+				<button type="button" onClick={zoomOneToOne}>100%</button>
+				<button type="button" onClick={() => zoomToRatio(1.25)}>125%</button>
+				<button type="button" onClick={() => zoomToRatio(1.5)}>150%</button>
+				<button type="button" onClick={() => zoomToRatio(2)}>200%</button>
 			</div>
 		);
 		return (
@@ -223,12 +239,14 @@ class ImageMapFooterToolbar extends Component {
 							icon="search-minus"
 							tooltipTitle={i18n.t('action.zoom-out')}
 						/>
-						<CommonButton
-							onClick={zoomOneToOne}
-							tooltipTitle={i18n.t('action.one-to-one')}
-						>
-							{`${zoomValue}%`}
-						</CommonButton>
+						<Popover content={zoomPresetContent} placement="top" trigger="click">
+							<CommonButton
+								tooltipTitle="Zoom presets"
+								ariaLabel={`Zoom presets, current zoom ${zoomValue}%`}
+							>
+								{`${zoomValue}%`}
+							</CommonButton>
+						</Popover>
 						<CommonButton
 							onClick={zoomToFit}
 							tooltipTitle={i18n.t('action.fit')}

@@ -741,6 +741,33 @@
 	}
 }
 
+.rde-zoom-preset-card {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(74px, 1fr));
+	gap: 6px;
+	min-width: 164px;
+
+	button {
+		height: 30px;
+		padding: 0 8px;
+		border: 1px solid #dfe6ef;
+		border-radius: 7px;
+		background: #ffffff;
+		color: #253044;
+		font-size: 12px;
+		font-weight: 800;
+		cursor: pointer;
+
+		&:hover,
+		&:focus {
+			border-color: #ff9a73;
+			background: #fff4ef;
+			color: #c44415;
+			outline: none;
+		}
+	}
+}
+
 .rde-object-actions-popover {
 	display: inline-flex;
 	align-items: center;

@@ -58,6 +58,16 @@ class ZoomHandler {
 	};
 
 	/**
+	 * Zoom to an explicit ratio around the canvas center.
+	 *
+	 * @param {number} zoom ex) 1 = 100%
+	 */
+	public zoomToRatio = (zoom: number) => {
+		const center = this.handler.canvas.getCenter();
+		this.zoomToPoint(new fabric.Point(center.left, center.top), zoom);
+	};
+
+	/**
 	 * Zoom to fit
 	 *
 	 */
