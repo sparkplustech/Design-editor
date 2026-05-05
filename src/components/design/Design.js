@@ -122,7 +122,7 @@ const Design = ({ canvasRef, onPageSizeChange, onCanvasChange, mainLoader, onApp
 	}
 
 	return (
-		<div className="TemplatesSection">
+		<div className="DesignsSection">
 			<Input.Search
 				allowClear
 				placeholder="Search designs"

@@ -17,19 +17,43 @@ const Svg = fabric.util.createClass(fabric.Group, {
 	type: 'svg',
 	initialize(option: SvgOption = {}) {
 		this.callSuper('initialize', [], option);
+		if (Array.isArray((option as any).objects) && (option as any).objects.length > 0) {
+			this.loadSerializedObjects(option);
+			return;
+		}
 		this.loadSvg(option);
 	},
-	addSvgElements(objects: FabricObject[], options: any, path: string) {
-		const createdObj = fabric.util.groupSVGElements(objects, options, path) as SvgObject;
-		this.set(options);
+	loadSerializedObjects(option: SvgOption) {
+		const { objects: serializedObjects, ...savedObjectOption } = option as any;
+		const onLoaded = (objects: FabricObject[]) => {
+			objects.filter(Boolean).forEach(obj => this.add(obj));
+			this.set(savedObjectOption);
+			this.setCoords();
+			if (this.canvas) {
+				this.canvas.requestRenderAll();
+			}
+		};
+		const result = (fabric.util.enlivenObjects as any)(serializedObjects);
+		if (result?.then) {
+			result.then(onLoaded);
+			return this;
+		}
+		(fabric.util.enlivenObjects as any)(serializedObjects, onLoaded);
+		return this;
+	},
+	addSvgElements(objects: FabricObject[], options: any, path: string, sourceOption: SvgOption = {}) {
+		const { objects: _serializedObjects, svg: _svg, loadType: _loadType, ...savedObjectOption } = sourceOption as any;
+		const nextOptions = { ...options, ...savedObjectOption };
+		const createdObj = fabric.util.groupSVGElements(objects, { ...options }, path) as SvgObject;
+		this.set(nextOptions);
 		if (createdObj.getObjects) {
 			(createdObj as FabricGroup).getObjects().forEach(obj => {
 				this.add(obj);
-				if (options.fill) {
-					obj.set('fill', options.fill);
+				if (nextOptions.fill) {
+					obj.set('fill', nextOptions.fill);
 				}
-				if (options.stroke) {
-					obj.set('stroke', options.stroke);
+				if (nextOptions.stroke) {
+					obj.set('stroke', nextOptions.stroke);
 				}
 			});
 		} else {
@@ -37,14 +61,14 @@ const Svg = fabric.util.createClass(fabric.Group, {
 				originX: 'center',
 				originY: 'center',
 			});
-			if (options.fill) {
+			if (nextOptions.fill) {
 				createdObj.set({
-					fill: options.fill,
+					fill: nextOptions.fill,
 				});
 			}
-			if (options.stroke) {
+			if (nextOptions.stroke) {
 				createdObj.set({
-					stroke: options.stroke,
+					stroke: nextOptions.stroke,
 				});
 			}
 			if (this._objects?.length) {
@@ -53,9 +77,10 @@ const Svg = fabric.util.createClass(fabric.Group, {
 			this.add(createdObj);
 		}
 		this.set({
-			fill: options.fill,
-			stroke: options.stroke,
+			fill: nextOptions.fill,
+			stroke: nextOptions.stroke,
 		});
+		this.set(nextOptions);
 		this.setCoords();
 		if (this.canvas) {
 			this.canvas.requestRenderAll();
@@ -67,8 +92,22 @@ const Svg = fabric.util.createClass(fabric.Group, {
 		return new Promise<SvgObject>((resolve, reject) => {
 			resolveSvgText(svg, loadType)
 				.then((safeSvg: string) => {
-					fabric.loadSVGFromString(safeSvg, (objects, options) => {
-						resolve(this.addSvgElements(objects, { ...options, fill, stroke }, safeSvg));
+					const onLoaded = (objects: FabricObject[], options: any) => {
+						resolve(this.addSvgElements(objects, { ...options, fill, stroke }, safeSvg, option));
+					};
+					const result = (fabric.loadSVGFromString as any)(safeSvg);
+
+					if (result?.then) {
+						result
+							.then(({ objects, options }: { objects: FabricObject[]; options: any }) => {
+								onLoaded(objects, options);
+							})
+							.catch(reject);
+						return;
+					}
+
+					(fabric.loadSVGFromString as any)(safeSvg, (objects: FabricObject[], options: any) => {
+						onLoaded(objects, options);
 					});
 				})
 				.catch(reject);

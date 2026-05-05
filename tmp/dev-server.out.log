@@ -1,0 +1,186 @@
+
+> react-design-editor@0.0.56 start:dev
+> webpack serve --config webpack.dev.js
+
+[34mi[39m [90m｢wds｣[39m: Project is running at [1m[34mhttp://localhost:4000/[39m[22m
+[34mi[39m [90m｢wds｣[39m: webpack output is served from [1m[34m/[39m[22m
+[34mi[39m [90m｢wds｣[39m: Content not from webpack is served from [1m[34mD:\Workspace\Projects\SOLO\projects\Design-editor\public[39m[22m
+[34mi[39m [90m｢wds｣[39m: 404s will fallback to [1m[34m/index.html[39m[22m
+[34mi[39m [90m｢wdm｣[39m: wait until bundle finished: /
+[34mi[39m [90m｢wdm｣[39m: Hash: [1mb679486615037cacbd90[39m[22m
+Version: webpack [1m4.47.0[39m[22m
+Time: [1m69192[39m[22mms
+Built at: 05/03/2026 [1m5:11:26 PM[39m[22m
+                                       [1mAsset[39m[22m       [1mSize[39m[22m  [1mChunks[39m[22m  [1m[39m[22m                       [1m[39m[22m[1mChunk Names[39m[22m
+                       [1m[32m0.b679486615037cac.js[39m[22m   18.4 MiB       [1m0[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+                       [1m[32m1.b679486615037cac.js[39m[22m   1.56 MiB       [1m1[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+                      [1m[32m10.b679486615037cac.js[39m[22m    455 KiB      [1m10[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+                      [1m[32m11.b679486615037cac.js[39m[22m    233 KiB      [1m11[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+                      [1m[32m12.b679486615037cac.js[39m[22m   54.4 KiB      [1m12[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+                      [1m[32m13.b679486615037cac.js[39m[22m    130 KiB      [1m13[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+                      [1m[32m14.b679486615037cac.js[39m[22m   24.9 KiB      [1m14[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+                      [1m[32m15.b679486615037cac.js[39m[22m   31.6 KiB      [1m15[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+                      [1m[32m16.b679486615037cac.js[39m[22m   2.13 KiB      [1m16[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+                      [1m[32m17.b679486615037cac.js[39m[22m   4.51 KiB      [1m17[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+                       [1m[32m2.b679486615037cac.js[39m[22m    7.5 MiB       [1m2[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+                       [1m[32m3.b679486615037cac.js[39m[22m   2.44 MiB       [1m3[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+                       [1m[32m4.b679486615037cac.js[39m[22m    111 KiB       [1m4[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+                       [1m[32m5.b679486615037cac.js[39m[22m   88.2 KiB       [1m5[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+                       [1m[32m6.b679486615037cac.js[39m[22m    125 KiB       [1m6[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+                       [1m[32m7.b679486615037cac.js[39m[22m   10.3 MiB       [1m7[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+                       [1m[32m8.b679486615037cac.js[39m[22m   3.13 MiB       [1m8[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+                       [1m[32m9.b679486615037cac.js[39m[22m    892 KiB       [1m9[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+                     [1m[32mapp.b679486615037cac.js[39m[22m    193 KiB     [1mapp[39m[22m  [1m[32m[emitted] [immutable][39m[22m  app
+ [1m[32mfonts/00339138fe04154f58c0e481e9344036.woff[39m[22m   31.4 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/0242d39c091519812641569fd8dcbb51.woff[39m[22m   28.9 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/070b269439953b54344dc2b0cc231f7e.woff2[39m[22m     44 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/072805fcbd74782af5db500cc9158e6c.ttf[39m[22m   94.4 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/0e6b58ac5d805dfcd66f61e447b7ddd6.woff[39m[22m   17.7 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/0f21a2f5d44e3ad76acb34710d7bc342.woff2[39m[22m   15.2 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/0f306efdaf67191632fafa0f55bd11ef.svg[39m[22m   64.3 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/0f9d1f74777600d15191f64c71380ffb.eot[39m[22m   39.7 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/0fe9428559f3518bb8d4917a727d133d.woff2[39m[22m   14.5 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/10b4c16969c165fd6564c9aba0f70ba7.woff2[39m[22m   25.9 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/11f481e846c22c184dfdc49a2f2d0d7b.svg[39m[22m   89.4 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/1408ce3e7444623962adbce36e59c6aa.woff2[39m[22m     20 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/17b3183d708c7a9915719ee0db2acec4.eot[39m[22m   36.9 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/1b0de02c05d19453eb3d46b8834e810b.svg[39m[22m    119 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/1b1af1e4b3a278058097e96a21f80371.svg[39m[22m   48.1 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/1c303a00c4d1453b19d223d3c9584598.woff2[39m[22m   14.9 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/1d07caf4ae3390847ed5bd92258aac00.woff2[39m[22m   16.3 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/1d5ad1d09ede0d8412433a42533f27d3.woff2[39m[22m   12.7 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/1df558950e461ee8e0c15dd4d7a785bb.eot[39m[22m     17 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/1fc0d1bfc8d547a32e8ba6a542afb3cd.svg[39m[22m     54 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/1fc68b28d332f381d7dc6ea131908d48.ttf[39m[22m   32.5 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/215adb34128fcb20668b963ec7926ef2.ttf[39m[22m   30.3 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/2845558950648c1e10aaeab5f644056f.svg[39m[22m   56.1 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/2aae7c212ce9c344ede6369768d4bcca.ttf[39m[22m    164 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/30de16e2e17663dc41f9f7b1d87f30db.eot[39m[22m   18.5 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/335643de538753a2982a3a2ceb14d853.svg[39m[22m   78.9 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/343ac79a2f8a42da54fc6bce1c164a79.ttf[39m[22m   29.8 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/3627ff053e7be7f30d4dd3ec1265cebd.ttf[39m[22m   26.9 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/3629881a572a8b87914f5d6ae3b71050.ttf[39m[22m   38.4 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/372d513cf8e617e652a7695f5a5c2b50.woff2[39m[22m   24.6 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/3781c361d588d85e782e28db8eeae215.svg[39m[22m   57.7 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/390098f3e105f0b93f65adda62da4b6f.ttf[39m[22m   58.7 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/39ab5aad23912e77a327af5ca1d316e9.eot[39m[22m   17.7 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/39d7a3b75f6c337d5bb2906b4e5ccc00.svg[39m[22m   57.5 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/3a5706fab1c11ad6dfdc7d0fc33cc238.woff[39m[22m   78.6 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/3c927f8d5c82e30f39e54bd6c485b63c.svg[39m[22m   55.3 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/3cd0114975eaa8e9c3c0cb38e8f89132.woff[39m[22m   42.4 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/3cebcf4e6c0b316bda7b196fe6b6c109.ttf[39m[22m   52.1 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/3e5facee0f114780006a95941e88769c.svg[39m[22m   53.6 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/3eaab0f59c9c6eab6b37746c17e85971.woff[39m[22m     30 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/4163c5ce45679952d5cb6dcf5d74a132.eot[39m[22m    114 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/449771156a0bebf25d3318333fbcdb7a.woff[39m[22m   19.4 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/461a6d24e335e07a72876366180767b3.eot[39m[22m     18 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/4811a01c1c4104078a1f2e249dac55d6.woff[39m[22m   17.7 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/4da513e297a829bf8e2b5b8a4b9f9deb.svg[39m[22m     49 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/4ff15100437112dd275025f0ff831bdb.svg[39m[22m    616 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/504499c7e16ee847a32a7a8bf6923a79.woff2[39m[22m   18.2 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/507e4906c8a526e19597335ee9821b17.woff[39m[22m   21.2 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/519d275306221a976adaa8c37af61ec0.woff2[39m[22m   19.5 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/55a153492b7c16c1b6e13e7d9c38129e.woff[39m[22m   23.9 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/57d0575529b45fab03aaa639dd008348.svg[39m[22m     59 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/5ad4c4808bcb674b533305c18d58d724.woff2[39m[22m   35.2 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/5ae2246a7e119070fd85230a8739cfee.svg[39m[22m   60.4 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/5b0544ffb9b73c7cd0571e2dbff8283c.svg[39m[22m   57.8 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/5c7c910b9c731d92f31fc6e88e2730a4.svg[39m[22m    139 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/5d92671aef0a4ada3c20a2787f651035.eot[39m[22m   25.7 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/5dda55edb6b9171f027c6d92f4c3d30f.ttf[39m[22m   52.1 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/5f092ea5c2d20399848a35add1c998a2.eot[39m[22m   19.1 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/6086b966f7072932f0943a9e01ab702e.ttf[39m[22m   39.5 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/61747992dd9a412e601e3defa3f3baa6.ttf[39m[22m   25.9 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/64c07b0dff2ecc2d492eee248a8963a7.woff[39m[22m   24.3 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/6872befb39ae4f8678391b584b5c73fa.woff2[39m[22m     17 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/6a448a94206d510e681c9281c8a4a834.eot[39m[22m   17.3 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/6aa885ee8df1bd34b1756488a23642b4.ttf[39m[22m   50.7 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/70257b1d0ff04d70da6c3fd1f0cedfd6.ttf[39m[22m    114 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/7229436de2e14143a83512cea933bef3.eot[39m[22m   27.8 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/74ddb2b07a7f05bded6da1fb93301a05.woff[39m[22m   19.2 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/7710fcbaccd9837e1c5e7e819bf1d230.woff[39m[22m   22.3 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/7bcc8995a41a56926e1e71f1def4d70e.svg[39m[22m   67.8 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/7d77968bb2d6005504dd3831b4ff5dca.woff[39m[22m   53.5 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/7e5c1c9ed46e37e75dbc74b41b08a874.svg[39m[22m    121 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/7f76cf6a1b834d95233525362bc5678c.ttf[39m[22m   31.3 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/807254fb1c654ab42c9fb253c385edfa.woff2[39m[22m   16.1 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/81f30f7e618cf7de169bfde69cb1273d.ttf[39m[22m   35.3 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/8552fc69e1dd3b6f500fb89717ab3b57.woff2[39m[22m     27 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/85e223daccdc88cf67c7335cd31dfb89.eot[39m[22m   30.6 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/861cb1eb52649343e7638a042670a919.woff[39m[22m   27.7 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/87a454b233bedae23f8d1be11e8b4f68.woff[39m[22m   17.3 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/924b7739d1fdce083d129dd36e8e518f.svg[39m[22m     53 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/9506993f27eb0b3f47151e1f9ffa6a1d.woff[39m[22m   18.8 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/96b158827eaacc5f7912648f2f99c752.woff2[39m[22m   15.5 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/995cee680a6f49f2548d04c0300c293a.ttf[39m[22m   43.9 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/9b33a278597f10fd97c0b68928834f9a.eot[39m[22m   28.9 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/9ddc01131808d88683297b2e0b4d207a.ttf[39m[22m   57.8 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/9ef50a04ef2ee9703d694b2244abd928.woff2[39m[22m     61 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/a2d316b0df4c9bd02cfada4c44f40686.eot[39m[22m   22.9 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/a3246d29b40a8b0da142caea1bc84974.woff[39m[22m   19.1 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/a33247ee19cd20c634b5479ce23b6ca5.svg[39m[22m   52.8 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/a356e361ee6765f3d6d4c1d4664f12ab.eot[39m[22m   14.7 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/ab76f448d0fe3fdf92285e3778956bc9.woff2[39m[22m   24.3 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/b4e99e336932c4c0bb59c5fb77c56a69.ttf[39m[22m   38.5 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/b523289417c944215beebfa10cc5aa89.eot[39m[22m   46.6 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/b97ac5f935e23fc1816faed5cfcc8244.woff[39m[22m   73.2 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/b9df8fe0faf79eb4f60bf3c42f2ba249.woff2[39m[22m   62.6 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/ba07cfbbe37722e9fec0033843b3e116.eot[39m[22m   15.2 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/c4c0c9429c30715c76275d5d3354bea4.woff[39m[22m   16.3 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/c5fd7e74c952543e05048a6a93ca9b24.svg[39m[22m    612 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/cb41c1e71debe927815c690f8bb471b0.woff2[39m[22m     15 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/cd45f20a370a3bb3dbcc7e65e2f20e1b.eot[39m[22m   16.3 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/cd7c081289c3ce85d15d7c3c9cae49e2.woff2[39m[22m   22.8 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/cf27fb904103a7092df11a026c7c3089.ttf[39m[22m   34.6 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/cfdef499dce5959a987225bf14d1e832.eot[39m[22m   16.9 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/d11f9990f7d50aa994d8d79f26e4bf55.woff2[39m[22m   18.4 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/d2c8b126d305ba3ef5604cea2d9663a8.eot[39m[22m    164 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/d30ff382ccfe31135153c6cc85048cfb.eot[39m[22m   21.3 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/d4b30e9df280a376a436f5fb4383ce90.woff[39m[22m   22.5 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/d4e549a718b0dbe9c3f3a718aededf38.svg[39m[22m   82.2 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/d6b57030e61c2b8d8000ba600724d994.eot[39m[22m   20.7 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/d702c3b1183b46337bae4cc4918fe614.eot[39m[22m   14.4 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/d9eac31cfd5a71415cdbc09a6d232417.svg[39m[22m   59.5 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/db318019bb0ad643911895c6d758f956.woff[39m[22m   18.5 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/e52c353c1ce95f49dbc73c465185e8b5.ttf[39m[22m   36.3 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/e8bbbf2c689c434a253a622618975217.eot[39m[22m   22.4 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/e96e94517c11a48588a9fbfaded380ae.ttf[39m[22m   59.6 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/ec806460121999bcfb12bc264d46d41e.woff2[39m[22m   13.7 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/eea3ddb2d4f3f9746f5ea3612c38a69f.svg[39m[22m   71.9 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/efaf7edc59082b05a8c7b0ad9a50b93a.woff[39m[22m   20.1 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/f1dc10a756c2c544588b7408095ffed7.woff2[39m[22m   15.7 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/f1f126c001a83b44a41c141aa4e42d3c.ttf[39m[22m   77.3 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+[1m[32mfonts/f248d2fad011280c2d3ed1514a7698dd.woff2[39m[22m   14.2 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/f928e70abc46ea2a19ca91545fd645d6.woff[39m[22m   29.5 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+ [1m[32mfonts/fbebe70817c0f48eb4ee894d68e5562f.woff[39m[22m   19.4 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/fcc35ed481274838553903b827db73c8.ttf[39m[22m   28.7 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/fe345ddc9f3a2fd0379c2124ef00c11c.ttf[39m[22m   42.3 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+  [1m[32mfonts/fec337956290334c2a24dd29410ccc68.eot[39m[22m   27.9 KiB        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  
+                                  [1m[32mindex.html[39m[22m  343 bytes        [1m[39m[22m  [1m[32m[emitted][39m[22m              
+                  [1m[32mvendor.b679486615037cac.js[39m[22m    7.8 MiB  [1mvendor[39m[22m  [1m[32m[emitted] [immutable][39m[22m  vendor
+Entrypoint [1mapp[39m[22m = [1m[32mvendor.b679486615037cac.js[39m[22m [1m[32mapp.b679486615037cac.js[39m[22m
+[0] [1mmulti (webpack)-dev-server/client?http://localhost:4000 (webpack)/hot/dev-server.js react-hot-loader/patch webpack-dev-server/client?http://localhost:4000 webpack/hot/only-dev-server ./src/index.tsx[39m[22m 88 bytes {[1m[33mapp[39m[22m}[1m[32m [built][39m[22m
+[[1m./node_modules/react-dom/index.js[39m[22m] 2.36 KiB {[1m[33mvendor[39m[22m}[1m[32m [built][39m[22m
+[[1m./node_modules/react-hot-loader/dist/react-hot-loader.development.js[39m[22m] 98.2 KiB {[1m[33mvendor[39m[22m}[1m[32m [built][39m[22m
+[[1m./node_modules/react-hot-loader/patch.js[39m[22m] 1.26 KiB {[1m[33mvendor[39m[22m}[1m[32m [built][39m[22m
+[[1m./node_modules/react/index.js[39m[22m] 1.21 KiB {[1m[33mvendor[39m[22m}[1m[32m [built][39m[22m
+[./node_modules/webpack-dev-server/client/index.js?http://localhost:4000] [1m(webpack)-dev-server/client?http://localhost:4000[39m[22m 5.35 KiB {[1m[33mvendor[39m[22m}[1m[32m [built][39m[22m
+[./node_modules/webpack-dev-server/client/overlay.js] [1m(webpack)-dev-server/client/overlay.js[39m[22m 4.59 KiB {[1m[33mvendor[39m[22m}[1m[32m [built][39m[22m
+[./node_modules/webpack-dev-server/client/socket.js] [1m(webpack)-dev-server/client/socket.js[39m[22m 2.59 KiB {[1m[33mvendor[39m[22m}[1m[32m [built][39m[22m
+[./node_modules/webpack-dev-server/client/utils/createSocketUrl.js] [1m(webpack)-dev-server/client/utils/createSocketUrl.js[39m[22m 4 KiB {[1m[33mvendor[39m[22m}[1m[32m [built][39m[22m
+[./node_modules/webpack-dev-server/client/utils/log.js] [1m(webpack)-dev-server/client/utils/log.js[39m[22m 2.01 KiB {[1m[33mvendor[39m[22m}[1m[32m [built][39m[22m
+[./node_modules/webpack-dev-server/client/utils/reloadApp.js] [1m(webpack)-dev-server/client/utils/reloadApp.js[39m[22m 2.67 KiB {[1m[33mvendor[39m[22m}[1m[32m [built][39m[22m
+[./node_modules/webpack-dev-server/client/utils/sendMessage.js] [1m(webpack)-dev-server/client/utils/sendMessage.js[39m[22m 1.48 KiB {[1m[33mvendor[39m[22m}[1m[32m [built][39m[22m
+[./node_modules/webpack/hot/dev-server.js] [1m(webpack)/hot/dev-server.js[39m[22m 2.64 KiB {[1m[33mvendor[39m[22m}[1m[32m [built][39m[22m
+[./node_modules/webpack/hot/only-dev-server.js] [1m(webpack)/hot/only-dev-server.js[39m[22m 3.57 KiB {[1m[33mvendor[39m[22m}[1m[32m [built][39m[22m
+[[1m./src/index.tsx[39m[22m] 1.46 KiB {[1m[33mapp[39m[22m}[1m[32m [built][39m[22m
+    + 4033 hidden modules
+Child [1mhtml-webpack-plugin for "index.html"[39m[22m:
+         [1mAsset[39m[22m     [1mSize[39m[22m  [1mChunks[39m[22m  [1m[39m[22m[1m[39m[22m[1mChunk Names[39m[22m
+    [1m[32mindex.html[39m[22m  542 KiB       [1m0[39m[22m  [1m[32m[39m[22m
+    Entrypoint [1mundefined[39m[22m = [1m[32mindex.html[39m[22m
+    [[1m./node_modules/html-webpack-plugin/lib/loader.js!./node_modules/html-webpack-plugin/default_index.ejs[39m[22m] 376 bytes {[1m[33m0[39m[22m}[1m[32m [built][39m[22m
+    [[1m./node_modules/lodash/lodash.js[39m[22m] 533 KiB {[1m[33m0[39m[22m}[1m[32m [built][39m[22m
+    [./node_modules/webpack/buildin/global.js] [1m(webpack)/buildin/global.js[39m[22m 1.5 KiB {[1m[33m0[39m[22m}[1m[32m [built][39m[22m
+    [./node_modules/webpack/buildin/module.js] [1m(webpack)/buildin/module.js[39m[22m 1.53 KiB {[1m[33m0[39m[22m}[1m[32m [built][39m[22m
+[34mi[39m [90m｢wdm｣[39m: Compiled successfully.

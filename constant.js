@@ -4,34 +4,45 @@ const ru = urlParams.get('ru');
 
 let decryptedRU = '';
 if (ru) {
-  decryptedRU = atob(ru);
+  try {
+    decryptedRU = atob(ru);
+  } catch (error) {
+    decryptedRU = '';
+  }
 }
 // console.log("decrypted", decryptedRU);
 let apiBaseUrl = '';
 let reactAppBaseUrl = '';
+const env = typeof process !== 'undefined' && process.env ? process.env : {};
+const configuredApiBaseUrl = env.REACT_APP_API_BASE_URL || env.API_BASE_URL || '';
+const normalizedDesignCode = (designCode || '').toUpperCase();
 
-if (designCode && designCode.startsWith('DCL')) {
+if (normalizedDesignCode.startsWith('DCL')) {
   apiBaseUrl = 'https://api.thesolo.network/api';
-} else if (designCode && designCode.startsWith('DCT')) {
+} else if (normalizedDesignCode.startsWith('DCT')) {
   apiBaseUrl = 'https://testapi.thesolo.network/api';
-} else if (designCode && designCode.startsWith('LDC')) {
+} else if (normalizedDesignCode.startsWith('LDC')) {
   apiBaseUrl = 'https://leafapi.thesolo.network/api';
-} else if (designCode && designCode.startsWith('GSI')) {
+} else if (normalizedDesignCode.startsWith('GSI')) {
   apiBaseUrl = 'https://astateqaapi.thesolo.network/api';
-} else if (designCode && designCode.startsWith('DCD')) {
+} else if (normalizedDesignCode.startsWith('DCD')) {
   apiBaseUrl = 'https://devapi.thesolo.network/api';
-} else if (designCode && designCode.startsWith('LTE')) {
+} else if (normalizedDesignCode.startsWith('LTE')) {
   apiBaseUrl = 'https://learn2earnapi.thesolo.network/api';
-} else if (designCode && designCode.startsWith('VPS')) {
+} else if (normalizedDesignCode.startsWith('VPS')) {
   apiBaseUrl = 'https://vialtopartnersapi.thesolo.network/api';
-} else if (designCode && designCode.startsWith('LTS')) {
+} else if (normalizedDesignCode.startsWith('LTS')) {
   apiBaseUrl = 'https://learn2earnapi.thesolo.network/api';
-} else if (designCode && designCode.startsWith('BTS')) {
+} else if (normalizedDesignCode.startsWith('BTS')) {
   apiBaseUrl = 'https://brilliancytechapi.thesolo.network/api';
-} else if (designCode && designCode.startsWith('TEST')) {
+} else if (normalizedDesignCode.startsWith('TEST')) {
   apiBaseUrl = 'https://astatedevapi.thesolo.network/api';
-} else if (designCode && designCode.startsWith('DCA')) {
+} else if (normalizedDesignCode.startsWith('DCA')) {
   apiBaseUrl = 'https://arkansasapi.thesolo.network/api';
+}
+
+if (!apiBaseUrl && configuredApiBaseUrl) {
+  apiBaseUrl = configuredApiBaseUrl.replace(/\/$/, '');
 }
 
 if (decryptedRU == 'localhost') {

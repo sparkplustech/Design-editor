@@ -1,9 +1,18 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Flex } from '../../components/flex';
 
 class ImageMapTitle extends Component {
+	static propTypes = {
+		title: PropTypes.node,
+		content: PropTypes.node,
+		action: PropTypes.node,
+		children: PropTypes.node,
+	};
+
 	render() {
 		const { title, content, action, children } = this.props;
+		const titleNode = typeof title === 'string' || title instanceof String ? <h3>{title}</h3> : title;
 		return (
 			children || (
 				<Flex className="rde-content-layout-title" alignItems="center" flexWrap="wrap">
@@ -13,7 +22,7 @@ class ImageMapTitle extends Component {
 							justifyContent="flex-start"
 							alignItems="center"
 						>
-							{title instanceof String ? <h3>{title}</h3> : title}
+							{titleNode}
 						</Flex>
 					</Flex.Item>
 					<Flex.Item flex="auto">

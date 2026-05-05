@@ -1,15 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Collapse, notification, Input, message } from 'antd';
+import { notification, Input, message } from 'antd';
 import classnames from 'classnames';
-import i18n from 'i18next';
 import {
-	FileTextFilled,
-	AntDesignOutlined,
+	AppstoreOutlined,
 	LayoutOutlined,
 	ProfileOutlined,
 	TagOutlined,
-	IeOutlined,
 	PictureOutlined,
 } from '@ant-design/icons';
 import { Flex } from '../../components/flex';
@@ -45,7 +42,6 @@ class ImageMapItems extends Component {
 	};
 
 	state = {
-		activeKey: [],
 		collapse: false,
 		textSearch: '',
 		descriptors: {},
@@ -87,13 +83,13 @@ class ImageMapItems extends Component {
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
-		if (JSON.stringify(this.state.descriptors) !== JSON.stringify(nextState.descriptors)) {
+		if (JSON.stringify(this.props.descriptors) !== JSON.stringify(nextProps.descriptors)) {
+			return true;
+		} else if (JSON.stringify(this.state.descriptors) !== JSON.stringify(nextState.descriptors)) {
 			return true;
 		} else if (JSON.stringify(this.state.filteredDescriptors) !== JSON.stringify(nextState.filteredDescriptors)) {
 			return true;
 		} else if (this.state.textSearch !== nextState.textSearch) {
-			return true;
-		} else if (JSON.stringify(this.state.activeKey) !== JSON.stringify(nextState.activeKey)) {
 			return true;
 		} else if (this.state.collapse !== nextState.collapse) {
 			return true;
@@ -246,11 +242,6 @@ class ImageMapItems extends Component {
 				canvasRef.handler.drawingHandler.polygon.init();
 			}
 			this.props.onFocusCanvas?.();
-		},
-		onChangeActiveKey: activeKey => {
-			this.setState({
-				activeKey,
-			});
 		},
 		onCollapse: () => {
 			this.setState({
@@ -440,43 +431,6 @@ class ImageMapItems extends Component {
 		);
 	};
 
-	renderComponents = () => {
-		const components = [
-			{
-				name: 'Ribbon',
-				description: '',
-				svgUrl: 'https://hirefullstackdevelopersindia.com/testfile/rt.svg',
-				type: 'component',
-				option: { superType: 'svg' },
-			},
-			{
-				name: 'Ribbon',
-				description: '',
-				svgUrl: 'https://hirefullstackdevelopersindia.com/testfile/rt.svg',
-				type: 'component',
-				option: { superType: 'svg' },
-			},
-		];
-
-		return components.map((item, index) => (
-			<button
-				type="button"
-				key={`${item.name}-${index}`}
-				draggable
-				onClick={e => this.handlers.onAddItem(item, true)}
-				onDragStart={e => this.events.onDragStart(e, item)}
-				onDragEnd={e => this.events.onDragEnd(e, item)}
-				className="rde-editor-items-item"
-				aria-label={`Add ${item.name}`}
-			>
-				<span className="rde-editor-items-item-icon">
-					{/* <Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} /> */}
-				</span>
-				<div className="rde-editor-items-item-text">{item.name}</div>
-			</button>
-		));
-	};
-
 	render() {
 		const canvasRef = this.getCanvasRef();
 		const { descriptors } = this.props;
@@ -484,7 +438,6 @@ class ImageMapItems extends Component {
 			collapse,
 			textSearch,
 			filteredDescriptors,
-			activeKey,
 			svgModalVisible,
 			svgOption,
 			activeSection,
@@ -512,7 +465,7 @@ class ImageMapItems extends Component {
 							onClick={this.handlers.onCollapse}
 							tooltipTitle={collapse ? 'Expand assets panel' : 'Collapse assets panel'}
 						/>
-						{!isAdminPath && this.renderNavButton('design', AntDesignOutlined, 'Designs')}
+						{!isAdminPath && this.renderNavButton('design', AppstoreOutlined, 'Designs')}
 						{isCertificatePath ? (
 							this.renderNavButton('template', ProfileOutlined, 'Templates')
 						) : (

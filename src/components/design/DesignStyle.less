@@ -1,18 +1,41 @@
 .DesignsSection {
-    padding: 15px 10px 10px;
     width: 100%;
+    padding: 10px 8px 14px;
 
-    .design-sections {
-        margin-bottom: 8px;
+    .ant-input-search {
+        height: 34px;
+        border-radius: 7px;
     }
 
-    .design-row {
+    .ant-input-search .ant-input {
+        height: 34px;
+        border-color: #d9e1ec;
+        border-radius: 7px;
+        background: #fbfcfe;
+    }
+
+    .ant-input-search .ant-input:hover,
+    .ant-input-search .ant-input:focus {
+        border-color: #2855b8;
+        box-shadow: 0 0 0 2px rgba(40, 85, 184, 0.12);
+    }
+
+    .template-design,
+    .template-design-all {
+        margin-top: 8px;
+    }
+
+    .template-row {
         display: flex;
         align-items: center;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
 
         h3 {
-            margin-bottom: 0px;
+            margin-bottom: 0;
+            color: #17202c;
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1.2;
         }
 
         span {
@@ -25,26 +48,54 @@
         }
     }
 
+    .ant-row {
+        margin-right: -4px;
+        margin-left: -4px;
+    }
+
+    .ant-col-12 {
+        padding-right: 4px;
+        padding-left: 4px;
+    }
+
+    .certificate-img1,
+    .certificate-img2 {
+        margin-bottom: 10px;
+    }
+
     .certificate-img1 {
-        height: 90px;
-        padding: 0 5%;
-        margin-bottom: 15px;
+        height: 86px;
     }
 
     .certificate-img2 {
-        padding: 0 5%;
-        height: 175px;
-        margin-bottom: 15px;
+        height: 168px;
     }
 
-    .design-img{
+    .template-card {
+        overflow: hidden;
+        border: 1px solid #d9e1ec;
+        border-radius: 8px;
+        background: #ffffff;
+        box-shadow: 0 5px 14px rgba(31, 42, 55, 0.06);
+        transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+    }
+
+    .template-card:hover,
+    .template-card:focus {
+        border-color: #ff9a73;
+        box-shadow: 0 10px 22px rgba(31, 42, 55, 0.12);
+        transform: translateY(-1px);
+    }
+
+    .template-img {
         width: 100%;
         height: 100%;
-        cursor: pointer;
+        background: #ffffff;
+        object-fit: cover;
     }
 
-    .design-all {
-        .design-row {
+    .template-design-all {
+        .template-row {
             span {
                 text-align: left;
                 cursor: pointer;
@@ -59,5 +110,4 @@
             }
         }
     }
-
 }

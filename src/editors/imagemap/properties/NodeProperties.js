@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Divider } from 'antd';
+import { Form } from 'antd';
 
 import PropertyDefinition from './PropertyDefinition';
 import { Flex } from '../../../components/flex';
@@ -42,7 +42,6 @@ class NodeProperties extends Component {
 								<div className="premium-inspector-section" key={key}>
 									<div className="premium-inspector-section-title">{definition.title}</div>
 									{definition.component.render(canvasRef, form, selectedItem)}
-									{definition.title !== 'Shadow' && <Divider className="divider-class" />}
 								</div>
 							);
 						})}

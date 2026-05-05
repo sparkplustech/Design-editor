@@ -25,6 +25,9 @@ class CommonButton extends Component {
 		type: PropTypes.string,
 		iconType: PropTypes.oneOf(['fas', 'material']),
 		ariaLabel: PropTypes.string,
+		size: PropTypes.string,
+		onClick: PropTypes.func,
+		children: PropTypes.node,
 	};
 
 	static defaultProps = {

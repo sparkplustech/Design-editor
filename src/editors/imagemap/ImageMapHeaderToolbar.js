@@ -84,7 +84,40 @@ class ImageMapHeaderToolbar extends Component {
 		const showCropControls = canCropSelection || hasCropRect || isCropping;
 		const showAdvancedObjectControls = collapse;
 		const advancedObjectControls = (
-			<div className="rde-object-actions-popover" role="toolbar" aria-label="Object alignment and grouping">
+			<div className="rde-object-actions-popover" role="toolbar" aria-label="Object arrange, alignment, and grouping">
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={disableObjectActions}
+					onClick={() => runCanvasAction(handler => handler.bringForward())}
+					icon="angle-up"
+					tooltipTitle={i18n.t('action.bring-forward')}
+				/>
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={disableObjectActions}
+					onClick={() => runCanvasAction(handler => handler.sendBackwards())}
+					icon="angle-down"
+					tooltipTitle={i18n.t('action.send-backwards')}
+				/>
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={disableObjectActions}
+					onClick={() => runCanvasAction(handler => handler.bringToFront())}
+					icon="angle-double-up"
+					tooltipTitle={i18n.t('action.bring-to-front')}
+				/>
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={disableObjectActions}
+					onClick={() => runCanvasAction(handler => handler.sendToBack())}
+					icon="angle-double-down"
+					tooltipTitle={i18n.t('action.send-to-back')}
+				/>
+				<span className="rde-object-actions-divider" aria-hidden="true" />
 				<CommonButton
 					className="rde-action-btn align-action-btn"
 					shape="circle"
@@ -230,40 +263,6 @@ class ImageMapHeaderToolbar extends Component {
 								onClick={() => runCanvasAction(handler => handler.remove())}
 								icon="trash"
 								tooltipTitle={i18n.t('action.delete')}
-							/>
-						</Flex.Item>
-						<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
-							<CommonButton
-								className="rde-action-btn"
-								shape="circle"
-								disabled={disableObjectActions}
-								onClick={() => runCanvasAction(handler => handler.bringForward())}
-								icon="angle-up"
-								tooltipTitle={i18n.t('action.bring-forward')}
-							/>
-							<CommonButton
-								className="rde-action-btn"
-								shape="circle"
-								disabled={disableObjectActions}
-								onClick={() => runCanvasAction(handler => handler.sendBackwards())}
-								icon="angle-down"
-								tooltipTitle={i18n.t('action.send-backwards')}
-							/>
-							<CommonButton
-								className="rde-action-btn"
-								shape="circle"
-								disabled={disableObjectActions}
-								onClick={() => runCanvasAction(handler => handler.bringToFront())}
-								icon="angle-double-up"
-								tooltipTitle={i18n.t('action.bring-to-front')}
-							/>
-							<CommonButton
-								className="rde-action-btn"
-								shape="circle"
-								disabled={disableObjectActions}
-								onClick={() => runCanvasAction(handler => handler.sendToBack())}
-								icon="angle-double-down"
-								tooltipTitle={i18n.t('action.send-to-back')}
 							/>
 						</Flex.Item>
 						{showAdvancedObjectControls && (

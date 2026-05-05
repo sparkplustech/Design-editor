@@ -1631,6 +1631,12 @@ class Handler implements HandlerOptions {
 			prevTop = workarea.top;
 			this.workarea.set(workarea);
 			await this.workareaHandler.setImage(workarea.src, true);
+			const canvasStack = this.canvas as any;
+			if (canvasStack.sendObjectToBack) {
+				canvasStack.sendObjectToBack(this.workarea);
+			} else if (canvasStack.sendToBack) {
+				canvasStack.sendToBack(this.workarea);
+			}
 			this.workarea.setCoords();
 		} else {
 			this.canvas.centerObject(this.workarea);
@@ -1638,9 +1644,19 @@ class Handler implements HandlerOptions {
 			prevLeft = this.workarea.left;
 			prevTop = this.workarea.top;
 		}
-		json.forEach((obj: FabricObjectOption) => {
+		const enlivenObjects = (objects: any[]) =>
+			new Promise<FabricObject[]>((resolve, reject) => {
+				const result = (fabric.util.enlivenObjects as any)(objects);
+				if (result?.then) {
+					result.then(resolve).catch(reject);
+					return;
+				}
+				(fabric.util.enlivenObjects as any)(objects, resolve);
+			});
+
+		for (const obj of json) {
 			if (obj.id === 'workarea') {
-				return;
+				continue;
 			}
 			const canvasWidth = this.canvas.getWidth();
 			const canvasHeight = this.canvas.getHeight();
@@ -1661,9 +1677,24 @@ class Handler implements HandlerOptions {
 			if (obj.superType === 'element') {
 				obj.id = uuid();
 			}
-			this.add(obj, false, true);
+			if (obj.type === 'svg' && Array.isArray((obj as any).objects)) {
+				const { objects: serializedObjects, ...svgOption } = obj as any;
+				const svgObjects = (await enlivenObjects(serializedObjects)).filter(Boolean);
+				const createdObj = new fabric.Group(svgObjects, svgOption) as FabricObject<fabric.Group>;
+				createdObj.set(svgOption);
+				this.canvas.add(createdObj);
+				createdObj.setCoords();
+			} else {
+				this.add(obj, false, true);
+			}
 			this.canvas.renderAll();
-		});
+		}
+		const canvasStack = this.canvas as any;
+		if (canvasStack.sendObjectToBack) {
+			canvasStack.sendObjectToBack(this.workarea);
+		} else if (canvasStack.sendToBack) {
+			canvasStack.sendToBack(this.workarea);
+		}
 		this.objects = this.getObjects();
 		if (callback) {
 			callback(this.canvas);

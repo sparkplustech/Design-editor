@@ -184,11 +184,11 @@ class WorkareaHandler {
 	public setResponsiveImage = async (source: string | File, loaded?: boolean) => {
 		const imageFromUrl = async (src: string = '') => {
 			return new Promise<WorkareaObject>(resolve => {
-				fabric.Image.fromURL(src, (img: any) => {
+				const handleImage = (img: any) => {
 					const { canvas, workarea, editable } = this.handler;
 					const { workareaWidth, workareaHeight } = workarea;
 					const { scaleX, scaleY } = this.calculateScale(img);
-					if (img._element) {
+					if (img?._element) {
 						workarea.set({
 							...img,
 							isElement: true,
@@ -230,7 +230,13 @@ class WorkareaHandler {
 					this.handler.zoomHandler.zoomToFit();
 					canvas.centerObject(workarea);
 					resolve(workarea);
-				});
+				};
+				const result = (fabric.Image.fromURL as any)(src);
+				if (result?.then) {
+					result.then(handleImage).catch(() => handleImage(null));
+					return;
+				}
+				(fabric.Image.fromURL as any)(src, handleImage);
 			});
 		};
 		const { workarea } = this.handler;
@@ -273,7 +279,7 @@ class WorkareaHandler {
 		}
 		const imageFromUrl = async (src: string) => {
 			return new Promise<WorkareaObject>(resolve => {
-				fabric.Image.fromURL(src, (img: any) => {
+				const handleImage = (img: any) => {
 					let width = canvas.getWidth();
 					let height = canvas.getHeight();
 					if (workarea.layout === 'fixed') {
@@ -282,7 +288,7 @@ class WorkareaHandler {
 					}
 					let scaleX = 1;
 					let scaleY = 1;
-					if (img._element) {
+					if (img?._element) {
 						scaleX = width / img.width;
 						scaleY = height / img.height;
 						img.set({
@@ -336,7 +342,13 @@ class WorkareaHandler {
 					this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), zoom);
 					canvas.renderAll();
 					resolve(workarea);
-				}, { crossOrigin: 'anonymous' });
+				};
+				const result = (fabric.Image.fromURL as any)(src, { crossOrigin: 'anonymous' });
+				if (result?.then) {
+					result.then(handleImage).catch(() => handleImage(null));
+					return;
+				}
+				(fabric.Image.fromURL as any)(src, handleImage, { crossOrigin: 'anonymous' });
 			});
 		};
 		if (!source) {

@@ -36,10 +36,11 @@ class Content extends Component<IProps> {
 					{title}
 					<Layout
 						style={{
-							overflowY: 'auto',
+							flex: '1 1 auto',
+							minHeight: 0,
+							height: 'auto',
+							overflowY: 'hidden',
 							overflowX: 'hidden',
-							minHeight: `calc(100vh - ${title ? 60 : 60}px)`,
-							height: `calc(100vh - ${title ? 98 : 60}px)`,
 						}}
 						className={className}
 					>

@@ -1,18 +1,41 @@
 .BadgeSection {
-    padding: 15px 10px 10px;
     width: 100%;
+    padding: 10px 8px 14px;
 
-    .template-sections {
-        margin-bottom: 8px;
+    .ant-input-search {
+        height: 34px;
+        border-radius: 7px;
+    }
+
+    .ant-input-search .ant-input {
+        height: 34px;
+        border-color: #d9e1ec;
+        border-radius: 7px;
+        background: #fbfcfe;
+    }
+
+    .ant-input-search .ant-input:hover,
+    .ant-input-search .ant-input:focus {
+        border-color: #2855b8;
+        box-shadow: 0 0 0 2px rgba(40, 85, 184, 0.12);
+    }
+
+    .template-design,
+    .template-design-all {
+        margin-top: 8px;
     }
 
     .template-row {
         display: flex;
         align-items: center;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
 
         h3 {
-            margin-bottom: 0px;
+            margin-bottom: 0;
+            color: #17202c;
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1.2;
         }
 
         span {
@@ -25,46 +48,69 @@
         }
     }
 
-    .certificate-img1 {
-        padding: 0 5%;
-        text-align: center;
-        margin-bottom: 25px;
+    .ant-row {
+        margin-right: -4px;
+        margin-left: -4px;
+    }
+
+    .ant-col-12 {
+        padding-right: 4px;
+        padding-left: 4px;
+    }
+
+    .certificate-img1,
+    .certificate-img2,
+    .shape-img {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 10px;
     }
 
     .certificate-img2 {
-        padding: 0 5%;
-        height: 175px;
-        margin-bottom: 15px;  
+        height: 168px;
     }
 
-    .template-img{
+    .template-card {
+        overflow: hidden;
         width: 100px;
         height: 100px;
-        object-fit: cover;
-        cursor: pointer;
-        box-shadow: 2px 2px 16px 0px rgb(242,244,248);
+        border: 1px solid #d9e1ec;
+        border-radius: 8px;
+        background: #ffffff;
+        box-shadow: 0 5px 14px rgba(31, 42, 55, 0.06);
+        transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
     }
 
-    .shape-img {
-        padding: 0 5%;
-        text-align: center;
-        margin-bottom: 25px;
+    .template-card:hover,
+    .template-card:focus {
+        border-color: #ff9a73;
+        box-shadow: 0 10px 22px rgba(31, 42, 55, 0.12);
+        transform: translateY(-1px);
+    }
 
-        .shape-images{
-            object-fit: cover;
-            cursor: pointer;
-            box-shadow: 2px 2px 16px 0px rgb(242,244,248);
-            width: 100px;
-            height: 100px;
-            margin: auto;
-            overflow: hidden;
-            .template-img{
-                width: 100px;
-                scale: 4;
-            }
+    .template-img {
+        width: 100%;
+        height: 100%;
+        background: #ffffff;
+        object-fit: cover;
+    }
+
+    .shape-images {
+        width: 100px;
+        height: 100px;
+        margin: auto;
+        overflow: hidden;
+        border-radius: 8px;
+
+        .template-card {
+            border: 0;
+            box-shadow: none;
+        }
+
+        .template-img {
+            transform: scale(4);
         }
     }
-
 
     .template-design-all {
         .template-row {
@@ -82,10 +128,9 @@
             }
         }
     }
-
 }
 
-.loader-class{
+.loader-class {
     position: absolute;
     left: 50%;
     top: 10%;

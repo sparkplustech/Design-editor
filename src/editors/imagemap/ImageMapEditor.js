@@ -273,9 +273,10 @@ class ImageMapEditor extends Component {
 			if (!this.isEditorMounted) {
 				return;
 			}
+			const descriptorGroups = descriptors.default || descriptors;
 			this.setState(
 				{
-					descriptors,
+					descriptors: descriptorGroups,
 				},
 				() => {
 					this.showLoading(false);
@@ -1821,13 +1822,14 @@ class ImageMapEditor extends Component {
 						type="button"
 						className="warn-txt proof-status-btn"
 						title={summarizeProofIssues(proofIssues)}
+						aria-label={`Open proof checks with ${proofIssues.length} issue${proofIssues.length > 1 ? 's' : ''}`}
 						onClick={this.handleOpenProofIssues}
 					>
 						Proof checks: {proofIssues.length} issue{proofIssues.length > 1 ? 's' : ''}
 					</button>
 				)}
 
-				<button type="button" className="proof-action-btn" onClick={this.handleOpenProofIssues}>
+				<button type="button" className="proof-action-btn" title="Open proof checks" onClick={this.handleOpenProofIssues}>
 					Proof
 				</button>
 				<CommonButton
@@ -1897,10 +1899,21 @@ class ImageMapEditor extends Component {
 			</React.Fragment>
 		);
 		const titleContent = (
-			<React.Fragment>
-				<CommonButton icon="arrow-left" onClick={this.handleBackButton} tooltipTitle="Back" />
-				<span style={{ marginLeft: '10px' }}>SOLO {isBadgePath ? 'Badge' : 'Certificate'} Designer</span>
-			</React.Fragment>
+			<div className="designer-title-brand">
+				<CommonButton
+					className="designer-back-btn"
+					icon="arrow-left"
+					onClick={this.handleBackButton}
+					tooltipTitle="Back"
+				/>
+				<div className="designer-title-mark" aria-hidden="true">
+					S
+				</div>
+				<div className="designer-title-copy">
+					<div className="designer-title-label">SOLO Designer</div>
+					<div className="designer-title-name">{isBadgePath ? 'Badge' : 'Certificate'} Studio</div>
+				</div>
+			</div>
 		);
 		const title = <ImageMapTitle title={titleContent} action={action} />;
 		const content = (
@@ -2014,26 +2027,26 @@ class ImageMapEditor extends Component {
 								// style={{width:'800px',height:'618px', top:'50%',left:'50%',transform:'translate(-50%,-50%'}}
 							/>
 						</div>
-						<div className="rde-editor-footer-toolbar">
-							<ImageMapFooterToolbar
-								canvasRef={this.canvasRef}
-								preview={preview}
-								onChangePreview={onChangePreview}
-								zoomRatio={zoomRatio}
-								gridEnabled={gridEnabled}
-								snapToGrid={snapToGrid}
-								guidesEnabled={guidesEnabled}
-								rulersEnabled={rulersEnabled}
-								safeAreaEnabled={safeAreaEnabled}
-								interactionMode={interactionMode}
-								onFocusCanvas={this.focusCanvas}
-								onToggleGrid={this.handleToggleGrid}
-								onToggleSnap={this.handleToggleSnap}
-								onToggleGuides={this.handleToggleGuides}
-								onToggleRulers={this.handleToggleRulers}
-								onToggleSafeArea={this.handleToggleSafeArea}
-							/>
-						</div>
+					</div>
+					<div className="rde-editor-footer-toolbar">
+						<ImageMapFooterToolbar
+							canvasRef={this.canvasRef}
+							preview={preview}
+							onChangePreview={onChangePreview}
+							zoomRatio={zoomRatio}
+							gridEnabled={gridEnabled}
+							snapToGrid={snapToGrid}
+							guidesEnabled={guidesEnabled}
+							rulersEnabled={rulersEnabled}
+							safeAreaEnabled={safeAreaEnabled}
+							interactionMode={interactionMode}
+							onFocusCanvas={this.focusCanvas}
+							onToggleGrid={this.handleToggleGrid}
+							onToggleSnap={this.handleToggleSnap}
+							onToggleGuides={this.handleToggleGuides}
+							onToggleRulers={this.handleToggleRulers}
+							onToggleSafeArea={this.handleToggleSafeArea}
+						/>
 					</div>
 				</div>
 				<ImageMapConfigurations
@@ -2088,7 +2101,8 @@ class ImageMapEditor extends Component {
 					<ul className="proof-issue-list">
 						{proofIssues.map((issue, index) => (
 							<li key={`${issue.message}-${index}`} className={`proof-issue-list-item proof-${issue.severity}`}>
-								{issue.message}
+								<span className="proof-issue-severity">{issue.severity}</span>
+								<span className="proof-issue-message">{issue.message}</span>
 							</li>
 						))}
 					</ul>
