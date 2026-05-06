@@ -16,14 +16,12 @@ class ImageMapFooterToolbar extends Component {
 		snapToGrid: PropTypes.bool,
 		guidesEnabled: PropTypes.bool,
 		rulersEnabled: PropTypes.bool,
-		safeAreaEnabled: PropTypes.bool,
-		interactionMode: PropTypes.string,
+			interactionMode: PropTypes.string,
 		onToggleGrid: PropTypes.func,
 		onToggleSnap: PropTypes.func,
 		onToggleGuides: PropTypes.func,
 		onToggleRulers: PropTypes.func,
-		onToggleSafeArea: PropTypes.func,
-		onFocusCanvas: PropTypes.func,
+			onFocusCanvas: PropTypes.func,
 	};
 
 	state = {
@@ -161,10 +159,6 @@ class ImageMapFooterToolbar extends Component {
 			this.props.onToggleRulers?.();
 			this.handlers.focusCanvas();
 		},
-		toggleSafeArea: () => {
-			this.props.onToggleSafeArea?.();
-			this.handlers.focusCanvas();
-		},
 	};
 
 	events = {
@@ -191,7 +185,6 @@ class ImageMapFooterToolbar extends Component {
 			snapToGrid,
 			guidesEnabled,
 			rulersEnabled,
-			safeAreaEnabled,
 			interactionMode: interactionModeProp,
 		} = this.props;
 		const interactionMode = interactionModeProp || this.state.interactionMode;
@@ -210,7 +203,6 @@ class ImageMapFooterToolbar extends Component {
 			toggleSnap,
 			toggleGuides,
 			toggleRulers,
-			toggleSafeArea,
 		} = this.handlers;
 		if (!canvasRef) {
 			return null;
@@ -329,16 +321,10 @@ class ImageMapFooterToolbar extends Component {
 						/>
 						<CommonButton
 							type={rulersEnabled ? 'primary' : 'default'}
+							style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
 							onClick={toggleRulers}
 							icon="ruler-horizontal"
 							tooltipTitle="Rulers"
-						/>
-						<CommonButton
-							type={safeAreaEnabled ? 'primary' : 'default'}
-							style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
-							onClick={toggleSafeArea}
-							icon="vector-square"
-							tooltipTitle="Safe area"
 						/>
 					</Button.Group>
 				</div>

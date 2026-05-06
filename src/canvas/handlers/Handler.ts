@@ -293,7 +293,6 @@ class Handler implements HandlerOptions {
 
 	private isRequsetAnimFrame = false;
 	private requestFrame: any;
-	private safeAreaObject?: FabricObject<fabric.Rect>;
 	/**
 	 * Copied object
 	 *
@@ -400,7 +399,7 @@ class Handler implements HandlerOptions {
 		const objects = this.canvas.getObjects().filter((obj: FabricObject) => {
 			if (obj.id === 'workarea') {
 				return false;
-			} else if (obj.id === 'grid' || obj.id === 'safe-area') {
+			} else if (obj.id === 'grid') {
 				return false;
 			} else if (obj.superType === 'port') {
 				return false;
@@ -472,15 +471,9 @@ class Handler implements HandlerOptions {
 		const isTextObject = object && ['textbox', 'i-text', 'text'].includes(object.type);
 
 		if (isTextObject && (!changedKey || textMetricKeys.includes(changedKey as string))) {
-			object.dirty = true;
-			if (typeof object.initDimensions === 'function') {
-				object.initDimensions();
-			}
-			if (typeof object.setCoords === 'function') {
-				object.setCoords();
-			}
-
 			if (changedKey === 'fontFamily' && typeof document !== 'undefined' && (document as any).fonts) {
+				// Wait for font to load before recalculating metrics so the bounding box
+				// reflects the actual glyph widths rather than a fallback font.
 				(document as any).fonts
 					.load(`${object.fontSize || 16}px "${object.fontFamily}"`)
 					.then(() => {
@@ -492,8 +485,22 @@ class Handler implements HandlerOptions {
 						this.canvas.requestRenderAll();
 					})
 					.catch(() => {
+						object.dirty = true;
+						if (typeof object.initDimensions === 'function') {
+							object.initDimensions();
+						}
+						object.setCoords();
 						this.canvas.requestRenderAll();
 					});
+				return;
+			}
+
+			object.dirty = true;
+			if (typeof object.initDimensions === 'function') {
+				object.initDimensions();
+			}
+			if (typeof object.setCoords === 'function') {
+				object.setCoords();
 			}
 		}
 
@@ -809,8 +816,8 @@ class Handler implements HandlerOptions {
 		} else {
 			option.editable = editable;
 		} 
-		if(obj.name==='attribute'){
-			option.editable=false
+		if (obj.name === 'attribute') {
+			option.editable = false;
 		}
 		if (editable && this.workarea.layout === 'fullscreen') {
 			option.scaleX = this.workarea.scaleX;
@@ -1707,7 +1714,7 @@ class Handler implements HandlerOptions {
 	 */
 	public exportJSON = () =>
 		(this.canvas.toObject(this.propertiesToInclude).objects as FabricObject[]).filter((obj: FabricObject) => {
-			if (obj.id === 'grid' || obj.id === 'safe-area' || obj.superType === 'port') {
+			if (obj.id === 'grid' || obj.superType === 'port') {
 				return false;
 			}
 			return true;
@@ -1860,7 +1867,7 @@ class Handler implements HandlerOptions {
 		} else {
 			this.canvas.discardActiveObject();
 			this.canvas.getObjects().forEach((obj: any) => {
-				if (obj.id === 'grid' || obj.id === 'workarea' || obj.id === 'safe-area') {
+				if (obj.id === 'grid' || obj.id === 'workarea') {
 					return;
 				}
 				this.canvas.remove(obj);
@@ -1939,7 +1946,7 @@ class Handler implements HandlerOptions {
 		const cachedVT = this.canvas.viewportTransform;
 		const exportHiddenObjects = this.canvas
 			.getObjects()
-			.filter(obj => obj.id === 'grid' || obj.id === 'safe-area')
+			.filter(obj => obj.id === 'grid')
 			.map(obj => ({ obj, visible: obj.visible }));
 		const cachedWorkareaShadow = this.workarea.shadow;
 		// reset the viewportTransform to default (no zoom)
@@ -2084,43 +2091,6 @@ class Handler implements HandlerOptions {
 		if (this.gridHandler) {
 			this.gridHandler.initialize();
 		}
-	};
-
-	public setSafeAreaOption = ({ enabled, margin = 40 }: { enabled: boolean; margin?: number }) => {
-		if (this.safeAreaObject) {
-			this.canvas.remove(this.safeAreaObject);
-			this.safeAreaObject = null;
-		}
-		if (!enabled || !this.workarea) {
-			this.canvas.requestRenderAll();
-			return;
-		}
-
-		const workareaWidth = this.workarea.width * (this.workarea.scaleX || 1);
-		const workareaHeight = this.workarea.height * (this.workarea.scaleY || 1);
-		const safeMargin = Math.min(margin, workareaWidth / 4, workareaHeight / 4);
-
-		this.safeAreaObject = new fabric.Rect({
-			id: 'safe-area',
-			name: 'Safe area',
-			left: this.workarea.left + safeMargin,
-			top: this.workarea.top + safeMargin,
-			width: Math.max(1, workareaWidth - safeMargin * 2),
-			height: Math.max(1, workareaHeight - safeMargin * 2),
-			fill: 'rgba(255, 108, 54, 0.025)',
-			stroke: 'rgba(255, 108, 54, 0.62)',
-			strokeDashArray: [8, 6],
-			strokeWidth: 1,
-			selectable: false,
-			evented: false,
-			hasControls: false,
-			hasBorders: false,
-			excludeFromExport: true,
-			hoverCursor: 'default',
-		}) as FabricObject<fabric.Rect>;
-
-		this.canvas.add(this.safeAreaObject);
-		this.canvas.requestRenderAll();
 	};
 
 	/**

@@ -26,7 +26,7 @@ class ImageMapList extends Component {
 		return canvasRef.canvas
 			.getObjects()
 			.filter(obj => {
-				if (obj.id === 'workarea' || obj.id === 'grid' || obj.id === 'safe-area' || obj.superType === 'port') {
+				if (obj.id === 'workarea' || obj.id === 'grid' || obj.superType === 'port') {
 					return false;
 				}
 				if (obj.id) {

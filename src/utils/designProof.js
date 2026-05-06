@@ -1,6 +1,5 @@
 import { DESIGN_VARIABLE_TOKENS } from './designVariables';
 
-const SAFE_AREA_TOLERANCE = 2;
 const MIN_QR_SIZE = 80;
 const VARIABLE_PATTERN = /\[[A-Za-z0-9_]+\]/g;
 
@@ -32,15 +31,6 @@ function getBounds(object) {
 
 function getObjectLabel(object, index) {
 	return object?.name || object?.text || object?.type || `Object ${index + 1}`;
-}
-
-function isOutsideSafeArea(bounds, workareaBounds) {
-	return (
-		bounds.left < workareaBounds.left - SAFE_AREA_TOLERANCE ||
-		bounds.top < workareaBounds.top - SAFE_AREA_TOLERANCE ||
-		bounds.left + bounds.width > workareaBounds.left + workareaBounds.width + SAFE_AREA_TOLERANCE ||
-		bounds.top + bounds.height > workareaBounds.top + workareaBounds.height + SAFE_AREA_TOLERANCE
-	);
 }
 
 function getUnknownVariableTokens(text) {
@@ -104,7 +94,6 @@ export function getDesignProofIssues(canvasRef) {
 		];
 	}
 
-	const workareaBounds = getBounds(workarea);
 	const canvasObjects = getObjects(handler).filter(object => object?.id !== 'workarea' && object?.id !== 'grid');
 	const issues = [];
 
@@ -118,13 +107,6 @@ export function getDesignProofIssues(canvasRef) {
 				message: `${label} has no printable size.`,
 			});
 		}
-		if (isOutsideSafeArea(bounds, workareaBounds)) {
-			issues.push({
-				severity: 'warning',
-				message: `${label} is outside the design safe area.`,
-			});
-		}
-
 		const unknownTokens = getUnknownVariableTokens(object.text);
 		if (unknownTokens.length > 0) {
 			issues.push({

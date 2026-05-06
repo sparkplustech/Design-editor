@@ -15,10 +15,8 @@ class NodeProperties extends Component {
 
 	componentDidUpdate(prevProps) {
 		const { selectedItem, form } = this.props;
-		if (prevProps.selectedItem && selectedItem) {
-			if (prevProps.selectedItem.id !== selectedItem.id) {
-				form.resetFields();
-			}
+		if (prevProps.selectedItem !== selectedItem) {
+			form.resetFields();
 		}
 	}
 

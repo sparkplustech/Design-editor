@@ -131,7 +131,6 @@ class ImageMapEditor extends Component {
 		snapToGrid: false,
 		guidesEnabled: true,
 		rulersEnabled: true,
-		safeAreaEnabled: true,
 		interactionMode: 'selection',
 	};
 
@@ -192,7 +191,6 @@ class ImageMapEditor extends Component {
 		handler.canvas.centerObject(handler.workarea);
 		handler.workarea.setCoords();
 		handler.zoomHandler.zoomToFit();
-		this.syncSafeAreaOverlay();
 	};
 
 	handleWindowResizeFit = debounce(() => {
@@ -203,15 +201,7 @@ class ImageMapEditor extends Component {
 		window.requestAnimationFrame(() => {
 			window.requestAnimationFrame(() => {
 				this.fitCanvasToViewport();
-				this.syncSafeAreaOverlay();
 			});
-		});
-	};
-
-	syncSafeAreaOverlay = () => {
-		this.canvasRef?.handler?.setSafeAreaOption?.({
-			enabled: this.state.safeAreaEnabled,
-			margin: this.state.isBadgePath ? 32 : 42,
 		});
 	};
 
@@ -219,7 +209,7 @@ class ImageMapEditor extends Component {
 		const cachedViewportTransform = this.canvasRef.canvas.viewportTransform;
 		const exportHiddenObjects = this.canvasRef.canvas
 			.getObjects()
-			.filter(obj => obj.id === 'grid' || obj.id === 'safe-area')
+			.filter(obj => obj.id === 'grid')
 			.map(obj => ({ obj, visible: obj.visible }));
 		const { workarea } = this.canvasRef.handler;
 		const cachedWorkareaShadow = workarea.shadow;
@@ -377,7 +367,7 @@ class ImageMapEditor extends Component {
 					this.importObjectsTimer = setTimeout(() => {
 						if (this.isEditorMounted) {
 							const importHandler = getReadyCanvasHandler(this.canvasRef);
-							importHandler?.importJSON(importObjects).then(this.syncSafeAreaOverlay);
+							importHandler?.importJSON(importObjects);
 						}
 					}, 50);
 				}
@@ -989,29 +979,9 @@ class ImageMapEditor extends Component {
 			this.canvasHandlers.onSelect(target);
 		},
 		onSelect: target => {
-			const { selectedItem } = this.state;
-			if (target && target.id && target.id !== 'workarea' && target.type !== 'activeSelection') {
-				if (selectedItem && target.id === selectedItem.id) {
-					return;
-				}
-				this.canvasRef.handler.getObjects().forEach(obj => {
-					if (obj) {
-						this.canvasRef.handler.animationHandler.resetAnimation(obj, true);
-					}
-				});
-				this.setState({
-					selectedItem: target,
-				});
-				return;
-			}
-			this.canvasRef.handler.getObjects().forEach(obj => {
-				if (obj) {
-					this.canvasRef.handler.animationHandler.resetAnimation(obj, true);
-				}
-			});
-			this.setState({
-				selectedItem: null,
-			});
+			const isSelectable =
+				target && target.id && target.id !== 'workarea' && target.type !== 'activeSelection';
+			this.setState({ selectedItem: isSelectable ? target : null });
 		},
 		onRemove: () => {
 			const { editing } = this.state;
@@ -1333,7 +1303,6 @@ class ImageMapEditor extends Component {
 			if (!this.state.editing) {
 				this.changeEditing(true);
 			}
-			this.syncSafeAreaOverlay();
 			this.forceUpdate();
 		},
 	};
@@ -1393,7 +1362,7 @@ class ImageMapEditor extends Component {
 								}
 								return true;
 							});
-							this.canvasRef.handler.importJSON(data).then(this.syncSafeAreaOverlay);
+							this.canvasRef.handler.importJSON(data);
 							this.setState({ editing: true, proofIssues: [] });
 						} catch (error) {
 							message.error(error.message || 'Unable to import design JSON.');
@@ -1577,7 +1546,7 @@ class ImageMapEditor extends Component {
 		handler.clear(true);
 
 		if (Array.isArray(objects)) {
-			handler.importJSON(objects).then(this.syncSafeAreaOverlay);
+			handler.importJSON(objects);
 		} else {
 			message.error('Unable to resize canvas because the current design data is invalid.');
 		}
@@ -1639,7 +1608,7 @@ class ImageMapEditor extends Component {
 	};
 
 	handlePreview = () => {
-		const { blockingIssues } = this.runDesignProofValidation();
+		const { blockingIssues } = this.runDesignProofValidation({ showMessage: false });
 		if (blockingIssues.length > 0) {
 			return;
 		}
@@ -1692,10 +1661,6 @@ class ImageMapEditor extends Component {
 		this.setState(prevState => ({ rulersEnabled: !prevState.rulersEnabled }));
 	};
 
-	handleToggleSafeArea = () => {
-		this.setState(prevState => ({ safeAreaEnabled: !prevState.safeAreaEnabled }), this.syncSafeAreaOverlay);
-	};
-
 	parseImportedDesign = rawJson => {
 		let parsedDesign;
 
@@ -1746,7 +1711,6 @@ class ImageMapEditor extends Component {
 			snapToGrid,
 			guidesEnabled,
 			rulersEnabled,
-			safeAreaEnabled,
 		} = this.state;
 		const saveBlockedByName = isInputEmpty;
 		const saveTooltip = saveBlockedByName
@@ -1918,7 +1882,6 @@ class ImageMapEditor extends Component {
 		const title = <ImageMapTitle title={titleContent} action={action} />;
 		const content = (
 			<div className="rde-editor">
-				{/* {loading && <Spin size="large" />} */}
 				<ImageMapItems
 					ref={c => {
 						this.itemsRef = c;
@@ -2017,14 +1980,8 @@ class ImageMapEditor extends Component {
 								}}
 								style={{
 									marginTop: '30px',
-									//left: '50%',
-									//transform: 'translate(-50%, 0)',
-									//position: 'relative',
 									marginBottom: '70px',
-									//...canvasStyle,
 								}}
-
-								// style={{width:'800px',height:'618px', top:'50%',left:'50%',transform:'translate(-50%,-50%'}}
 							/>
 						</div>
 					</div>
@@ -2038,14 +1995,12 @@ class ImageMapEditor extends Component {
 							snapToGrid={snapToGrid}
 							guidesEnabled={guidesEnabled}
 							rulersEnabled={rulersEnabled}
-							safeAreaEnabled={safeAreaEnabled}
 							interactionMode={interactionMode}
 							onFocusCanvas={this.focusCanvas}
 							onToggleGrid={this.handleToggleGrid}
 							onToggleSnap={this.handleToggleSnap}
 							onToggleGuides={this.handleToggleGuides}
 							onToggleRulers={this.handleToggleRulers}
-							onToggleSafeArea={this.handleToggleSafeArea}
 						/>
 					</div>
 				</div>
@@ -2112,7 +2067,7 @@ class ImageMapEditor extends Component {
 						<div>
 							<div className="proof-pass-state-title">No proof issues found</div>
 							<div className="proof-pass-state-copy">
-								The current design passes safe-area, variable, overflow, and scan-size checks.
+								The current design passes all variable, overflow, and scan-size checks.
 							</div>
 						</div>
 					</div>

@@ -91,7 +91,7 @@ class TransactionHandler {
 			this.state = objects.filter(obj => {
 				if (obj.id === 'workarea') {
 					return false;
-				} else if (obj.id === 'grid' || obj.id === 'safe-area') {
+				} else if (obj.id === 'grid') {
 					return false;
 				} else if (obj.superType === 'port') {
 					return false;

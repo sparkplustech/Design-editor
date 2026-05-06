@@ -46,7 +46,6 @@ export default {
 			title: 'Icon',
 			component: MarkerProperty,
 		},
-	
 		style: {
 			title: 'Style',
 			component: StyleProperty,
@@ -54,9 +53,7 @@ export default {
 		shadow: {
 			title: 'Shadow',
 			component: ShadowProperty,
-		}
-	
-		
+		},
 	},
 	textbox: {
 		general: {
@@ -74,8 +71,7 @@ export default {
 		shadow: {
 			title: 'Shadow',
 			component: ShadowProperty,
-		}
-	
+		},
 	},
 	image: {
 		general: {
