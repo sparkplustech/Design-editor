@@ -305,6 +305,7 @@ class ImageMapEditor extends Component {
 		height = Math.ceil(height * scaleY);
 		// cachedVT is used to reset the viewportTransform after the image is saved.
 		// reset the viewportTransform to default (no zoom)
+		const cachedVT = this.canvasRef.canvas.viewportTransform;
 		this.canvasRef.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
 		const dataURL = this.canvasRef.canvas.toDataURL({
 			...option,
@@ -313,7 +314,10 @@ class ImageMapEditor extends Component {
 			width,
 			height,
 			enableRetinaScaling: true,
+			multiplier: 2,
 		});
+		this.canvasRef.canvas.viewportTransform = cachedVT;
+		this.canvasRef.canvas.requestRenderAll();
 
 		if (isBadgePath) {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
@@ -458,6 +462,7 @@ class ImageMapEditor extends Component {
 		let { left, top, width, height, scaleX, scaleY } = this.canvasRef.handler.workarea;
 		width = Math.ceil(width * scaleX);
 		height = Math.ceil(height * scaleY);
+		const cachedVT = this.canvasRef.canvas.viewportTransform;
 		this.canvasRef.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
 		const dataURL = this.canvasRef.canvas.toDataURL({
 			...option,
@@ -466,7 +471,10 @@ class ImageMapEditor extends Component {
 			width,
 			height,
 			enableRetinaScaling: true,
+			multiplier: 2,
 		});
+		this.canvasRef.canvas.viewportTransform = cachedVT;
+		this.canvasRef.canvas.requestRenderAll();
 
 		if (isBadgePath) {
 			this.canvasHandlers.onChangeWokarea('backgroundColor', '', '');
@@ -1288,6 +1296,7 @@ class ImageMapEditor extends Component {
 		let { left, top, width, height, scaleX, scaleY } = this.canvasRef.handler.workarea;
 		width = Math.ceil(width * scaleX);
 		height = Math.ceil(height * scaleY);
+		const cachedVT = this.canvasRef.canvas.viewportTransform;
 		this.canvasRef.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
 		const dataUrl = this.canvasRef.canvas.toDataURL({
 			...option,
@@ -1296,7 +1305,10 @@ class ImageMapEditor extends Component {
 			width,
 			height,
 			enableRetinaScaling: true,
+			multiplier: 2,
 		});
+		this.canvasRef.canvas.viewportTransform = cachedVT;
+		this.canvasRef.canvas.requestRenderAll();
 		this.setState({
 			previewVisible: true,
 			previewImage: dataUrl,
