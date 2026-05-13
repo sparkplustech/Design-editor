@@ -113,6 +113,10 @@ class ImageMapEditor extends Component {
 		isAdminBadgePath: false,
 		previewVisible: false,
 		previewImage: '',
+		renderCompareLoading: false,
+		renderCompareVisible: false,
+		renderCompareResult: null,
+		renderCompareError: '',
 		toolbarClass: 'minimize',
 		skip: 0,
 	};
@@ -1322,6 +1326,272 @@ class ImageMapEditor extends Component {
 		});
 	};
 
+	isRenderCompareEnabled = () => {
+		const queryParams = new URLSearchParams(window.location.search);
+		return queryParams.get('renderCompare') === 'true';
+	};
+
+	getRenderCompareApiBase = () => {
+		const queryParams = new URLSearchParams(window.location.search);
+		const overrideBase = queryParams.get('renderApiBase');
+		const apiBase = overrideBase || 'http://localhost:3000';
+		return (apiBase || '').replace(/\/$/, '');
+	};
+
+	waitForCanvasRender = async () => {
+		if (document.fonts && document.fonts.ready) {
+			await document.fonts.ready.catch(() => undefined);
+		}
+		this.canvasRef.canvas.getObjects().forEach(obj => {
+			if (['textbox', 'i-text', 'text'].includes(obj.type)) {
+				obj.set({
+					objectCaching: false,
+					dirty: true,
+				});
+				if (typeof obj.initDimensions === 'function') {
+					obj.initDimensions();
+				}
+				if (typeof obj.setCoords === 'function') {
+					obj.setCoords();
+				}
+			}
+		});
+		this.canvasRef.canvas.renderAll();
+		await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+	};
+
+	getFrontendRenderDataUrl = async () => {
+		await this.waitForCanvasRender();
+		const option = { name: 'Frontend render', format: 'png', quality: 1 };
+		let { left, top, width, height, scaleX, scaleY } = this.canvasRef.handler.workarea;
+		width = Math.ceil(width * scaleX);
+		height = Math.ceil(height * scaleY);
+		const cachedVT = this.canvasRef.canvas.viewportTransform;
+		try {
+			this.canvasRef.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
+			return this.canvasRef.canvas.toDataURL({
+				...option,
+				left,
+				top,
+				width,
+				height,
+				enableRetinaScaling: true,
+				multiplier: 2,
+			});
+		} finally {
+			this.canvasRef.canvas.viewportTransform = cachedVT;
+			this.canvasRef.canvas.requestRenderAll();
+		}
+	};
+
+	getStoredRenderPayload = () => {
+		let { left, top } = this.canvasRef.handler.workarea;
+		left = Number(left) || 0;
+		top = Number(top) || 0;
+		const exportedObjects = this.canvasRef.handler
+			.exportJSON()
+			.filter(obj => obj.id)
+			.map(obj => JSON.parse(JSON.stringify(obj)));
+		const exportedWorkarea = exportedObjects.find(obj => obj.id === 'workarea');
+		const exportWidth =
+			Number(exportedWorkarea?.width) * Number(exportedWorkarea?.scaleX || 1) ||
+			Number(this.canvasRef.handler.workarea.width) * Number(this.canvasRef.handler.workarea.scaleX || 1);
+		const exportHeight =
+			Number(exportedWorkarea?.height) * Number(exportedWorkarea?.scaleY || 1) ||
+			Number(this.canvasRef.handler.workarea.height) * Number(this.canvasRef.handler.workarea.scaleY || 1);
+		const normalizedWorkarea = {
+			...(exportedWorkarea ||
+				(this.state.isBadgePath
+					? CONSTANTS.JSON_CONSTANT.BADGE
+					: this.state.selectedPageSize === 'a4portrait'
+					? CONSTANTS.JSON_CONSTANT.PORTRAIT_CERTIFICATE
+					: CONSTANTS.JSON_CONSTANT.LANDSCAPE_CERTIFICATE)),
+			left: 0,
+			top: 0,
+			width: exportWidth,
+			height: exportHeight,
+			scaleX: 1,
+			scaleY: 1,
+			workareaWidth: exportWidth,
+			workareaHeight: exportHeight,
+		};
+
+		const objects = exportedObjects.filter(obj => obj.id !== 'workarea');
+		objects.forEach(obj => {
+			if (typeof obj.left === 'number') {
+				obj.left -= left;
+			}
+			if (typeof obj.top === 'number') {
+				obj.top -= top;
+			}
+		});
+
+		objects.unshift(normalizedWorkarea);
+
+		return {
+			objects,
+			animations: this.state.animations,
+			styles: this.state.styles,
+			dataSources: this.state.dataSources,
+		};
+	};
+
+	getApiRenderEndpoint = () => {
+		const endpoint = this.state.isBadgePath ? 'json-to-badgeImage' : 'json-to-image';
+		const apiBase = this.getRenderCompareApiBase();
+		if (!apiBase) {
+			throw new Error('Render API base URL is missing. Add renderApiBase to the URL.');
+		}
+		return `${apiBase}/puppeter-canvas/${endpoint}`;
+	};
+
+	normalizeApiImageDataUrl = responseBody => {
+		const imageData = responseBody?.data?.buffer || responseBody?.data || responseBody?.buffer || responseBody;
+		if (typeof imageData === 'string') {
+			return imageData.startsWith('data:image') ? imageData : `data:image/png;base64,${imageData}`;
+		}
+		const bytes = imageData?.data || imageData;
+		if (!Array.isArray(bytes)) {
+			throw new Error('Backend response did not contain a PNG buffer.');
+		}
+		let binary = '';
+		const chunkSize = 0x8000;
+		for (let i = 0; i < bytes.length; i += chunkSize) {
+			const chunk = bytes.slice(i, i + chunkSize);
+			binary += String.fromCharCode.apply(null, chunk);
+		}
+		return `data:image/png;base64,${btoa(binary)}`;
+	};
+
+	loadCompareImage = dataUrl =>
+		new Promise((resolve, reject) => {
+			const image = new Image();
+			image.onload = () => resolve(image);
+			image.onerror = reject;
+			image.src = dataUrl;
+		});
+
+	compareRenderImages = async (frontendDataUrl, apiDataUrl) => {
+		const [frontendImage, apiImage] = await Promise.all([
+			this.loadCompareImage(frontendDataUrl),
+			this.loadCompareImage(apiDataUrl),
+		]);
+		const frontendWidth = frontendImage.naturalWidth || frontendImage.width;
+		const frontendHeight = frontendImage.naturalHeight || frontendImage.height;
+		const apiWidth = apiImage.naturalWidth || apiImage.width;
+		const apiHeight = apiImage.naturalHeight || apiImage.height;
+		const width = Math.min(frontendWidth, apiWidth);
+		const height = Math.min(frontendHeight, apiHeight);
+		const frontendCanvas = document.createElement('canvas');
+		const apiCanvas = document.createElement('canvas');
+		const diffCanvas = document.createElement('canvas');
+		frontendCanvas.width = apiCanvas.width = diffCanvas.width = width;
+		frontendCanvas.height = apiCanvas.height = diffCanvas.height = height;
+
+		const frontendCtx = frontendCanvas.getContext('2d');
+		const apiCtx = apiCanvas.getContext('2d');
+		const diffCtx = diffCanvas.getContext('2d');
+		frontendCtx.drawImage(frontendImage, 0, 0);
+		apiCtx.drawImage(apiImage, 0, 0);
+
+		const frontendPixels = frontendCtx.getImageData(0, 0, width, height);
+		const apiPixels = apiCtx.getImageData(0, 0, width, height);
+		const diffPixels = diffCtx.createImageData(width, height);
+		let strictDifferentPixels = 0;
+		let visibleDifferentPixels = 0;
+		let maxChannelDelta = 0;
+		const visibleThreshold = 8;
+
+		for (let i = 0; i < frontendPixels.data.length; i += 4) {
+			const redDelta = Math.abs(frontendPixels.data[i] - apiPixels.data[i]);
+			const greenDelta = Math.abs(frontendPixels.data[i + 1] - apiPixels.data[i + 1]);
+			const blueDelta = Math.abs(frontendPixels.data[i + 2] - apiPixels.data[i + 2]);
+			const alphaDelta = Math.abs(frontendPixels.data[i + 3] - apiPixels.data[i + 3]);
+			const pixelDelta = Math.max(redDelta, greenDelta, blueDelta, alphaDelta);
+			maxChannelDelta = Math.max(maxChannelDelta, pixelDelta);
+			if (pixelDelta > 0) {
+				strictDifferentPixels += 1;
+			}
+			if (pixelDelta > visibleThreshold) {
+				visibleDifferentPixels += 1;
+				diffPixels.data[i] = 255;
+				diffPixels.data[i + 1] = 0;
+				diffPixels.data[i + 2] = 0;
+				diffPixels.data[i + 3] = 255;
+			} else {
+				diffPixels.data[i] = 255;
+				diffPixels.data[i + 1] = 255;
+				diffPixels.data[i + 2] = 255;
+				diffPixels.data[i + 3] = 255;
+			}
+		}
+		diffCtx.putImageData(diffPixels, 0, 0);
+
+		return {
+			frontendDimensions: `${frontendWidth} x ${frontendHeight}`,
+			apiDimensions: `${apiWidth} x ${apiHeight}`,
+			dimensionsMatch: frontendWidth === apiWidth && frontendHeight === apiHeight,
+			strictDifferentPixels,
+			visibleDifferentPixels,
+			visibleDifferencePercent: width && height ? (visibleDifferentPixels / (width * height)) * 100 : 0,
+			maxChannelDelta,
+			diffDataUrl: diffCanvas.toDataURL('image/png'),
+		};
+	};
+
+	handleRenderCompare = async () => {
+		if (!this.canvasRef || !this.canvasRef.handler) {
+			return;
+		}
+		this.setState({
+			renderCompareLoading: true,
+			renderCompareVisible: true,
+			renderCompareResult: null,
+			renderCompareError: '',
+		});
+		try {
+			const frontendDataUrl = await this.getFrontendRenderDataUrl();
+			const payload = this.getStoredRenderPayload();
+			const endpoint = this.getApiRenderEndpoint();
+			const response = await fetch(endpoint, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(payload),
+			});
+			if (!response.ok) {
+				const errorText = await response.text();
+				throw new Error(errorText || `Backend render failed with ${response.status}`);
+			}
+			const responseBody = await response.json();
+			const apiDataUrl = this.normalizeApiImageDataUrl(responseBody);
+			const comparison = await this.compareRenderImages(frontendDataUrl, apiDataUrl);
+			this.setState({
+				renderCompareResult: {
+					endpoint,
+					frontendDataUrl,
+					apiDataUrl,
+					...comparison,
+				},
+			});
+		} catch (error) {
+			this.setState({
+				renderCompareError: error.message || String(error),
+			});
+		} finally {
+			this.setState({
+				renderCompareLoading: false,
+			});
+		}
+	};
+
+	handleRenderCompareCancel = () => {
+		this.setState({
+			renderCompareVisible: false,
+		});
+	};
+
 	render() {
 		const {
 			preview,
@@ -1348,6 +1618,10 @@ class ImageMapEditor extends Component {
 			isEdit,
 			previewVisible,
 			previewImage,
+			renderCompareLoading,
+			renderCompareVisible,
+			renderCompareResult,
+			renderCompareError,
 			toolbarClass,
 		} = this.state;
 		const {
@@ -1469,6 +1743,16 @@ class ImageMapEditor extends Component {
 					onClick={this.handlePreview}
 					tooltipPlacement="bottomRight"
 				/>
+				{this.isRenderCompareEnabled() && (
+					<CommonButton
+						name="Compare API Render"
+						className="rde-action-btn"
+						loading={renderCompareLoading}
+						onClick={this.handleRenderCompare}
+						tooltipTitle="Compare frontend export with backend PNG"
+						tooltipPlacement="bottomRight"
+					/>
+				)}
 			</React.Fragment>
 		);
 		const titleContent = (
@@ -1595,7 +1879,70 @@ class ImageMapEditor extends Component {
 				<img alt="Preview" className="previewPop-Img" src={this.state.previewImage} />
 			</Modal>
 		);
-		return <Content title={title} content={content} loading={loading} previewModal={previewModal} className="" />;
+		const renderCompareModal = (
+			<Modal
+				title="Frontend/API Render Compare"
+				visible={renderCompareVisible}
+				width={1180}
+				footer={[
+					<Button key="close" className="saveBtn" onClick={this.handleRenderCompareCancel}>
+						Close
+					</Button>,
+				]}
+				onCancel={this.handleRenderCompareCancel}
+			>
+				{renderCompareLoading && <Spin size="large" />}
+				{renderCompareError && <div className="err-txt">{renderCompareError}</div>}
+				{renderCompareResult && (
+					<div>
+						<div style={{ marginBottom: 12 }}>
+							<div>
+								<strong>Endpoint:</strong> {renderCompareResult.endpoint}
+							</div>
+							<div>
+								<strong>Dimensions:</strong> frontend {renderCompareResult.frontendDimensions}, API{' '}
+								{renderCompareResult.apiDimensions}{' '}
+								{renderCompareResult.dimensionsMatch ? '(match)' : '(do not match)'}
+							</div>
+							<div>
+								<strong>Pixel diff:</strong> {renderCompareResult.visibleDifferentPixels} visible pixels (
+								{renderCompareResult.visibleDifferencePercent.toFixed(4)}%),{' '}
+								{renderCompareResult.strictDifferentPixels} strict pixels, max channel delta{' '}
+								{renderCompareResult.maxChannelDelta}
+							</div>
+						</div>
+						<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+							<div>
+								<strong>Frontend</strong>
+								<img alt="Frontend render" style={{ width: '100%', border: '1px solid #ddd' }} src={renderCompareResult.frontendDataUrl} />
+							</div>
+							<div>
+								<strong>API</strong>
+								<img alt="API render" style={{ width: '100%', border: '1px solid #ddd' }} src={renderCompareResult.apiDataUrl} />
+							</div>
+							<div>
+								<strong>Diff</strong>
+								<img alt="Render diff" style={{ width: '100%', border: '1px solid #ddd' }} src={renderCompareResult.diffDataUrl} />
+							</div>
+						</div>
+					</div>
+				)}
+			</Modal>
+		);
+		return (
+			<Content
+				title={title}
+				content={content}
+				loading={loading}
+				previewModal={
+					<React.Fragment>
+						{previewModal}
+						{renderCompareModal}
+					</React.Fragment>
+				}
+				className=""
+			/>
+		);
 	}
 }
 
