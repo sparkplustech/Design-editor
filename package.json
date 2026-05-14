@@ -10,7 +10,7 @@
 	],
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"build": "npm run clean && webpack --node-env production --config webpack.prod.js && typedoc",
+		"build": "npm run clean && webpack --node-env production --config webpack.prod.js && npm run typedoc",
 		"build:lib": "npm run tsc && webpack --node-env production --config webpack.lib.js",
 		"start": "npm install && npm run start:dev",
 		"start:dev": "webpack serve --config webpack.dev.js",
@@ -20,7 +20,7 @@
 		"lint": "npm run tsc",
 		"clean": "node scripts/clean",
 		"tsc": "tsc",
-		"typedoc": "typedoc"
+		"typedoc": "typedoc --ignoreCompilerErrors --mode modules --out docs/api src/canvas/index.tsx src/canvas/global.d.ts"
 	},
 	"repository": {
 		"type": "git",

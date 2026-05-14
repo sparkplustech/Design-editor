@@ -756,12 +756,13 @@ class Handler implements HandlerOptions {
 						dirty: true,
 					}) as FabricImage,
 				);
+				return;
 			}
 			if (source instanceof File) {
 				const reader = new FileReader();
 				reader.onload = () => {
-					obj.set('file', source);
-					obj.set('src', null);
+					obj.set('file', null);
+					obj.set('src', reader.result);
 					resolve(
 						obj.setSrc(reader.result as string, () => this.canvas.renderAll(), {
 							dirty: true,

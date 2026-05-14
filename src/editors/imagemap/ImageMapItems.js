@@ -139,7 +139,7 @@ class ImageMapItems extends Component {
 				return;
 			}
 			if (item.option.superType === 'svg' && item.type === 'component') {
-				fetch(item.svgUrl)
+				return fetch(item.svgUrl)
 					.then(response => response.text())
 					.then(svgData => {
 						// Convert SVG data to data URI

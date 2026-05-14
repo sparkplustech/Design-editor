@@ -18,8 +18,9 @@
 		"moduleResolution": "node",
 		"target": "esnext",
 		"outDir": "lib",
+		"types": ["webpack-env"],
 		"lib": ["dom", "esnext"]
 	},
 	"include": ["src/canvas/index.tsx", "src/canvas/global.d.ts"],
-	"exclude": ["node_modules", "dist", "lib","src"]
+	"exclude": ["node_modules", "dist", "lib"]
 }

@@ -76,6 +76,84 @@ const defaultOption = {
 	},
 };
 
+const EMBEDDED_IMAGE_SRC_LIMIT = 40000;
+const EMBEDDED_IMAGE_MAX_DIMENSIONS = [1600, 1200, 900, 700, 500, 360, 240];
+const EMBEDDED_IMAGE_QUALITIES = [0.9, 0.8, 0.7, 0.6, 0.5];
+
+const isEmbeddedRasterDataUrl = src =>
+	typeof src === 'string' && /^data:image\/(png|jpe?g|webp);base64,/i.test(src);
+
+const compressEmbeddedImageSrc = src =>
+	new Promise(resolve => {
+		if (!isEmbeddedRasterDataUrl(src) || src.length <= EMBEDDED_IMAGE_SRC_LIMIT) {
+			resolve(src);
+			return;
+		}
+
+		const image = new Image();
+		image.onload = () => {
+			try {
+				const sourceWidth = image.naturalWidth || image.width;
+				const sourceHeight = image.naturalHeight || image.height;
+				if (!sourceWidth || !sourceHeight) {
+					resolve(src);
+					return;
+				}
+
+				let best = src;
+				for (const maxDimension of EMBEDDED_IMAGE_MAX_DIMENSIONS) {
+					const scale = Math.min(1, maxDimension / Math.max(sourceWidth, sourceHeight));
+					const width = Math.max(1, Math.round(sourceWidth * scale));
+					const height = Math.max(1, Math.round(sourceHeight * scale));
+					const canvas = document.createElement('canvas');
+					canvas.width = width;
+					canvas.height = height;
+					const context = canvas.getContext('2d');
+					if (!context) {
+						continue;
+					}
+					context.drawImage(image, 0, 0, width, height);
+
+					for (const quality of EMBEDDED_IMAGE_QUALITIES) {
+						const candidate = canvas.toDataURL('image/webp', quality);
+						if (candidate.length < best.length) {
+							best = candidate;
+						}
+						if (candidate.length <= EMBEDDED_IMAGE_SRC_LIMIT) {
+							resolve(candidate);
+							return;
+						}
+					}
+				}
+				resolve(best);
+			} catch (error) {
+				resolve(src);
+			}
+		};
+		image.onerror = () => resolve(src);
+		image.src = src;
+	});
+
+const prepareEmbeddedImageSourcesForSave = async objects => {
+	await Promise.all(
+		(objects || []).map(async obj => {
+			if (!obj) {
+				return;
+			}
+			if (obj.file) {
+				obj.file = null;
+			}
+			if (isEmbeddedRasterDataUrl(obj.src)) {
+				obj.src = await compressEmbeddedImageSrc(obj.src);
+			}
+			if (Array.isArray(obj.objects)) {
+				await prepareEmbeddedImageSourcesForSave(obj.objects);
+			}
+		}),
+	);
+	return objects;
+};
+
 class ImageMapEditor extends Component {
 	state = {
 		selectedItem: null,
@@ -329,7 +407,7 @@ class ImageMapEditor extends Component {
 		}
 
 		const blobPromise = fetch(dataURL).then(res => res.blob());
-		blobPromise.then(blob => {
+		blobPromise.then(async blob => {
 			const pageSize = this.state.selectedPageSize;
 			const objects = this.canvasRef.handler.exportJSON().filter(obj => {
 				if (!obj.id) {
@@ -350,6 +428,7 @@ class ImageMapEditor extends Component {
 			}
 
 			const badgeAttribute = isAdminBadgePath && objects.some(obj => obj.name === 'attribute');
+			await prepareEmbeddedImageSourcesForSave(objects);
 			const { animations, styles, dataSources } = this.state;
 			const exportDatas = {
 				objects,
@@ -485,7 +564,7 @@ class ImageMapEditor extends Component {
 			this.canvasHandlers.onChangeWokarea('src', './images/sample/transparentBg.png', '');
 		}
 		const blobPromise = fetch(dataURL).then(res => res.blob());
-		blobPromise.then(blob => {
+		blobPromise.then(async blob => {
 			const name = this.state.inputData === null || this.state.inputData === 'null' ? '' : this.state.inputData;
 			const pageSize = this.state.selectedPageSize;
 			const objects = this.canvasRef.handler.exportJSON().filter(obj => {
@@ -514,6 +593,7 @@ class ImageMapEditor extends Component {
 			}
 
 			const badgeAttribute = isAdminBadgePath && objects.some(obj => obj.name === 'attribute');
+			await prepareEmbeddedImageSourcesForSave(objects);
 			const { animations, styles, dataSources } = this.state;
 			const exportDatas = {
 				objects,
@@ -1109,7 +1189,7 @@ class ImageMapEditor extends Component {
 			inputEl.click();
 			inputEl.remove();
 		},
-		onDownload: () => {
+		onDownload: async () => {
 			this.showLoading(true);
 			const objects = this.canvasRef.handler.exportJSON().filter(obj => {
 				if (!obj.id) {
@@ -1129,6 +1209,7 @@ class ImageMapEditor extends Component {
 				}
 			}
 
+			await prepareEmbeddedImageSourcesForSave(objects);
 			const { animations, styles, dataSources } = this.state;
 			const exportDatas = {
 				objects,
