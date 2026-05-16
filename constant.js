@@ -32,6 +32,8 @@ if (designCode && designCode.startsWith('DCL')) {
   apiBaseUrl = 'https://astatedevapi.thesolo.network/api';
 } else if (designCode && designCode.startsWith('DCA')) {
   apiBaseUrl = 'https://arkansasapi.thesolo.network/api';
+} else if (designCode && designCode.startsWith('DPG')) {
+  apiBaseUrl = 'https://ipgapi.thesolo.network/api';
 }
 
 if (decryptedRU == 'localhost') {
