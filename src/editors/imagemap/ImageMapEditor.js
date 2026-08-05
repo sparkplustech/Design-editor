@@ -354,7 +354,7 @@ class ImageMapEditor extends Component {
 			const formData = new FormData();
 			formData.append('image', blob, 'image.png');
 			formData.append('name', name);
-			formData.append('pageSize', pageSize);
+			// formData.append('pageSize', pageSize);
 			formData.append('designCode', designCode);
 
 			if (isAdminPath) {
@@ -514,7 +514,7 @@ class ImageMapEditor extends Component {
 			const formData = new FormData();
 			formData.append('image', blob, 'image.png');
 			formData.append('name', name);
-			formData.append('pageSize', pageSize);
+			// formData.append('pageSize', pageSize);
 			formData.append('designCode', designCode);
 
 			if (isAdminPath) {
