@@ -1105,6 +1105,7 @@ class ImageMapEditor extends Component {
 		},
 		onDownload: () => {
 			this.showLoading(true);
+			const { left, top } = this.canvasRef.handler.workarea;
 			const objects = this.canvasRef.handler.exportJSON().filter(obj => {
 				if (!obj.id) {
 					return false;
@@ -1114,6 +1115,11 @@ class ImageMapEditor extends Component {
 
 			// remove bg
 			objects.shift();
+			objects.forEach(obj => {
+				if (obj.id === 'workarea') return;
+				obj.left -= left;
+				obj.top -= top;
+			});
 
 			if (this.state.isCertificatePath) {
 				if (this.state.selectedPageSize === 'a4landscape') {
