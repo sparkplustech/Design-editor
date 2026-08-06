@@ -221,7 +221,7 @@ class ImageMapEditor extends Component {
 							loading: false,
 							inputData: data?.name === null || data?.name === 'null' ? '' : data?.name,
 							isInputEmpty: false,
-							selectedPageSize: data?.pageSize,
+							selectedPageSize: data?.pageSize || 'a4landscape',
 						});
 					}
 				})
@@ -355,7 +355,7 @@ class ImageMapEditor extends Component {
 			formData.append('image', blob, 'image.png');
 			formData.append('name', name);
 			if (isCertificatePath) {
-				formData.append('pageSize', pageSize);
+				formData.append('pageSize', pageSize || 'a4landscape');
 			}
 			console.log("is certificate path", isCertificatePath, pageSize);
 			formData.append('designCode', designCode);
@@ -518,7 +518,7 @@ class ImageMapEditor extends Component {
 			formData.append('image', blob, 'image.png');
 			formData.append('name', name);
 			if (isCertificatePath) {
-				formData.append('pageSize', pageSize);
+				formData.append('pageSize', pageSize || 'a4landscape');
 			}
 			formData.append('designCode', designCode);
 
@@ -1057,7 +1057,7 @@ class ImageMapEditor extends Component {
 						}
 					};
 					reader.onload = e => {
-						const { objects, animations, styles, dataSources } = JSON.parse(e.target.result);
+						const { objects, animations, styles, dataSources, pageSize } = JSON.parse(e.target.result);
 
 						if (this.state.isBadgePath) {
 							objects.unshift(CONSTANTS.JSON_CONSTANT.BADGE);
@@ -1067,6 +1067,7 @@ class ImageMapEditor extends Component {
 							animations,
 							styles,
 							dataSources,
+							selectedPageSize: pageSize || 'a4landscape',
 						});
 						if (objects) {
 							this.canvasRef.handler.clear(true);
@@ -1122,12 +1123,13 @@ class ImageMapEditor extends Component {
 				}
 			}
 
-			const { animations, styles, dataSources } = this.state;
+			const { animations, styles, dataSources, selectedPageSize } = this.state;
 			const exportDatas = {
 				objects,
 				animations,
 				styles,
 				dataSources,
+				pageSize: selectedPageSize,
 			};
 			const anchorEl = document.createElement('a');
 			anchorEl.href = `data:text/json;charset=utf-8,${encodeURIComponent(
@@ -1407,7 +1409,7 @@ class ImageMapEditor extends Component {
 					onClick={onSaveImageAndJson}
 					disabled={isSaving}
 				/>
-				{isAdminPath && (
+				{/* {isAdminPath && ( */}
 					<div>
 						<CommonButton
 							className="rde-action-btn"
@@ -1453,7 +1455,7 @@ class ImageMapEditor extends Component {
 							tooltipPlacement="bottomRight"
 						/>
 					</div>
-				)}
+				{/* )} */}
 				<CommonButton
 					className="rde-action-btn"
 					shape="circle"
