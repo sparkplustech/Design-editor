@@ -354,7 +354,10 @@ class ImageMapEditor extends Component {
 			const formData = new FormData();
 			formData.append('image', blob, 'image.png');
 			formData.append('name', name);
-			// formData.append('pageSize', pageSize);
+			if (isCertificatePath) {
+				formData.append('pageSize', pageSize);
+			}
+			console.log("is certificate path", isCertificatePath, pageSize);
 			formData.append('designCode', designCode);
 
 			if (isAdminPath) {
@@ -514,7 +517,9 @@ class ImageMapEditor extends Component {
 			const formData = new FormData();
 			formData.append('image', blob, 'image.png');
 			formData.append('name', name);
-			// formData.append('pageSize', pageSize);
+			if (isCertificatePath) {
+				formData.append('pageSize', pageSize);
+			}
 			formData.append('designCode', designCode);
 
 			if (isAdminPath) {
