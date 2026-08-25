@@ -46,6 +46,7 @@ const fonts = {
 		{ name: 'Roboto Slab', type: 'serif', ref: 'google' },
 		{ name: 'Roboto', type: 'sans-serif', ref: 'google' },
 		{ name: 'Source Sans Pro', type: 'serif', ref: 'google' },
+		{ name: 'The Seasons', type: 'serif', ref: 'google' },
 	],
 };
 
