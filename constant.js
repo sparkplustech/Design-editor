@@ -52,9 +52,13 @@ if (decryptedRU == 'localhost') {
 	reactAppBaseUrl = `https://${decryptedRU}`;
 }
 
+const AGNEL_DESIGN_CODES = ['AIEP', 'AIED', 'AIE'];
+const IS_AGNEL = Boolean(designCode && AGNEL_DESIGN_CODES.some(code => designCode.startsWith(code)));
+
 const API_CONSTANT = {
 	REACT_APP_API_BASE_URL: apiBaseUrl,
 	REACT_APP_BASE_URL: reactAppBaseUrl,
+	IS_AGNEL,
 };
 
 const JSON_CONSTANT = {

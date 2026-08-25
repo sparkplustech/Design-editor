@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Row, Col, Divider } from 'antd';
 import PropTypes from 'prop-types';
 import { uuid } from 'uuidv4';
+import CONSTANTS from '../../../constant';
 
 class Attributes extends Component {
 	item = '';
@@ -77,6 +78,8 @@ class Attributes extends Component {
 	};
 
 	render() {
+		const { IS_AGNEL } = CONSTANTS.API_CONSTANT;
+
 		return (
 			<Row className="panel-space">
 				<Col>
@@ -139,12 +142,14 @@ class Attributes extends Component {
 					>
 						Credential License ID
 					</p> */}
-					<p
-						className="sub-attribute"
-						onClick={e => this.handlers.onAddItem(this.getItem('[DepartmentName]'), true)}
-					>
-						Department Name
-					</p>
+					{IS_AGNEL && (
+						<p
+							className="sub-attribute"
+							onClick={e => this.handlers.onAddItem(this.getItem('[DepartmentName]'), true)}
+						>
+							Department Name
+						</p>
+					)}
 					<p
 						className="sub-attribute"
 						onClick={e => this.handlers.onAddItem(this.getItem('[IssueDate]'), true)}
