@@ -13,7 +13,10 @@ const plugins = [
 	new webpack.LoaderOptionsPlugin({
 		minimize: true,
 	}),
-	new BundleAnalyzerPlugin(),
+	new BundleAnalyzerPlugin({
+		analyzerMode: process.env.ANALYZE === 'true' ? 'server' : 'disabled',
+		openAnalyzer: false,
+	}),
 
 	new CompressionPlugin({
 		algorithm: 'gzip',

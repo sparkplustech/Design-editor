@@ -50,7 +50,7 @@ class ImageMapItems extends Component {
 		item: null,
 		currentPath: '',
 	};
-
+	
 	componentDidMount() {
 		const { canvasRef } = this.props;
 		this.waitForCanvasRender(canvasRef);
@@ -139,7 +139,7 @@ class ImageMapItems extends Component {
 				return;
 			}
 			if (item.option.superType === 'svg' && item.type === 'component') {
-				fetch(item.svgUrl)
+				return fetch(item.svgUrl)
 					.then(response => response.text())
 					.then(svgData => {
 						// Convert SVG data to data URI
@@ -202,7 +202,9 @@ class ImageMapItems extends Component {
 			});
 		},
 		transformList: () => {
-			return Object.values(this.props.descriptors).reduce((prev, curr) => prev.concat(curr), []);
+			return Object.values(this.props.descriptors)
+				.reduce((prev, curr) => prev.concat(curr), [])
+				.filter(item => !(item.type === 'default' && item.option?.superType === 'svg'));
 		},
 		onSVGModalVisible: () => {
 			this.setState(prevState => {
@@ -380,6 +382,7 @@ class ImageMapItems extends Component {
 	};
 
 	render() {
+
 		const { descriptors } = this.props;
 		const {
 			collapse,
@@ -394,7 +397,7 @@ class ImageMapItems extends Component {
 		const className = classnames('rde-editor-items', {
 			minimize: collapse,
 		});
-
+				console.log(this.props.descriptors, descriptors);
 		const isAdminPath = currentPath.includes('admin');
 		const isCertificatePath = currentPath.includes('certificate-designer');
 		const isAdminBadgePath = currentPath.includes('admin-badge-designer');

@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const baseConfig = require('./webpack.common.js');
 const dotenv = require('dotenv');
 const Dotenv = require('dotenv-webpack');
-const devPort = 4000;
+const devPort = Number(process.env.PORT || process.env.DEV_PORT || 4000);
 const host = 'localhost';
 
 module.exports = merge(baseConfig, {

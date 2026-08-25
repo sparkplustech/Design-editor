@@ -9,8 +9,38 @@ export type SvgObject = (FabricGroup | FabricObject) & {
 
 export interface SvgOption extends FabricObjectOption {
 	svg?: string;
+	src?: string;
 	loadType?: 'file' | 'svg';
 }
+
+const SVG_DATA_URL_PREFIX = /^data:image\/svg\+xml(?:;[^,]*)?,/i;
+
+const getSvgSource = (option: SvgOption = {}) => option.svg || option.src || '';
+
+const decodeSvgDataUrl = (source: string) => {
+	if (!SVG_DATA_URL_PREFIX.test(source)) {
+		return null;
+	}
+	const commaIndex = source.indexOf(',');
+	if (commaIndex === -1) {
+		return null;
+	}
+	const header = source.slice(0, commaIndex).toLowerCase();
+	const body = source.slice(commaIndex + 1);
+	try {
+		return header.includes(';base64') ? atob(body) : decodeURIComponent(body);
+	} catch (error) {
+		return null;
+	}
+};
+
+const getInlineSvg = (source: string) => {
+	const trimmed = source.trim();
+	if (trimmed.startsWith('<svg') || trimmed.startsWith('<?xml')) {
+		return trimmed;
+	}
+	return decodeSvgDataUrl(trimmed);
+};
 
 const Svg = fabric.util.createClass(fabric.Group, {
 	type: 'svg',
@@ -62,15 +92,21 @@ const Svg = fabric.util.createClass(fabric.Group, {
 		return this;
 	},
 	loadSvg(option: SvgOption) {
-		const { svg, loadType, fill, stroke } = option;
+		const { loadType, fill, stroke } = option;
+		const source = getSvgSource(option);
+		const inlineSvg = getInlineSvg(source);
 		return new Promise<SvgObject>(resolve => {
-			if (loadType === 'svg') {
-				fabric.loadSVGFromString(svg, (objects, options) => {
-					resolve(this.addSvgElements(objects, { ...options, fill, stroke }, svg));
+			if (!source) {
+				resolve(this);
+				return;
+			}
+			if (loadType === 'svg' || inlineSvg) {
+				fabric.loadSVGFromString(inlineSvg || source, (objects, options) => {
+					resolve(this.addSvgElements(objects, { ...options, fill, stroke }, source));
 				});
 			} else {
-				fabric.loadSVGFromURL(svg, (objects, options) => {
-					resolve(this.addSvgElements(objects, { ...options, fill, stroke }, svg));
+				fabric.loadSVGFromURL(source, (objects, options) => {
+					resolve(this.addSvgElements(objects, { ...options, fill, stroke }, source));
 				});
 			}
 		});
@@ -86,6 +122,7 @@ const Svg = fabric.util.createClass(fabric.Group, {
 	toObject(propertiesToInclude: string[]) {
 		return toObject(this, propertiesToInclude, {
 			svg: this.get('svg'),
+			src: this.get('src'),
 			loadType: this.get('loadType'),
 		});
 	},

@@ -49,6 +49,19 @@ import {
 import { LinkOption } from './LinkHandler';
 import { TransactionEvent } from './TransactionHandler';
 
+const TEXT_OBJECT_TYPES = ['i-text', 'textbox', 'text'];
+const TEXT_METRIC_KEYS = [
+	'fontFamily',
+	'fontSize',
+	'fontWeight',
+	'fontStyle',
+	'lineHeight',
+	'charSpacing',
+	'text',
+	'width',
+	'height',
+];
+
 export interface HandlerCallback {
 	/**
 	 * When has been added object in Canvas, Called function
@@ -301,6 +314,88 @@ class Handler implements HandlerOptions {
 	 */
 	private clipboard: any;
 
+	private isTextObject = (obj?: FabricObject | any) => {
+		return !!obj && TEXT_OBJECT_TYPES.includes(obj.type);
+	};
+
+	private affectsTextMetrics = (key: string) => TEXT_METRIC_KEYS.includes(key);
+
+	private quoteFontFamily = (fontFamily: string) => {
+		if (!fontFamily) {
+			return '';
+		}
+		if (fontFamily.includes(',')) {
+			return fontFamily;
+		}
+		return /[\s"']/.test(fontFamily) ? `"${fontFamily.replace(/"/g, '\\"')}"` : fontFamily;
+	};
+
+	private refreshTextMetrics = (obj?: FabricObject | any) => {
+		if (!this.isTextObject(obj)) {
+			return;
+		}
+		obj.set({
+			objectCaching: false,
+			dirty: true,
+		});
+		if (typeof obj.initDimensions === 'function') {
+			obj.initDimensions();
+		}
+		if (typeof obj.setCoords === 'function') {
+			obj.setCoords();
+		}
+	};
+
+	private clearFabricFontCache = (fontFamily?: string) => {
+		const util = (fabric as any).util;
+		if (!util || typeof util.clearFabricFontCache !== 'function') {
+			return;
+		}
+		if (fontFamily) {
+			util.clearFabricFontCache(fontFamily);
+		} else {
+			util.clearFabricFontCache();
+		}
+	};
+
+	private waitForFont = (
+		fontFamily?: string,
+		fontSize: number = 32,
+		fontWeight: string | number = 'normal',
+		fontStyle: string = 'normal',
+	) => {
+		if (!fontFamily || typeof document === 'undefined') {
+			return Promise.resolve();
+		}
+		const fonts = (document as any).fonts;
+		if (!fonts || typeof fonts.load !== 'function') {
+			return Promise.resolve();
+		}
+		const cssFont = `${fontStyle || 'normal'} ${fontWeight || 'normal'} ${fontSize || 32}px ${this.quoteFontFamily(
+			fontFamily,
+		)}`;
+		return fonts
+			.load(cssFont)
+			.then(() => fonts.ready || Promise.resolve())
+			.then(() => undefined)
+			.catch(() => undefined);
+	};
+
+	private refreshTextAfterFontLoad = (obj: FabricObject | any) => {
+		if (!this.isTextObject(obj)) {
+			return;
+		}
+		const { fontFamily, fontSize, fontWeight, fontStyle } = obj;
+		this.waitForFont(fontFamily, Number(fontSize) || 32, fontWeight, fontStyle).then(() => {
+			this.clearFabricFontCache(fontFamily);
+			this.refreshTextMetrics(obj);
+			if (this.canvas.getActiveObject() === obj) {
+				this.canvas.setActiveObject(obj);
+			}
+			this.canvas.requestRenderAll();
+		});
+	};
+
 	constructor(options: HandlerOptions) {
 		this.initialize(options);
 	}
@@ -431,7 +526,14 @@ class Handler implements HandlerOptions {
 			(activeObject as FabricGroup)._objects.forEach(obj => obj.set(key, value));
 		}
 		activeObject.set(key, value);
-		activeObject.setCoords();
+		if (this.affectsTextMetrics(key)) {
+			this.refreshTextMetrics(activeObject);
+			if (key === 'fontFamily') {
+				this.refreshTextAfterFontLoad(activeObject);
+			}
+		} else {
+			activeObject.setCoords();
+		}
 		this.canvas.requestRenderAll();
 		const { id, superType, type, player, width, height } = activeObject as any;
 		if (superType === 'element') {
@@ -467,12 +569,23 @@ class Handler implements HandlerOptions {
 		if (!activeObject) {
 			return;
 		}
+		let shouldRefreshTextMetrics = false;
 		Object.keys(option).forEach(key => {
 			if (option[key] !== activeObject[key]) {
 				activeObject.set(key, option[key]);
-				activeObject.setCoords();
+				if (this.affectsTextMetrics(key)) {
+					shouldRefreshTextMetrics = true;
+				} else {
+					activeObject.setCoords();
+				}
 			}
 		});
+		if (shouldRefreshTextMetrics) {
+			this.refreshTextMetrics(activeObject);
+			if ('fontFamily' in option) {
+				this.refreshTextAfterFontLoad(activeObject);
+			}
+		}
 		this.canvas.requestRenderAll();
 		const { id, superType, type, player, width, height } = activeObject;
 		if (superType === 'element') {
@@ -517,7 +630,14 @@ class Handler implements HandlerOptions {
 			}
 		}
 		obj.set(key, value);
-		obj.setCoords();
+		if (this.affectsTextMetrics(key)) {
+			this.refreshTextMetrics(obj);
+			if (key === 'fontFamily') {
+				this.refreshTextAfterFontLoad(obj);
+			}
+		} else {
+			obj.setCoords();
+		}
 		this.canvas.renderAll();
 		const { id, superType, type, player, width, height } = obj as any;
 		if (superType === 'element') {
@@ -572,7 +692,15 @@ class Handler implements HandlerOptions {
 			}
 		}
 		obj.set(option);
-		obj.setCoords();
+		const shouldRefreshTextMetrics = Object.keys(option).some(key => this.affectsTextMetrics(key));
+		if (shouldRefreshTextMetrics) {
+			this.refreshTextMetrics(obj);
+			if ('fontFamily' in option) {
+				this.refreshTextAfterFontLoad(obj);
+			}
+		} else {
+			obj.setCoords();
+		}
 		this.canvas.renderAll();
 		const { id, superType, type, player, width, height } = obj as any;
 		if (superType === 'element') {
@@ -628,12 +756,13 @@ class Handler implements HandlerOptions {
 						dirty: true,
 					}) as FabricImage,
 				);
+				return;
 			}
 			if (source instanceof File) {
 				const reader = new FileReader();
 				reader.onload = () => {
-					obj.set('file', source);
-					obj.set('src', null);
+					obj.set('file', null);
+					obj.set('src', reader.result);
 					resolve(
 						obj.setSrc(reader.result as string, () => this.canvas.renderAll(), {
 							dirty: true,
@@ -1576,7 +1705,9 @@ class Handler implements HandlerOptions {
 			if (obj.superType === 'element') {
 				obj.id = uuid();
 			}
-			this.add(obj, false, true);
+			const createdObject = this.add(obj, false, true);
+			this.refreshTextMetrics(createdObject);
+			this.refreshTextAfterFontLoad(createdObject);
 			this.canvas.renderAll();
 		});
 		this.objects = this.getObjects();
@@ -1824,6 +1955,7 @@ class Handler implements HandlerOptions {
 			width,
 			height,
 			enableRetinaScaling: true,
+			multiplier: 2,
 		});
 
 		if (dataUrl) {
@@ -1836,6 +1968,7 @@ class Handler implements HandlerOptions {
 		}
 		// reset the viewportTransform to previous value.
 		this.canvas.viewportTransform = cachedVT;
+		this.canvas.requestRenderAll();
 	};
 
 	/**

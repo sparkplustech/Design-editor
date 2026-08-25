@@ -2,6 +2,7 @@ import { FabricObjectOption, WorkareaObject } from '../utils';
 
 export const canvasOption = {
 	preserveObjectStacking: true,
+	enableRetinaScaling: true,
 	width: 300,
 	height: 150,
 	selection: true,

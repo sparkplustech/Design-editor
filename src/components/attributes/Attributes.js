@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { Row, Col, Divider } from 'antd';
+import { Row, Col, Divider, message } from 'antd';
 import PropTypes from 'prop-types';
 import { uuid } from 'uuidv4';
 import CONSTANTS from '../../../constant';
+
+const svgToDataUri = svgData => `data:image/svg+xml,${encodeURIComponent(svgData)}`;
 
 class Attributes extends Component {
 	item = '';
@@ -26,14 +28,16 @@ class Attributes extends Component {
 					name: 'attribute',
 				},
 			};
-		}else if (name == '[QRCode]') {
+		} else if (name == '[QRCode]') {
 			item = {
-				type: 'image',
+				type: 'svg',
 				option: {
-					type: 'image',
-					src: '../../../images/sample/qr.svg',
-					// width: 100,
-					// height: 100,
+					type: 'svg',
+					superType: 'svg',
+					svgUrl: '/images/sample/qr.svg',
+					loadType: 'file',
+					width: 101,
+					height: 101,
 					name: 'attribute-qr',
 				},
 			};
@@ -71,6 +75,23 @@ class Attributes extends Component {
 			const option = Object.assign({}, item.option, { id });
 			if (item.option.superType === 'svg' && item.type === 'default') {
 				this.handlers.onSVGModalVisible(item.option);
+				return;
+			}
+			if (option.type === 'svg' && option.svgUrl) {
+				fetch(option.svgUrl)
+					.then(response => response.text())
+					.then(svgData => {
+						canvasRef.handler.add(
+							{
+								...option,
+								svg: svgToDataUri(svgData),
+								src: null,
+								svgUrl: null,
+							},
+							centered,
+						);
+					})
+					.catch(() => message.error('Failed to load QR code'));
 				return;
 			}
 			canvasRef.handler.add(option, centered);
