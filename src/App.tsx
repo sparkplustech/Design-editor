@@ -55,6 +55,7 @@ class App extends Component<any, IState> {
 						<link rel="stylesheet" href="https://fonts.googleapis.com/earlyaccess/notosanskr.css" />
 						<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
 						<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+						<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" />
 						<title>Designer | SOLO ECOSYSTEM</title>
 						<script async={true} src="https://www.googletagmanager.com/gtag/js?id=G-EH7WWSK514" />
 						<script>
