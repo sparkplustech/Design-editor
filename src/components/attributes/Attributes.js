@@ -141,6 +141,12 @@ class Attributes extends Component {
 					</p> */}
 					<p
 						className="sub-attribute"
+						onClick={e => this.handlers.onAddItem(this.getItem('[DepartmentName]'), true)}
+					>
+						Department Name
+					</p>
+					<p
+						className="sub-attribute"
 						onClick={e => this.handlers.onAddItem(this.getItem('[IssueDate]'), true)}
 					>
 						Issue Date
