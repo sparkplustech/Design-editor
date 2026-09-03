@@ -32,6 +32,8 @@ if (designCode && designCode.startsWith('DCL')) {
 	apiBaseUrl = 'https://astatedevapi.thesolo.network/api';
 } else if (designCode && designCode.startsWith('DCA')) {
 	apiBaseUrl = 'https://arkansasapi.thesolo.network/api';
+} else if (designCode && designCode.startsWith('DPG')) {
+  apiBaseUrl = 'https://ipgapi.thesolo.network/api';
 } else if (designCode && designCode.startsWith('AIEP')) {
 	apiBaseUrl = 'https://agnelprodapi.thesolo.network/api';
 } else if (designCode && designCode.startsWith('AIED')) {
@@ -40,6 +42,8 @@ if (designCode && designCode.startsWith('DCL')) {
 	apiBaseUrl = 'https://agneltestapi.thesolo.network/api';
 } else if (designCode && designCode.startsWith('GFD')) {
 	apiBaseUrl = 'https://gfdapi.thesolo.network/api';
+} else if (designCode && designCode.startsWith('ADC')) {
+	apiBaseUrl = 'https://apiaguafria.thesolo.network/api';
 }
 
 if (decryptedRU == 'localhost') {
@@ -48,9 +52,13 @@ if (decryptedRU == 'localhost') {
 	reactAppBaseUrl = `https://${decryptedRU}`;
 }
 
+const AGNEL_DESIGN_CODES = ['AIEP', 'AIED', 'AIE'];
+const IS_AGNEL = Boolean(designCode && AGNEL_DESIGN_CODES.some(code => designCode.startsWith(code)));
+
 const API_CONSTANT = {
 	REACT_APP_API_BASE_URL: apiBaseUrl,
 	REACT_APP_BASE_URL: reactAppBaseUrl,
+	IS_AGNEL,
 };
 
 const JSON_CONSTANT = {

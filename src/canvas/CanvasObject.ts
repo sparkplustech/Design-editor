@@ -33,10 +33,18 @@ const CanvasObject: CanvasObjectSchema = {
 		create: ({ objects, ...option }: { objects: FabricObject[] }) => new fabric.Group(objects, option),
 	},
 	'i-text': {
-		create: ({ text, ...option }: { text: string }) => new fabric.IText(text, option),
+		create: ({ text, ...option }: { text: string }) =>
+			new fabric.IText(text, {
+				objectCaching: false,
+				...option,
+			}),
 	},
 	textbox: {
-		create: ({ text, ...option }: { text: string }) => new fabric.Textbox(text, option),
+		create: ({ text, ...option }: { text: string }) =>
+			new fabric.Textbox(text, {
+				objectCaching: false,
+				...option,
+			}),
 	},
 	triangle: {
 		create: (option: any) => new fabric.Triangle(option),

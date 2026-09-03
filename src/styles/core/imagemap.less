@@ -150,19 +150,48 @@
 
 .saveBtn{
 	border-radius: 8px;
-	background: #ff885e;
+	background: #ff4b08;
 	color: #FFFFFF !important;
 	height: 32px;
-    line-height: 27px;
+	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+	font-weight: 600;
+	font-size: 14px;
+	letter-spacing: 0.02857em;
+	// text-transform: uppercase;
+	border: none;
+	box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
+	transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-family:'Montserrat';
+	padding: 8px 22px;
 
 	&:hover {
-		background: #ff6c36;;
+		background: #e03e00;
 		color: #FFFFFF !important;
 		border-color: transparent;
+		box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
 	}
 
 	&:focus {
 		color: #FFFFFF !important;
+		box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
+	}
+
+	&:active {
+		box-shadow: 0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12);
+	}
+
+	&[disabled], &.ant-btn-disabled {
+		&, &:hover, &:focus, &:active {
+			background: #ff4b08 !important;
+			opacity: 0.6;
+			color: #FFFFFF !important;
+			box-shadow: none;
+			cursor: not-allowed;
+			border: none;
+		}
 	}
 
 	&:disabled {
@@ -175,9 +204,15 @@
 }
 
 .ant-btn.saveBtn.ant-btn-default{
-	background: #ff885e;
+	border: none;
+	background: #ff4b08;
 	height: 32px;
-	
+	box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
+
+	&:hover {
+		background: #e03e00;
+		box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
+	}
 
 	span{
 		color: #FFFFFF !important;
