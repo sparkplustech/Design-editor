@@ -165,7 +165,7 @@
 	align-items: center;
 	justify-content: center;
 	font-family:'Montserrat';
-	padding: 8px 22px;
+	padding: 0px 22px;
 
 	&:hover {
 		background: #e03e00;
@@ -201,6 +201,17 @@
         opacity: 1 !important;
         cursor: not-allowed;
     }
+
+	&.ant-btn.saveBtn[disabled],
+	&.ant-btn.saveBtn.ant-btn-disabled {
+		background: #ff4b08 !important;
+		opacity: 1 !important;
+		color: #FFFFFF !important;
+		box-shadow: none !important;
+		border: none !important;
+		text-shadow: none !important;
+		cursor: not-allowed;
+	}
 }
 
 .ant-btn.saveBtn.ant-btn-default{

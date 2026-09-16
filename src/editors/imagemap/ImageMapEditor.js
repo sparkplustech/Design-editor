@@ -704,6 +704,7 @@ class ImageMapEditor extends Component {
 
 				.then(data => {
 					if (editType === 'click') {
+						this.setState({ isSaving: false });
 						if (isAdminPath) {
 							if (isCertificatePath) {
 								window.location.href = `${
@@ -1279,6 +1280,9 @@ class ImageMapEditor extends Component {
 		},
 
 		onSaveImageAndJson: () => {
+			if (this.state.isSaving) {
+				return;
+			}
 			this.editTemplate('click');
 			// const successMessage = this.state.isEdit
 			// 	? 'Template edited successfully!'
@@ -1776,10 +1780,11 @@ class ImageMapEditor extends Component {
 
 				{/* <span className='text-width'>No unsaved changes</span> */}
 				<CommonButton
-					name="Save & Close"
+					name={isSaving ? 'Saving...' : 'Save & Close'}
 					className="saveBtn"
 					onClick={onSaveImageAndJson}
-					disabled={isSaving}
+					// disabled={isSaving}
+					style={isSaving ? { pointerEvents: 'none' } : undefined}
 				/>
 				{/* {isAdminPath && ( */}
 					<div>
